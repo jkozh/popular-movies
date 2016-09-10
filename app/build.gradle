@@ -17,6 +17,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    buildTypes.each {
+        it.buildConfigField 'String', 'OPEN_MOVIE_API_KEY', "\"d8abd880d252d46b702f6961f5045337\""
+    }
 }
 
 dependencies {
