@@ -1,14 +1,22 @@
 package com.example.julia.popularmovies;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,6 +34,32 @@ public class MovieFragment extends Fragment {
     ArrayAdapter<String> mMovieAdapter;
 
     public MovieFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Add this line in order for this fragment to handle menu events.
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.moviefragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_refresh) {
+            FetchMovieTask movieTask = new FetchMovieTask();
+            movieTask.execute();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -56,12 +90,45 @@ public class MovieFragment extends Fragment {
         return rootView;
     }
 
-    public class FetchMovieTask extends AsyncTask<Void, Void, Void> {
+    public class FetchMovieTask extends AsyncTask<String, Void, String[]> {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
+        /**
+         * Take the String representing the complete forecast in JSON Format and
+         * pull out the data we need to construct the Strings needed for the wireframes.
+         *
+         * Fortunately parsing is easy:  constructor takes the JSON string and converts it
+         * into an Object hierarchy for us.
+         */
+        private String[] getMovieDataFromJson(String movieJsonStr, int numMovies) throws JSONException {
+            // These are the names of the JSON objects that need to be extracted.
+            final String TMD_RESULTS = "results";
+            final String TMD_POSTER_PATH = "poster_path";
+
+            Log.v(LOG_TAG, "Movies JSON: " + movieJsonStr);
+            JSONObject forecastJson = new JSONObject(movieJsonStr);
+            JSONArray movieArray = forecastJson.getJSONArray(TMD_RESULTS);
+            Log.v(LOG_TAG, "NUMBER OF MOVIES: " + movieArray.length());
+            numMovies = movieArray.length();
+            String[] resultStrs = new String[numMovies];
+            for(int i = 0; i < movieArray.length(); i++) {
+                String poster;
+                // Get the JSON object representing the movie
+                JSONObject movie = movieArray.getJSONObject(i);
+                poster = movie.getString(TMD_POSTER_PATH);
+                resultStrs[i] = poster;
+            }
+
+            for (String s : resultStrs) {
+                Log.v(LOG_TAG, "Movies entry: " + s);
+            }
+            return resultStrs;
+
+        }
+
         @Override
-        protected Void doInBackground(Void... params) {
+        protected String[] doInBackground(String... params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -69,11 +136,21 @@ public class MovieFragment extends Fragment {
 
             // Will contain the raw JSON response as a string.
             String movieJsonStr = null;
+            // TODO: Think about number of movies
+            int numMovies = 10;
 
             try {
-                String baseUrl = "https://api.themoviedb.org/3/movie/550?";
-                String apiKey = "api_key=" + BuildConfig.OPEN_MOVIE_API_KEY;
-                URL url = new URL(baseUrl.concat(apiKey));
+
+                final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/popular?";
+                final String API_KEY_PARAM = "api_key";
+
+                Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                        .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
+                        .build();
+
+                URL url = new URL(builtUri.toString());
+
+                Log.v(LOG_TAG, "Built URI " + url);
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -119,6 +196,15 @@ public class MovieFragment extends Fragment {
                     }
                 }
             }
+
+            try {
+                return getMovieDataFromJson(movieJsonStr, numMovies);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+
+            // This will only happen if there was an error getting or parsing the forecast.
             return null;
         }
     }
