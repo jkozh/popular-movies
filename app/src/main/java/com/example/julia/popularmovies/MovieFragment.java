@@ -11,7 +11,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 
 import org.json.JSONArray;
@@ -25,22 +24,20 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class MovieFragment extends Fragment {
 
-    ArrayAdapter<String> mMovieAdapter;
+    private MovieAdapter movieAdapter;
+    private ArrayList<Movie> movieList;
 
-    public MovieFragment() {
-    }
+    public MovieFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
+        movieList = new ArrayList<>();
     }
 
     @Override
@@ -50,9 +47,6 @@ public class MovieFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
             FetchMovieTask movieTask = new FetchMovieTask();
@@ -62,73 +56,71 @@ public class MovieFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    //Saves state of activity as parcelable.
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(null, movieList);
+        super.onSaveInstanceState(outState);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        // TODO: Implement actual data as thumbnails images
-        String[] data = {
-                "Img1",
-                "Img2",
-                "Img3",
-                "Img4"
-        };
-        List<String> movies = new ArrayList<>(Arrays.asList(data));
-
-        mMovieAdapter =
-                new ArrayAdapter<>(
-                        getActivity(),
-                        R.layout.grid_item_movie,
-                        R.id.grid_item_movie_view,
-                        movies);
-
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+        movieAdapter = new MovieAdapter(getActivity(), movieList);
 
         // Get a reference to the GridView, and attach this adapter to it.
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movie);
-        gridView.setAdapter(mMovieAdapter);
+        gridView.setAdapter(movieAdapter);
 
         return rootView;
     }
 
-    public class FetchMovieTask extends AsyncTask<String, Void, String[]> {
+    private void updateMovie() {
+        FetchMovieTask movieTask = new FetchMovieTask();
+        movieTask.execute();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateMovie();
+    }
+
+
+    public class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
-        /**
-         * Take the String representing the complete forecast in JSON Format and
-         * pull out the data we need to construct the Strings needed for the wireframes.
-         *
-         * Fortunately parsing is easy:  constructor takes the JSON string and converts it
-         * into an Object hierarchy for us.
-         */
-        private String[] getMovieDataFromJson(String movieJsonStr, int numMovies) throws JSONException {
+        public Movie[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
             // These are the names of the JSON objects that need to be extracted.
-            final String TMD_RESULTS = "results";
-            final String TMD_POSTER_PATH = "poster_path";
+            final String TMD_LIST = "results";
+            final String TMD_POSTER = "poster_path";
 
-            Log.v(LOG_TAG, "Movies JSON: " + movieJsonStr);
-            JSONObject forecastJson = new JSONObject(movieJsonStr);
-            JSONArray movieArray = forecastJson.getJSONArray(TMD_RESULTS);
-            Log.v(LOG_TAG, "NUMBER OF MOVIES: " + movieArray.length());
-            numMovies = movieArray.length();
-            String[] resultStrs = new String[numMovies];
+            JSONObject movieJson = new JSONObject(movieJsonStr);
+            JSONArray movieArray = movieJson.getJSONArray(TMD_LIST);
+
+            Movie[] resultMovies = new Movie[movieArray.length()];
+
+            //  Constructing an URL for a movie's poster image
+            final String MOVIE_POSTER_BASE_URL = "http://image.tmdb.org/t/p/";
+            final String[] POSTER_SIZE =
+                    { "w185", "w92", "w154", "w185", "w342", "w500", "w780", "original" };
+
             for(int i = 0; i < movieArray.length(); i++) {
-                String poster;
-                // Get the JSON object representing the movie
                 JSONObject movie = movieArray.getJSONObject(i);
-                poster = movie.getString(TMD_POSTER_PATH);
-                resultStrs[i] = poster;
+                Uri builtPosterUri = Uri.parse(MOVIE_POSTER_BASE_URL).buildUpon()
+                        .appendPath(POSTER_SIZE[3])
+                        .appendEncodedPath(movie.getString(TMD_POSTER))
+                        .build();
+                resultMovies[i] = new Movie(builtPosterUri.toString());
             }
-
-            for (String s : resultStrs) {
-                Log.v(LOG_TAG, "Movies entry: " + s);
-            }
-            return resultStrs;
-
+            return resultMovies;
         }
 
         @Override
-        protected String[] doInBackground(String... params) {
+        protected Movie[] doInBackground(Void... params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -136,12 +128,10 @@ public class MovieFragment extends Fragment {
 
             // Will contain the raw JSON response as a string.
             String movieJsonStr = null;
-            // TODO: Think about number of movies
-            int numMovies = 10;
 
             try {
-
                 final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/popular?";
+                // TODO: implement sort by
                 final String API_KEY_PARAM = "api_key";
 
                 Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
@@ -184,7 +174,7 @@ public class MovieFragment extends Fragment {
                 // If the code didn't successfully get the weather data, there's no point in attemping
                 // to parse it.
                 return null;
-            } finally{
+            } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
                 }
@@ -198,14 +188,24 @@ public class MovieFragment extends Fragment {
             }
 
             try {
-                return getMovieDataFromJson(movieJsonStr, numMovies);
+                return getMovieDataFromJson(movieJsonStr);
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
 
-            // This will only happen if there was an error getting or parsing the forecast.
+            // This will only happen if there was an error getting or parsing the movies.
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Movie[] result) {
+            if (result != null) {
+                movieAdapter.clear();
+                for (Movie movie: result) {
+                    movieAdapter.add(movie);
+                }
+            }
         }
     }
 }
