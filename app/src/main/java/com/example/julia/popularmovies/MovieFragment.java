@@ -1,9 +1,11 @@
 package com.example.julia.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -107,7 +109,7 @@ public class MovieFragment extends Fragment {
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
         public Movie[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
-            // These are the names of the JSON objects that need to be extracted.
+
             final String TMD_LIST = "results";
             final String TMD_POSTER = "poster_path";
 
@@ -143,12 +145,24 @@ public class MovieFragment extends Fragment {
             String movieJsonStr = null;
 
             try {
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String sortType = prefs.getString(
+                        getString(R.string.pref_sort_key),
+                        getString(R.string.pref_sort_popular));
+
+                String sort_by = "popular";
+
+                if (sortType.equals(getString(R.string.pref_sort_rating))) {
+                    sort_by = "top_rated";
+                } else if (!sortType.equals(getString(R.string.pref_sort_popular))) {
+                    Log.d(LOG_TAG, "Unit type not found: " + sortType);
+                }
+
                 final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/";
-                final String[] SORT_BY = { "popular", "top_rated" };
                 final String API_KEY_PARAM = "api_key";
 
                 Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                        .appendPath(SORT_BY[0])
+                        .appendPath(sort_by)
                         .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                         .build();
 
