@@ -143,11 +143,12 @@ public class MovieFragment extends Fragment {
             String movieJsonStr = null;
 
             try {
-                final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/popular?";
-                // TODO: implement sort by
+                final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/";
+                final String[] SORT_BY = { "popular", "top_rated" };
                 final String API_KEY_PARAM = "api_key";
 
                 Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                        .appendPath(SORT_BY[0])
                         .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                         .build();
 
