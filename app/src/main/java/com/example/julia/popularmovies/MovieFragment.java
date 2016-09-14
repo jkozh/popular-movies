@@ -85,7 +85,7 @@ public class MovieFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Movie movie = movieAdapter.getItem(position);
-                Intent intent = new Intent(getActivity(), DetailActivity.class)
+                Intent intent = new Intent(getActivity(), MovieDetailActivity.class)
                         .putExtra(Intent.EXTRA_TEXT, new String[] {
                                 movie.title,
                                 movie.releaseDate,
