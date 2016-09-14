@@ -6,13 +6,26 @@ import android.os.Parcelable;
 public class Movie implements Parcelable {
 
     String posterUrl;
+    String title;
+    String releaseDate;
+    String voteAverage;
+    String overview;
 
     protected Movie(Parcel in) {
         posterUrl = in.readString();
+        title = in.readString();
+        releaseDate = in.readString();
+        voteAverage = in.readString();
+        overview = in.readString();
+
     }
 
-    public Movie(String url) {
+    public Movie(String url, String  t, String date, String vote, String plot) {
         posterUrl = url;
+        title = t;
+        releaseDate = date;
+        voteAverage = vote;
+        overview = plot;
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -35,5 +48,9 @@ public class Movie implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(posterUrl);
+        dest.writeString(title);
+        dest.writeString(releaseDate);
+        dest.writeString(voteAverage);
+        dest.writeString(overview);
     }
 }

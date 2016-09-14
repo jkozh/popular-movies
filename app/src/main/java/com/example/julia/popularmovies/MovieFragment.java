@@ -41,7 +41,9 @@ public class MovieFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        movieList = new ArrayList<>();
+        if (savedInstanceState == null) {
+            movieList = new ArrayList<>();
+        }
     }
 
     @Override
@@ -84,7 +86,12 @@ public class MovieFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Movie movie = movieAdapter.getItem(position);
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, movie);
+                        .putExtra(Intent.EXTRA_TEXT, new String[] {
+                                movie.title,
+                                movie.releaseDate,
+                                movie.posterUrl,
+                                movie.voteAverage,
+                                movie.overview });
                 startActivity(intent);
             }
         });
@@ -112,6 +119,10 @@ public class MovieFragment extends Fragment {
 
             final String TMD_LIST = "results";
             final String TMD_POSTER = "poster_path";
+            final String TMD_TITLE = "title";
+            final String TMD_DATE = "release_date";
+            final String TMD_VOTE = "vote_average";
+            final String TMD_PLOT = "overview";
 
             JSONObject movieJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = movieJson.getJSONArray(TMD_LIST);
@@ -129,7 +140,13 @@ public class MovieFragment extends Fragment {
                         .appendPath(POSTER_SIZE[3])
                         .appendEncodedPath(movie.getString(TMD_POSTER))
                         .build();
-                resultMovies[i] = new Movie(builtPosterUri.toString());
+
+                resultMovies[i] = new Movie(
+                        builtPosterUri.toString(),
+                        movie.getString(TMD_TITLE),
+                        movie.getString(TMD_DATE),
+                        movie.getString(TMD_VOTE),
+                        movie.getString(TMD_PLOT));
             }
             return resultMovies;
         }
@@ -167,8 +184,6 @@ public class MovieFragment extends Fragment {
                         .build();
 
                 URL url = new URL(builtUri.toString());
-
-                Log.v(LOG_TAG, "Built URI " + url);
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
