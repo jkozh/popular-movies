@@ -16,7 +16,6 @@ import android.widget.TextView;
 import java.io.InputStream;
 
 public class MovieDetailFragment extends Fragment {
-    private static final String LOG_TAG = MovieDetailFragment.class.getSimpleName();
 
     public MovieDetailFragment() {
         setHasOptionsMenu(true);
@@ -25,28 +24,15 @@ public class MovieDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        String[] movieStr;
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-
-        // The detail Activity called via intent
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-
-            movieStr = intent.getStringArrayExtra(Intent.EXTRA_TEXT);
-
-            ((TextView) rootView.findViewById(R.id.detail_title))
-                    .setText(movieStr[0]);
-            ((TextView) rootView.findViewById(R.id.detail_release_date))
-                    .setText(movieStr[1]);
-
-            new DownloadImageTask((ImageView) rootView.findViewById(R.id.detail_poster))
-                    .execute(movieStr[2]);
-
-            ((TextView) rootView.findViewById(R.id.detail_vote_average))
-                    .setText(movieStr[3]);
-            ((TextView) rootView.findViewById(R.id.detail_overview))
-                    .setText(movieStr[4]);
+            Movie movie = intent.getParcelableExtra(Intent.EXTRA_TEXT);
+            ((TextView) rootView.findViewById(R.id.detail_title)).setText(movie.title);
+            ((TextView) rootView.findViewById(R.id.detail_release_date)).setText(movie.releaseDate);
+            new DownloadImageTask((ImageView) rootView.findViewById(R.id.detail_poster)).execute(movie.posterUrl);
+            ((TextView) rootView.findViewById(R.id.detail_vote_average)).setText(movie.voteAverage);
+            ((TextView) rootView.findViewById(R.id.detail_overview)).setText(movie.overview);
         }
 
         return rootView;

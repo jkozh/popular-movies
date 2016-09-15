@@ -1,46 +1,54 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MovieDetailFragment">
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
 
-    <TextView
-        android:id="@+id/detail_title"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/abc_text_size_display_1_material"
-        android:textStyle="bold"
-        android:background="@color/accent_material_light"
-        android:textColor="@color/abc_primary_text_material_dark"
-        android:padding="@dimen/abc_text_size_display_1_material" />
+        tools:context=".MovieDetailFragment">
 
-    <TextView
-        android:id="@+id/detail_release_date"
-        android:layout_width = "match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/detail_title"
-        android:gravity="end"
-        android:paddingRight="@dimen/abc_text_size_display_1_material"
-        android:paddingTop="@dimen/abc_text_size_display_1_material"/>
+        <TextView
+            android:id="@+id/detail_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/abc_text_size_display_1_material"
+            android:textStyle="bold"
+            android:background="@color/accent_material_light"
+            android:textColor="@color/abc_primary_text_material_dark"
+            android:padding="@dimen/abc_text_size_display_1_material" />
 
-    <ImageView
-        android:id="@+id/detail_poster"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_below="@+id/detail_release_date" />
+        <TextView
+            android:id="@+id/detail_release_date"
+            android:layout_width = "match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/detail_title"
+            android:gravity="end"
+            android:paddingRight="@dimen/abc_text_size_display_1_material"
+            android:paddingTop="@dimen/abc_text_size_display_1_material"/>
 
-    <TextView
-        android:id="@+id/detail_vote_average"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/detail_poster"
-        android:gravity="end"
-        android:paddingRight="@dimen/abc_text_size_display_1_material" />
+        <ImageView
+            android:id="@+id/detail_poster"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_below="@+id/detail_release_date" />
 
-    <TextView
-        android:id="@+id/detail_overview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/detail_vote_average" />
+        <TextView
+            android:id="@+id/detail_vote_average"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/detail_poster"
+            android:gravity="end"
+            android:paddingRight="@dimen/abc_text_size_display_1_material" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/detail_overview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/detail_vote_average"
+            android:padding="@dimen/abc_text_size_display_1_material" />
+
+    </RelativeLayout>
+</ScrollView>
