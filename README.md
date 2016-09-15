@@ -1,7 +1,16 @@
 # Popular Movies
 An app that allows users to discover the most popular movies playing.
 
-![alt tag](https://assets.tmdb.org/images/logos/var_2_1_PoweredByTMDB_Blk_Logo_Bree.png)
+## You need to add your own API key  
+If you don't have one you can obtain it from themoviedb.org.
+Then add it into your build.gradle (Module: app) script.
+Where shown below:
+
+![alt tag](https://lh5.googleusercontent.com/lcrd9OzPlFfhviXWKaSQflMMsDvOtzKRtdzCWP_vrERg-k3bqgRxeK3vm-vvxJkFOfZQPvO_1qksMCl7PBDlX336ZLftEWFOxpeeqIxid-3RrCayH0klSAMQkG1UvqO6cvB48ho)
+
+
+## Powered by
+![alt tag](https://assets.tmdb.org/assets/c9dbe2292fb5eea61788571fbd96fa67/images/v4/logos/208x226-stacked-blue.png)
 
 ## License
 Copyright 2016 Julia Kozhukhovskaya
