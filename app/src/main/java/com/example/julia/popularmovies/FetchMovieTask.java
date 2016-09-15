@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -162,6 +163,13 @@ public class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
             for (Movie movie: result) {
                 movieAdapter.add(movie);
             }
+        } else {
+            Toast.makeText(
+                    context,
+                    "Something went wrong, please check your internet connection and try again!",
+                    Toast.LENGTH_SHORT)
+                    .show();
         }
+
     }
 }
