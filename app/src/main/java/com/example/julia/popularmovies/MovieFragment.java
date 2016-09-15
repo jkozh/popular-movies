@@ -41,8 +41,10 @@ public class MovieFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
             movieList = new ArrayList<>();
+        } else {
+            movieList = savedInstanceState.getParcelableArrayList("movies");
         }
     }
 
@@ -65,12 +67,13 @@ public class MovieFragment extends Fragment {
     //Saves state of activity as parcelable.
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(null, movieList);
+        outState.putParcelableArrayList("movies", movieList);
         super.onSaveInstanceState(outState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -93,6 +96,7 @@ public class MovieFragment extends Fragment {
                                 movie.voteAverage,
                                 movie.overview });
                 startActivity(intent);
+                movieAdapter.notifyDataSetChanged();
             }
         });
 
