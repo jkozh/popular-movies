@@ -77,7 +77,8 @@ public class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
         String movieJsonStr = null;
 
         try {
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+            SharedPreferences prefs = PreferenceManager
+                    .getDefaultSharedPreferences(context.getApplicationContext());
             String sortType = prefs.getString(
                     context.getString(R.string.pref_sort_key),
                     context.getString(R.string.pref_sort_popular));
@@ -151,7 +152,6 @@ public class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
-
         // This will only happen if there was an error getting or parsing the movies.
         return null;
     }
@@ -170,6 +170,5 @@ public class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
                     Toast.LENGTH_SHORT)
                     .show();
         }
-
     }
 }

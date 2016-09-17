@@ -3,6 +3,8 @@ package com.example.julia.popularmovies;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,24 +65,12 @@ public class MovieFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.gridview_movie);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        recyclerView.setLayoutManager(layoutManager);
+
         movieAdapter = new MovieAdapter(getActivity(), movieList);
-
-        // Get a reference to the GridView, and attach this adapter to it.
-        GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movie);
-        gridView.setAdapter(movieAdapter);
-
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Movie movie = movieAdapter.getItem(position);
-                Intent intent = new Intent(getActivity(), MovieDetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, movie);
-                startActivity(intent);
-                movieAdapter.notifyDataSetChanged();
-            }
-        });
-
+        recyclerView.setAdapter(movieAdapter);
         return rootView;
     }
 
