@@ -46,7 +46,7 @@ public class MovieFragment extends Fragment {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
             FetchMovieTask movieTask = new FetchMovieTask(getContext(), movieAdapter);
-            movieTask.execute();
+            movieTask.getMovies();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -77,7 +77,7 @@ public class MovieFragment extends Fragment {
 
     private void updateMovie() {
         FetchMovieTask movieTask = new FetchMovieTask(getContext(), movieAdapter);
-        movieTask.execute();
+        movieTask.getMovies();
     }
 
     @Override
