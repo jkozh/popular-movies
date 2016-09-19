@@ -64,9 +64,10 @@ public class MovieFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        final int NUMBER_COLUMNS = 2;
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.gridview_movie);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), NUMBER_COLUMNS);
         recyclerView.setLayoutManager(layoutManager);
 
         movieAdapter = new MovieAdapter(getActivity(), movieList);
