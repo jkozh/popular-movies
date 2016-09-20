@@ -2,46 +2,71 @@ package com.example.julia.popularmovies;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class MovieAdapter extends ArrayAdapter<Movie> {
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
     private Context context;
+    private List<Movie> movies;
 
     public MovieAdapter(Activity context, List<Movie> movies){
-        super(context, 0, movies);
         this.context = context;
+        this.movies = movies;
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
-        ViewHolder holder;
-
-        if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.grid_item_movie, parent, false);
-            holder = new ViewHolder();
-            holder.image = (ImageView) view.findViewById(R.id.grid_item_movie_view);
-            view.setTag(holder);
-        } else {
-            holder = (ViewHolder) view.getTag();
-        }
-
-        Movie movie = getItem(position);
-
-        Picasso.with(context).load(movie.posterUrl).into(holder.image);
-        return view;
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.grid_item_movie, parent, false);
+        return new ViewHolder(view);
     }
 
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, int position) {
+        final Movie movie = movies.get(position);
+        Picasso.with(context).load(movie.posterUrl).into(viewHolder.image);
 
-    static class ViewHolder {
+        viewHolder.image.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, MovieDetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, movie);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return movies.size();
+    }
+
+    public void clear() {
+        movies.clear();
+        notifyDataSetChanged();
+    }
+
+    public void add(Movie movie) {
+        movies.add(movie);
+        notifyDataSetChanged();
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder{
         ImageView image;
+        public ViewHolder(View view) {
+            super(view);
+            image = (ImageView)view.findViewById(R.id.grid_item_movie_view);
+        }
     }
 }

@@ -28,13 +28,17 @@ public class MovieDetailFragment extends Fragment {
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
             Movie movie = intent.getParcelableExtra(Intent.EXTRA_TEXT);
-            ((TextView) rootView.findViewById(R.id.detail_title)).setText(movie.title);
-            ((TextView) rootView.findViewById(R.id.detail_release_date)).setText(movie.releaseDate);
-            new DownloadImageTask((ImageView) rootView.findViewById(R.id.detail_poster)).execute(movie.posterUrl);
-            ((TextView) rootView.findViewById(R.id.detail_vote_average)).setText(movie.voteAverage);
-            ((TextView) rootView.findViewById(R.id.detail_overview)).setText(movie.overview);
+            ((TextView) rootView.findViewById(R.id.detail_title))
+                    .setText(movie.title);
+            ((TextView) rootView.findViewById(R.id.detail_release_date))
+                    .setText(movie.releaseDate);
+            new DownloadImageTask((ImageView) rootView.findViewById(R.id.detail_poster))
+                    .execute(movie.posterUrl);
+            ((TextView) rootView.findViewById(R.id.detail_vote_average))
+                    .setText(movie.voteAverage);
+            ((TextView) rootView.findViewById(R.id.detail_overview))
+                    .setText(movie.overview);
         }
-
         return rootView;
     }
 
@@ -62,5 +66,4 @@ public class MovieDetailFragment extends Fragment {
             bmImage.setImageBitmap(result);
         }
     }
-
 }

@@ -5,13 +5,13 @@
     android:layout_height="match_parent"
     tools:context=".MovieFragment">
 
-    <GridView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/gridview_movie"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:numColumns="2"
         android:verticalSpacing="0dp"
         android:horizontalSpacing="0dp">
-    </GridView>
+    </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>
