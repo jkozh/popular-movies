@@ -5,8 +5,9 @@
 <ImageView
     android:id="@+id/grid_item_movie_view"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="fill_parent"
+    android:scaleType="fitXY"
     android:adjustViewBounds="true"
-    android:clickable="true" />
-
+    android:clickable="true"
+    android:contentDescription="@null" />
 </FrameLayout>

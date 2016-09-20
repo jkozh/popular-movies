@@ -8,10 +8,8 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/gridview_movie"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:numColumns="2"
-        android:verticalSpacing="0dp"
-        android:horizontalSpacing="0dp">
+        android:layout_height="wrap_content"
+        android:numColumns="2">
     </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>

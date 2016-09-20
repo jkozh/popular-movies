@@ -3,7 +3,6 @@ package com.example.julia.popularmovies;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -19,14 +18,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 public class FetchMovieTask {
 
     private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
@@ -38,7 +29,7 @@ public class FetchMovieTask {
         this.movieAdapter = movieAdapter;
     }
 
-    public Movie[] getMovieDataFromJson(JSONObject movieJson) throws JSONException {
+    private Movie[] getMovieDataFromJson(JSONObject movieJson) throws JSONException {
 
         JSONArray movieArray = movieJson.getJSONArray(Config.TMD_LIST);
         int moviesLength = movieArray.length();
@@ -112,7 +103,7 @@ public class FetchMovieTask {
         queue.add(jsObjRequest);
     }
 
-    protected void addMovies(Movie[] result) {
+    private void addMovies(Movie[] result) {
         if (result != null) {
             movieAdapter.clear();
             for (Movie movie: result) {
