@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 public class MovieDetailFragment extends Fragment {
 
@@ -29,29 +31,25 @@ public class MovieDetailFragment extends Fragment {
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
             Movie movie = intent.getParcelableExtra(Intent.EXTRA_TEXT);
+
+            // Set Movie Title
             ((TextView) rootView.findViewById(R.id.detail_title))
                     .setText(movie.title);
+
+            // Set Movie Release date
             ((TextView) rootView.findViewById(R.id.detail_release_date))
                     .setText(movie.releaseDate);
 
-            RequestQueue queue = Volley.newRequestQueue(getContext());
-            final ImageView  mImageView = (ImageView ) rootView.findViewById(R.id.detail_poster);
-            ImageRequest request = new ImageRequest(movie.posterUrl,
-                    new Response.Listener<Bitmap>() {
-                        @Override
-                        public void onResponse(Bitmap bitmap) {
-                            mImageView.setImageBitmap(bitmap);
-                        }
-                    }, 0, 0, null,
-                    new Response.ErrorListener() {
-                        public void onErrorResponse(VolleyError error) {
-                            mImageView.setImageResource(R.drawable.image_load_error);
-                        }
-                    });
-            queue.add(request);
+            // Set Movie Poster
+            Picasso.with(getContext())
+                    .load(movie.posterUrl)
+                    .into((ImageView) rootView.findViewById(R.id.detail_poster));
 
+            // Set Movie Vote Average
             ((TextView) rootView.findViewById(R.id.detail_vote_average))
                     .setText(movie.voteAverage);
+
+            // Set Movie Overview
             ((TextView) rootView.findViewById(R.id.detail_overview))
                     .setText(movie.overview);
         }
