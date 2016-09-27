@@ -1,8 +1,10 @@
-package com.example.julia.popularmovies.data;
+package com.example.julia.popularmovies.data.data;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.test.AndroidTestCase;
+
+import com.example.julia.popularmovies.data.MovieContract;
 
 import java.util.Map;
 import java.util.Set;

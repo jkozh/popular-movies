@@ -7,7 +7,6 @@ import android.test.AndroidTestCase;
 
 import com.example.julia.popularmovies.data.MovieContract;
 import com.example.julia.popularmovies.data.MovieDbHelper;
-import com.example.julia.popularmovies.data.TestUtilities;
 
 public class TestDb extends AndroidTestCase{
     public static final String LOG_TAG = TestDb.class.getSimpleName();
