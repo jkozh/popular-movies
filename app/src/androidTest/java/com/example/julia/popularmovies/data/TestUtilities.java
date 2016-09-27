@@ -7,10 +7,6 @@ import android.test.AndroidTestCase;
 import java.util.Map;
 import java.util.Set;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
 // TODO: change deprecated class
 public class TestUtilities extends AndroidTestCase {
 
@@ -20,7 +16,7 @@ public class TestUtilities extends AndroidTestCase {
         valueCursor.close();
     }
 
-    static void validateCurrentRecord(String error, Cursor valueCursor, ContentValues expectedValues) {
+    public static void validateCurrentRecord(String error, Cursor valueCursor, ContentValues expectedValues) {
         Set<Map.Entry<String, Object>> valueSet = expectedValues.valueSet();
         for (Map.Entry<String, Object> entry : valueSet) {
             String columnName = entry.getKey();
@@ -33,12 +29,12 @@ public class TestUtilities extends AndroidTestCase {
         }
     }
 
-    static ContentValues createWeatherValues() {
+    public static ContentValues createMovieValues() {
         ContentValues movieValues = new ContentValues();
         movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, "123");
         movieValues.put(MovieContract.MovieEntry.COLUMN_TITLE, "Capitan America");
         movieValues.put(MovieContract.MovieEntry.COLUMN_DATE, "2016-08-12");
-        movieValues.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, "Some synopsis");
+        movieValues.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, "Synopsis example");
         movieValues.put(MovieContract.MovieEntry.COLUMN_POSTER, "poster URL");
         movieValues.put(MovieContract.MovieEntry.COLUMN_RATING, "7.5");
         return movieValues;
