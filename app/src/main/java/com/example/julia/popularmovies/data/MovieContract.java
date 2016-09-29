@@ -22,12 +22,7 @@ public class MovieContract {
     // looking at movie data. content://com.example.julia.popularmovies/givemeroot/ will fail,
     // as the ContentProvider hasn't been given any information on what to do with "givemeroot".
     // At least, let's hope not.  Don't be that dev, reader.  Don't be that dev.
-    public static final String PATH_MOVIE = "movie";
-
-    public static String normaliseDate(String date) {
-        // TODO: human readable date
-        return "";
-    }
+    static final String PATH_MOVIE = "movie";
 
     public static final class MovieEntry implements BaseColumns {
         public static final Uri CONTENT_URI =

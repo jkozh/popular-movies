@@ -40,11 +40,11 @@ public class MovieDetailFragment extends Fragment {
 
             // Set Movie Vote Average
             ((TextView) rootView.findViewById(R.id.detail_vote_average))
-                    .setText(movie.voteAverage);
+                    .setText(movie.rating);
 
             // Set Movie Overview
             ((TextView) rootView.findViewById(R.id.detail_overview))
-                    .setText(movie.overview);
+                    .setText(movie.synopsis);
         }
         return rootView;
     }

@@ -7,8 +7,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-import com.example.julia.popularmovies.Movie;
-
 public class MovieProvider extends ContentProvider {
 
     // The URI Matcher used by this content provider.

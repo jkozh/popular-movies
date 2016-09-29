@@ -3,28 +3,31 @@ package com.example.julia.popularmovies;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Movie implements Parcelable {
+class Movie implements Parcelable {
 
+    private String movie_id;
     String posterUrl;
     String title;
     String releaseDate;
-    String voteAverage;
-    String overview;
+    String rating;
+    String synopsis;
 
-    public Movie(String url, String  t, String date, String vote, String plot) {
+    Movie(String id, String url, String t, String date, String rat, String synops) {
+        movie_id = id;
         posterUrl = url;
         title = t;
         releaseDate = date;
-        voteAverage = vote;
-        overview = plot;
+        rating = rat;
+        synopsis = synops;
     }
 
     private Movie(Parcel in) {
+        movie_id = in.readString();
         posterUrl = in.readString();
         title = in.readString();
         releaseDate = in.readString();
-        voteAverage = in.readString();
-        overview = in.readString();
+        rating = in.readString();
+        synopsis = in.readString();
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -46,10 +49,11 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(movie_id);
         parcel.writeString(posterUrl);
         parcel.writeString(title);
         parcel.writeString(releaseDate);
-        parcel.writeString(voteAverage);
-        parcel.writeString(overview);
+        parcel.writeString(rating);
+        parcel.writeString(synopsis);
     }
 }

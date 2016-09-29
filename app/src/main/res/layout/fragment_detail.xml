@@ -15,19 +15,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/abc_text_size_display_1_material"
-            android:textStyle="bold"
-            android:background="@color/accent_material_light"
-            android:textColor="@color/abc_primary_text_material_dark"
-            android:padding="@dimen/abc_text_size_display_1_material" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/detail_release_date"
             android:layout_width = "match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/detail_title"
-            android:gravity="end"
-            android:paddingRight="@dimen/abc_text_size_display_1_material"
-            android:paddingTop="@dimen/abc_text_size_display_1_material"/>
+            android:gravity="end"/>
 
         <ImageView
             android:id="@+id/detail_poster"
@@ -40,15 +35,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/detail_poster"
-            android:gravity="end"
-            android:paddingRight="@dimen/abc_text_size_display_1_material" />
+            android:gravity="end"/>
 
         <TextView
             android:id="@+id/detail_overview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/detail_vote_average"
-            android:padding="@dimen/abc_text_size_display_1_material" />
+            android:layout_below="@+id/detail_vote_average" />
 
     </RelativeLayout>
 </ScrollView>

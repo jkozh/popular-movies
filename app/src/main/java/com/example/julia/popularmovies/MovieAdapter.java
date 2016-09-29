@@ -13,12 +13,12 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
+class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
     private Context context;
     private List<Movie> movies;
 
-    public MovieAdapter(Activity context, List<Movie> movies){
+    MovieAdapter(Activity context, List<Movie> movies){
         this.context = context;
         this.movies = movies;
     }
@@ -52,7 +52,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         return movies.size();
     }
 
-    public void clear() {
+    void clear() {
         movies.clear();
         notifyDataSetChanged();
     }
@@ -62,9 +62,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder{
         ImageView image;
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             image = (ImageView)view.findViewById(R.id.grid_item_movie_view);
         }

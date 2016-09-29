@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class MovieFragment extends Fragment {
 
-    private MovieAdapter movieAdapter;
+    private MovieAdapter mMovieAdapter;
     private ArrayList<Movie> movieList;
 
     public MovieFragment() {
@@ -42,8 +42,8 @@ public class MovieFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            FetchMovieTask movieTask = new FetchMovieTask(getContext(), movieAdapter);
-            movieTask.getMovies();
+            FetchMovieTask movieTask = new FetchMovieTask(getContext(), mMovieAdapter);
+            movieTask.execute();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -67,14 +67,15 @@ public class MovieFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), NUMBER_COLUMNS);
         recyclerView.setLayoutManager(layoutManager);
 
-        movieAdapter = new MovieAdapter(getActivity(), movieList);
-        recyclerView.setAdapter(movieAdapter);
+        mMovieAdapter = new MovieAdapter(getActivity(), movieList);
+        recyclerView.setAdapter(mMovieAdapter);
+        updateMovie();
         return rootView;
     }
 
     private void updateMovie() {
-        FetchMovieTask movieTask = new FetchMovieTask(getContext(), movieAdapter);
-        movieTask.getMovies();
+        FetchMovieTask movieTask = new FetchMovieTask(getActivity(), mMovieAdapter);
+        movieTask.execute();
     }
 
     @Override

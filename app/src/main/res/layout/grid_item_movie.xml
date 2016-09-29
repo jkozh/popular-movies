@@ -8,6 +8,5 @@
     android:layout_height="fill_parent"
     android:scaleType="fitXY"
     android:adjustViewBounds="true"
-    android:clickable="true"
-    android:contentDescription="@null" />
+    android:clickable="true"/>
 </FrameLayout>

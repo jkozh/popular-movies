@@ -49,18 +49,6 @@ public class TestProvider extends AndroidTestCase {
     }
 
     /*
-       This helper function deletes all records from database table using the database
-       functions only. This is designed to be used to reset the state of the database until the
-       delete functionality is available in the ContentProvider.
-     */
-    public void deleteAllRecordsFromDB() {
-        MovieDbHelper dbHelper = new MovieDbHelper(mContext);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete(MovieEntry.TABLE_NAME, null, null);
-        db.close();
-    }
-
-    /*
        Student: Refactor this function to use the deleteAllRecordsFromProvider functionality once
        you have implemented delete functionality there.
     */
@@ -187,6 +175,64 @@ public class TestProvider extends AndroidTestCase {
         movieObserver.waitForNotificationOrFail();
 
         mContext.getContentResolver().unregisterContentObserver(movieObserver);
+    }
+
+
+    static private final int BULK_INSERT_RECORDS_TO_INSERT = 10;
+    private static ContentValues[] createBulkInsertMovieValues() {
+        ContentValues[] returnContentValues = new ContentValues[BULK_INSERT_RECORDS_TO_INSERT];
+        for ( int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++ ) {
+            ContentValues weatherValues = new ContentValues();
+            weatherValues.put(MovieEntry.COLUMN_MOVIE_ID, i);
+            weatherValues.put(MovieEntry.COLUMN_TITLE, "Title-" + i);
+            weatherValues.put(MovieEntry.COLUMN_DATE, "2016-08-09");
+            weatherValues.put(MovieEntry.COLUMN_SYNOPSIS, "Synopsis-" + i);
+            weatherValues.put(MovieEntry.COLUMN_POSTER, "Poster-" + i);
+            weatherValues.put(MovieEntry.COLUMN_RATING, "Rating-" + i);
+            returnContentValues[i] = weatherValues;
+        }
+        return returnContentValues;
+    }
+
+    public void testBulkInsert() {
+        // Now we can bulkInsert some weather.  In fact, we only implement BulkInsert for weather
+        // entries.  With ContentProviders, you really only have to implement the features you
+        // use, after all.
+        ContentValues[] bulkInsertContentValues = createBulkInsertMovieValues();
+
+        // Register a content observer for our bulk insert.
+        TestUtilities.TestContentObserver weatherObserver = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(MovieEntry.CONTENT_URI, true, weatherObserver);
+
+        int insertCount = mContext.getContentResolver().bulkInsert(MovieEntry.CONTENT_URI, bulkInsertContentValues);
+
+        // Students:  If this fails, it means that you most-likely are not calling the
+        // getContext().getContentResolver().notifyChange(uri, null); in your BulkInsert
+        // ContentProvider method.
+        weatherObserver.waitForNotificationOrFail();
+        mContext.getContentResolver().unregisterContentObserver(weatherObserver);
+
+        assertEquals(insertCount, BULK_INSERT_RECORDS_TO_INSERT);
+
+        // A cursor is your primary interface to the query results.
+        Cursor cursor = mContext.getContentResolver().query(
+                MovieEntry.CONTENT_URI,
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null
+        );
+
+        // we should have as many records in the database as we've inserted
+        assertEquals(cursor.getCount(), BULK_INSERT_RECORDS_TO_INSERT);
+
+        // and let's make sure they match the ones we created
+        cursor.moveToFirst();
+        for ( int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++, cursor.moveToNext() ) {
+            TestUtilities.validateCurrentRecord("testBulkInsert.  Error validating MovieEntry " + i,
+                    cursor, bulkInsertContentValues[i]);
+        }
+        cursor.close();
     }
 
 
