@@ -21,15 +21,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
-import com.example.julia.popularmovies.data.MovieContract;
-import com.example.julia.popularmovies.data.MovieDbHelper;
+import com.example.julia.popularmovies.data.MoviesContract;
+import com.example.julia.popularmovies.data.MoviesDbHelper;
 
 public class TestDb extends AndroidTestCase{
     public static final String LOG_TAG = TestDb.class.getSimpleName();
 
     // Since we want each test to start with a clean slate
     private void deleteTheDatabase() {
-        mContext.deleteDatabase(MovieDbHelper.DATABASE_NAME);
+        mContext.deleteDatabase(MoviesDbHelper.DATABASE_NAME);
     }
 
     /*
@@ -47,20 +47,20 @@ public class TestDb extends AndroidTestCase{
         // First step: Get reference to writable database
         // If there's an error in those massive SQL table creation Strings,
         // errors will be thrown here when you try to get a writable database.
-        MovieDbHelper dbHelper = new MovieDbHelper(mContext);
+        MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // Second Step : Create movie values
         ContentValues movieValues = TestUtilities.createMovieValues();
 
         // Third Step : Insert ContentValues into database and get a row ID back
-        long movieRowId = db.insert(MovieContract.MovieEntry.TABLE_NAME, null, movieValues);
+        long movieRowId = db.insert(MoviesContract.MovieEntry.TABLE_MOVIES, null, movieValues);
         assertTrue(movieRowId != -1);
 
         // Fourth Step: Query the database and receive a Cursor back
         // A cursor is your primary interface to the query results.
         Cursor cursor = db.query(
-                MovieContract.MovieEntry.TABLE_NAME,  // Table to Query
+                MoviesContract.MovieEntry.TABLE_MOVIES,  // Table to Query
                 null, // leaving "columns" null just returns all the columns.
                 null, // cols for "where" clause
                 null, // values for "where" clause

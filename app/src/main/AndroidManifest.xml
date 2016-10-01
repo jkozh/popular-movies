@@ -33,7 +33,7 @@
         </activity>
         <provider
             android:authorities="com.example.julia.popularmovies"
-            android:name=".data.MovieProvider" />
+            android:name=".data.MoviesProvider" />
     </application>
 
 </manifest>

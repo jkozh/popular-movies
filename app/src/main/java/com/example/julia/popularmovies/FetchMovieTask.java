@@ -27,7 +27,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.julia.popularmovies.data.MovieContract.MovieEntry;
+import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
 
 import org.json.JSONArray;
 import org.json.JSONException;

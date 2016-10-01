@@ -21,21 +21,21 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.example.julia.popularmovies.data.MovieContract.MovieEntry;
+import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
 
-public class MovieDbHelper extends SQLiteOpenHelper {
-    public static final String LOG_TAG = MovieDbHelper.class.getSimpleName();
+public class MoviesDbHelper extends SQLiteOpenHelper {
+    public static final String LOG_TAG = MoviesDbHelper.class.getSimpleName();
 
     private static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "movie.db";
 
-    public MovieDbHelper(Context context) {
+    public MoviesDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieEntry.TABLE_NAME + "(" +
+        final String SQL_CREATE_MOVIE_TABLE = "CREATE TABLE " + MovieEntry.TABLE_MOVIES + "(" +
                 MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 MovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
                 MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
@@ -54,8 +54,8 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 newVersion + ". OLD DATA WILL BE DESTROYED");
 
         // drop the table
-        db.execSQL("DROP TABLE IF EXISTS " + MovieEntry.TABLE_NAME);
-        db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" + MovieEntry.TABLE_NAME + "'");
+        db.execSQL("DROP TABLE IF EXISTS " + MovieEntry.TABLE_MOVIES);
+        db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" + MovieEntry.TABLE_MOVIES + "'");
 
         // re-create database
         onCreate(db);

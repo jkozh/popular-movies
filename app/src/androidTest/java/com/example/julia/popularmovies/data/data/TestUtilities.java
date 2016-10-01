@@ -24,7 +24,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.test.AndroidTestCase;
 
-import com.example.julia.popularmovies.data.MovieContract;
+import com.example.julia.popularmovies.data.MoviesContract;
 import com.example.julia.popularmovies.data.utils.PollingCheck;
 
 import java.util.Map;
@@ -54,12 +54,12 @@ public class TestUtilities extends AndroidTestCase {
 
     static ContentValues createMovieValues() {
         ContentValues movieValues = new ContentValues();
-        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, "123");
-        movieValues.put(MovieContract.MovieEntry.COLUMN_TITLE, "Capitan America");
-        movieValues.put(MovieContract.MovieEntry.COLUMN_DATE, "2016-08-12");
-        movieValues.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, "Synopsis example");
-        movieValues.put(MovieContract.MovieEntry.COLUMN_POSTER, "poster URL");
-        movieValues.put(MovieContract.MovieEntry.COLUMN_RATING, "7.5");
+        movieValues.put(MoviesContract.MovieEntry.COLUMN_MOVIE_ID, "123");
+        movieValues.put(MoviesContract.MovieEntry.COLUMN_TITLE, "Capitan America");
+        movieValues.put(MoviesContract.MovieEntry.COLUMN_DATE, "2016-08-12");
+        movieValues.put(MoviesContract.MovieEntry.COLUMN_SYNOPSIS, "Synopsis example");
+        movieValues.put(MoviesContract.MovieEntry.COLUMN_POSTER, "poster URL");
+        movieValues.put(MoviesContract.MovieEntry.COLUMN_RATING, "7.5");
         return movieValues;
     }
 

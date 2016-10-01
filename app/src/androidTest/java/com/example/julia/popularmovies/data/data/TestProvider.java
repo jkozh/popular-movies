@@ -25,10 +25,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.test.AndroidTestCase;
 
-import com.example.julia.popularmovies.data.MovieContract;
-import com.example.julia.popularmovies.data.MovieContract.MovieEntry;
-import com.example.julia.popularmovies.data.MovieDbHelper;
-import com.example.julia.popularmovies.data.MovieProvider;
+import com.example.julia.popularmovies.data.MoviesContract;
+import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
+import com.example.julia.popularmovies.data.MoviesDbHelper;
+import com.example.julia.popularmovies.data.MoviesProvider;
 
 public class TestProvider extends AndroidTestCase {
 
@@ -59,7 +59,7 @@ public class TestProvider extends AndroidTestCase {
                 null,
                 null
         );
-        assertEquals("Error: Records not deleted from " + MovieEntry.TABLE_NAME +
+        assertEquals("Error: Records not deleted from " + MovieEntry.TABLE_MOVIES +
                 " table during delete", 0, cursor.getCount());
         cursor.close();
     }
@@ -90,19 +90,19 @@ public class TestProvider extends AndroidTestCase {
         // We define the component name based on the package name from the context and the
         // WeatherProvider class.
         ComponentName componentName = new ComponentName(mContext.getPackageName(),
-                MovieProvider.class.getName());
+                MoviesProvider.class.getName());
         try {
             // Fetch the provider info using the component name from the PackageManager
             // This throws an exception if the provider isn't registered.
             ProviderInfo providerInfo = pm.getProviderInfo(componentName, 0);
 
             // Make sure that the registered authority matches the authority from the Contract.
-            assertEquals("Error: MovieProvider registered with authority: " + providerInfo.authority +
-                            " instead of authority: " + MovieContract.CONTENT_AUTHORITY,
-                    providerInfo.authority, MovieContract.CONTENT_AUTHORITY);
+            assertEquals("Error: MoviesProvider registered with authority: " + providerInfo.authority +
+                            " instead of authority: " + MoviesContract.CONTENT_AUTHORITY,
+                    providerInfo.authority, MoviesContract.CONTENT_AUTHORITY);
         } catch (PackageManager.NameNotFoundException e) {
             // I guess the provider isn't registered correctly.
-            assertTrue("Error: MovieProvider not registered at " + mContext.getPackageName(), false);
+            assertTrue("Error: MoviesProvider not registered at " + mContext.getPackageName(), false);
         }
     }
 
@@ -121,13 +121,13 @@ public class TestProvider extends AndroidTestCase {
      */
     public void testBasicWeatherQuery() {
         // insert our test records into the database
-        MovieDbHelper dbHelper = new MovieDbHelper(mContext);
+        MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         // Fantastic.  Now that we have a location, add some weather!
         ContentValues movieValues = TestUtilities.createMovieValues();
 
-        long movieRowId = db.insert(MovieEntry.TABLE_NAME, null, movieValues);
+        long movieRowId = db.insert(MovieEntry.TABLE_MOVIES, null, movieValues);
         assertTrue("Unable to Insert MovieEntry into the Database", movieRowId != -1);
 
         db.close();
