@@ -37,13 +37,13 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Mark as favorite"
+                    android:text="@string/mark_as_favorite"
                     android:background="@color/colorAccent"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="120 min"/>
+                    android:text="@string/_120_min"/>
 
                 <TextView
                     android:id="@+id/detail_release_date"
@@ -64,12 +64,12 @@
                 android:layout_width="match_parent"/>
 
             <TextView
-                android:text="Trailers"
+                android:text="@string/trailers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:text="Review"
+                android:text="@string/review"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

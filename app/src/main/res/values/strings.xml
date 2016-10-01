@@ -10,4 +10,8 @@
     <string name="pref_sort_label_popular">Most popular</string>
     <string name="pref_sort_rating">rating</string>
     <string name="title_activity_detail">Detail</string>
+    <string name="mark_as_favorite">Mark as favorite</string>
+    <string name="_120_min">120 min</string>
+    <string name="trailers">Trailers</string>
+    <string name="review">Review</string>
 </resources>
