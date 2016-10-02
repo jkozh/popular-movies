@@ -19,70 +19,81 @@ package com.example.julia.popularmovies;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.example.julia.popularmovies.data.MoviesContract;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
+class MovieAdapter extends CursorAdapter {
 
-    private Context context;
-    private List<Movie> movies;
+    private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
+    private Context mContext;
+    private static int sLoaderID;
 
-    MovieAdapter(Activity context, List<Movie> movies){
-        this.context = context;
-        this.movies = movies;
-    }
+    public static class ViewHolder {
+        public final ImageView poster;
+        public final TextView synopsis;
+        public final TextView rating;
+        public final TextView date;
 
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.grid_item_movie, parent, false);
-        return new ViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        final Movie movie = movies.get(position);
-        Picasso.with(context).load(movie.posterUrl).into(viewHolder.image);
-
-        viewHolder.image.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, MovieDetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, movie);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-                notifyDataSetChanged();
-            }
-        });
-    }
-
-    @Override
-    public int getItemCount() {
-        return movies.size();
-    }
-
-    void clear() {
-        movies.clear();
-        notifyDataSetChanged();
-    }
-
-    public void add(Movie movie) {
-        movies.add(movie);
-        notifyDataSetChanged();
-    }
-
-    class ViewHolder extends RecyclerView.ViewHolder{
-        ImageView image;
-        ViewHolder(View view) {
-            super(view);
-            image = (ImageView)view.findViewById(R.id.grid_item_movie_view);
+        public ViewHolder(View view){
+            poster = (ImageView) view.findViewById(R.id.detail_poster);
+            synopsis = (TextView) view.findViewById(R.id.detail_overview);
+            rating = (TextView) view.findViewById(R.id.detail_vote_average);
+            date = (TextView) view.findViewById(R.id.detail_release_date);
         }
+    }
+
+    public MovieAdapter(Context context, Cursor c, int flags, int loaderID){
+        super(context, c, flags);
+        Log.d(LOG_TAG, "MovieAdapter");
+        mContext = context;
+        sLoaderID = loaderID;
+    }
+
+    @Override
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        int layoutId = R.layout.grid_item_movie;
+
+        Log.d(LOG_TAG, "In new View");
+
+        View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
+        ViewHolder viewHolder = new ViewHolder(view);
+        view.setTag(viewHolder);
+
+        return view;
+    }
+
+    @Override
+    public void bindView(View view, Context context, Cursor cursor) {
+
+        ViewHolder viewHolder = (ViewHolder) view.getTag();
+
+        Log.d(LOG_TAG, "In bind View");
+
+        int dateIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_DATE);
+        final String date = cursor.getString(dateIndex);
+        viewHolder.date.setText(date);
+
+        int ratingIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_RATING);
+        final String rating = cursor.getString(dateIndex);
+        viewHolder.rating.setText(rating);
+
+        int imageIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_POSTER);
+        int image = cursor.getInt(imageIndex);
+        Log.i(LOG_TAG, "Image reference extracted: " + image);
+
+        viewHolder.poster.setImageResource(image);
+
     }
 }

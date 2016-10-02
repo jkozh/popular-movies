@@ -212,7 +212,7 @@ class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
         // This will only happen if there was an error getting or parsing the movies.
         return null;
     }
-
+/*
     @Override
     protected void onPostExecute(Movie[] result) {
         if (result != null && mMovieAdapter != null) {
@@ -227,5 +227,5 @@ class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
                     Toast.LENGTH_SHORT)
                     .show();
         }
-    }
+    }*/
 }

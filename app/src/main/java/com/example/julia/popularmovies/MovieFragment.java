@@ -16,8 +16,15 @@
 
 package com.example.julia.popularmovies;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -26,18 +33,42 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.GridView;
+
+import com.example.julia.popularmovies.data.MoviesContract;
 
 import java.util.ArrayList;
 
 
-public class MovieFragment extends Fragment {
+public class MovieFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+
+    private static final String LOG_TAG = MovieFragment.class.getSimpleName();
 
     private MovieAdapter mMovieAdapter;
-    private ArrayList<Movie> movieList;
+    private GridView mGridView;
+
+    private static final int CURSOR_LOADER_ID = 0;
 
     public MovieFragment() {
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        Cursor c =
+                getActivity().getContentResolver().query(MoviesContract.MovieEntry.CONTENT_URI,
+                        new String[]{MoviesContract.MovieEntry._ID},
+                        null,
+                        null,
+                        null);
+        if (c.getCount() == 0){
+            insertData();
+        }
+        // initialize loader
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+        super.onActivityCreated(savedInstanceState);
+    }
+/*
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +79,7 @@ public class MovieFragment extends Fragment {
             movieList = savedInstanceState.getParcelableArrayList("movies");
         }
     }
-
+*/
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.moviefragment, menu);
@@ -65,30 +96,80 @@ public class MovieFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+/*
     //Saves state of activity as parcelable.
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList("movies", movieList);
         super.onSaveInstanceState(outState);
     }
+*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // inflate fragment_main layout
+        final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        final int NUMBER_COLUMNS = 2;
 
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.gridview_movie);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), NUMBER_COLUMNS);
-        recyclerView.setLayoutManager(layoutManager);
+        // initialize our MovieAdapter
+        mMovieAdapter = new MovieAdapter(getActivity(), null, 0, CURSOR_LOADER_ID);
+        // initialize mGridView to the GridView in fragment_main.xml
+        mGridView = (GridView) rootView.findViewById(R.id.movies_grid);
+        // set mGridView adapter to our CursorAdapter
+        mGridView.setAdapter(mMovieAdapter);
 
-        mMovieAdapter = new MovieAdapter(getActivity(), movieList);
-        recyclerView.setAdapter(mMovieAdapter);
-        updateMovie();
+        // make each item clickable
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // increment the position to match Database Ids indexed starting at 1
+                int uriId = position + 1;
+                // append Id to uri
+                Uri uri = ContentUris.withAppendedId(MoviesContract.MovieEntry.CONTENT_URI, uriId);
+                // create fragment
+                DetailFragment detailFragment = DetailFragment.newInstance(uriId, uri);
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, detailFragment)
+                        .addToBackStack(null).commit();
+            }
+        });
+
         return rootView;
     }
 
+    // Static values for our flavors
+    // content credit https://www.android.com/intl/en_us/history/
+    Movie[] movies = {
+            new Movie("Cupcake", "The first release of Android", "sds", "sdsfsdf", "sadad", "sdasd"),
+            new Movie("Donut", "search the web", "dsf", "dsas", "sdfdsf", "asdsa"),
+            new Movie("Eclair", "Make ", "dsfsdf", "saaaaa", "sdfsdf", "sdfsad"),
+            new Movie("Froyo", "Voice", "dsssss", "sssssssddfdf", "qqqqqq", "uuu")
+    };
+
+
+
+    // insert data into database
+    public void insertData(){
+        ContentValues[] movieValuesArr = new ContentValues[movies.length];
+        // Loop through static array of Flavors, add each to an instance of ContentValues
+        // in the array of ContentValues
+        for(int i = 0; i < movies.length; i++){
+            movieValuesArr[i] = new ContentValues();
+            movieValuesArr[i].put(MoviesContract.MovieEntry.COLUMN_DATE, movies[i].releaseDate);
+            movieValuesArr[i].put(MoviesContract.MovieEntry.COLUMN_POSTER, movies[i].posterUrl);
+            movieValuesArr[i].put(MoviesContract.MovieEntry.COLUMN_RATING, movies[i].rating);
+            movieValuesArr[i].put(MoviesContract.MovieEntry.COLUMN_SYNOPSIS, movies[i].synopsis);
+            movieValuesArr[i].put(MoviesContract.MovieEntry.COLUMN_TITLE, movies[i].title);
+            movieValuesArr[i].put(MoviesContract.MovieEntry.COLUMN_MOVIE_ID, movies[i].movie_id);
+        }
+
+        // bulkInsert our ContentValues array
+        getActivity().getContentResolver().bulkInsert(MoviesContract.MovieEntry.CONTENT_URI,
+                movieValuesArr);
+    }
+
+/*
     private void updateMovie() {
         FetchMovieTask movieTask = new FetchMovieTask(getActivity(), mMovieAdapter);
         movieTask.execute();
@@ -98,5 +179,32 @@ public class MovieFragment extends Fragment {
     public void onStart() {
         super.onStart();
         updateMovie();
+    }
+*/
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(getActivity(),
+                MoviesContract.MovieEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState){
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    // Set the cursor in our CursorAdapter once the Cursor is loaded
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mMovieAdapter.swapCursor(data);
+    }
+
+    // reset CursorAdapter on Loader Reset
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader){
+        mMovieAdapter.swapCursor(null);
     }
 }
