@@ -33,7 +33,9 @@
         </activity>
         <provider
             android:authorities="com.example.julia.popularmovies"
-            android:name=".data.MoviesProvider" />
+            android:name=".data.MoviesProvider"
+            android:exported="false"
+            android:syncable="true"/>
     </application>
 
 </manifest>

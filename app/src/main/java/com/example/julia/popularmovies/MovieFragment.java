@@ -62,24 +62,25 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
                         null,
                         null);
         if (c.getCount() == 0){
-            insertData();
+            FetchMovieTask movieTask = new FetchMovieTask(getActivity(), mMovieAdapter);
+            movieTask.execute();
         }
         // initialize loader
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
         super.onActivityCreated(savedInstanceState);
     }
-/*
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
+        /*if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
             movieList = new ArrayList<>();
         } else {
             movieList = savedInstanceState.getParcelableArrayList("movies");
-        }
+        }*/
     }
-*/
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.moviefragment, menu);
@@ -138,36 +139,6 @@ public class MovieFragment extends Fragment implements LoaderManager.LoaderCallb
         return rootView;
     }
 
-    // Static values for our flavors
-    // content credit https://www.android.com/intl/en_us/history/
-    Movie[] movies = {
-            new Movie("Cupcake", "The first release of Android", "sds", "sdsfsdf", "sadad", "sdasd"),
-            new Movie("Donut", "search the web", "dsf", "dsas", "sdfdsf", "asdsa"),
-            new Movie("Eclair", "Make ", "dsfsdf", "saaaaa", "sdfsdf", "sdfsad"),
-            new Movie("Froyo", "Voice", "dsssss", "sssssssddfdf", "qqqqqq", "uuu")
-    };
-
-
-
-    // insert data into database
-    public void insertData(){
-        ContentValues[] movieValuesArr = new ContentValues[movies.length];
-        // Loop through static array of Flavors, add each to an instance of ContentValues
-        // in the array of ContentValues
-        for(int i = 0; i < movies.length; i++){
-            movieValuesArr[i] = new ContentValues();
-            movieValuesArr[i].put(MoviesContract.MovieEntry.COLUMN_DATE, movies[i].releaseDate);
-            movieValuesArr[i].put(MoviesContract.MovieEntry.COLUMN_POSTER, movies[i].posterUrl);
-            movieValuesArr[i].put(MoviesContract.MovieEntry.COLUMN_RATING, movies[i].rating);
-            movieValuesArr[i].put(MoviesContract.MovieEntry.COLUMN_SYNOPSIS, movies[i].synopsis);
-            movieValuesArr[i].put(MoviesContract.MovieEntry.COLUMN_TITLE, movies[i].title);
-            movieValuesArr[i].put(MoviesContract.MovieEntry.COLUMN_MOVIE_ID, movies[i].movie_id);
-        }
-
-        // bulkInsert our ContentValues array
-        getActivity().getContentResolver().bulkInsert(MoviesContract.MovieEntry.CONTENT_URI,
-                movieValuesArr);
-    }
 
 /*
     private void updateMovie() {

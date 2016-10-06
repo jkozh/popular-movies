@@ -19,21 +19,33 @@ package com.example.julia.popularmovies;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends ActionBarActivity {
+import com.facebook.stetho.Stetho;
+
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Stetho is a tool created by facebook to view your database in chrome inspect.
+        // The code below integrates Stetho into your app. More information here:
+        // http://facebook.github.io/stetho/
         setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, new MovieFragment())
-                    .commit();
-        }
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                new MovieFragment()).commit();
+        Stetho.initialize(
+                Stetho.newInitializerBuilder(this)
+                        .enableDumpapp(
+                                Stetho.defaultDumperPluginsProvider(this))
+                        .enableWebKitInspector(
+                                Stetho.defaultInspectorModulesProvider(this))
+                        .build());
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

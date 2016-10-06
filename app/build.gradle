@@ -29,7 +29,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support:support-v4:24.2.1'
     compile 'com.android.support:recyclerview-v7:24.2.1'
-    compile project(":volley")
+    compile 'com.facebook.stetho:stetho:1.4.1'
 }
 
 repositories {

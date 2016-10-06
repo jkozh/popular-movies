@@ -31,10 +31,10 @@ public class MoviesContract {
         // table name
         public static final String TABLE_MOVIES = "movie";
         // columns
-        public static final String COLUMN_MOVIE_ID = "movie_id";
+        public static final String _ID = "_id";
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_DATE = "date";
-        public static final String COLUMN_SYNOPSIS = "synopsis";
+        public static final String COLUMN_PLOT = "plot";
         public static final String COLUMN_POSTER = "poster";
         public static final String COLUMN_RATING = "rating";
 

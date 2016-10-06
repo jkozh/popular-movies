@@ -199,10 +199,9 @@ public class TestProvider extends AndroidTestCase {
         ContentValues[] returnContentValues = new ContentValues[BULK_INSERT_RECORDS_TO_INSERT];
         for ( int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++ ) {
             ContentValues weatherValues = new ContentValues();
-            weatherValues.put(MovieEntry.COLUMN_MOVIE_ID, i);
             weatherValues.put(MovieEntry.COLUMN_TITLE, "Title-" + i);
             weatherValues.put(MovieEntry.COLUMN_DATE, "2016-08-09");
-            weatherValues.put(MovieEntry.COLUMN_SYNOPSIS, "Synopsis-" + i);
+            weatherValues.put(MovieEntry.COLUMN_PLOT, "PLOT-" + i);
             weatherValues.put(MovieEntry.COLUMN_POSTER, "Poster-" + i);
             weatherValues.put(MovieEntry.COLUMN_RATING, "Rating-" + i);
             returnContentValues[i] = weatherValues;

@@ -16,7 +16,6 @@
 
 package com.example.julia.popularmovies;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.net.Uri;
@@ -37,13 +36,12 @@ import com.squareup.picasso.Picasso;
 public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private Cursor mDetailCursor;
-    private View mRootView;
     private int mPosition;
+    private TextView mTitle;
     private ImageView mPoster;
-    private TextView mReleaseDate;
+    private TextView mDate;
     private TextView mRating;
-    private TextView mSynopsis;
-    private TextView mUriText;
+    private TextView mPlot;
     private Uri mUri;
     private static final int CURSOR_LOADER_ID = 0;
 
@@ -72,41 +70,14 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+        mTitle = (TextView) rootView.findViewById(R.id.detail_title);
         mPoster = (ImageView) rootView.findViewById(R.id.detail_poster);
-        mReleaseDate = (TextView) rootView.findViewById(R.id.detail_release_date);
-        mRating = (TextView) rootView.findViewById(R.id.detail_vote_average);
-        mSynopsis = (TextView) rootView.findViewById(R.id.detail_overview);
+        mDate = (TextView) rootView.findViewById(R.id.detail_date);
+        mRating = (TextView) rootView.findViewById(R.id.detail_rating);
+        mPlot = (TextView) rootView.findViewById(R.id.detail_plot);
         Bundle args = this.getArguments();
         getLoaderManager().initLoader(CURSOR_LOADER_ID, args, DetailFragment.this);
 
-
-/*
-        Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            Movie movie = intent.getParcelableExtra(Intent.EXTRA_TEXT);
-
-            // Set Movie Title
-            //((TextView) rootView.findViewById(R.id.detail_title))
-            //        .setText(movie.title);
-
-            // Set Movie Release date
-            ((TextView) rootView.findViewById(R.id.detail_release_date))
-                    .setText(movie.releaseDate);
-
-            // Set Movie Poster
-            Picasso.with(getContext())
-                    .load(movie.posterUrl)
-                    .into((ImageView) rootView.findViewById(R.id.detail_poster));
-
-            // Set Movie Vote Average
-            ((TextView) rootView.findViewById(R.id.detail_vote_average))
-                    .setText(movie.rating);
-
-            // Set Movie Overview
-            ((TextView) rootView.findViewById(R.id.detail_overview))
-                    .setText(movie.synopsis);
-       }
-*/
         return rootView;
     }
 
@@ -145,11 +116,15 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mDetailCursor.moveToFirst();
         DatabaseUtils.dumpCursor(data);
         //mPoster.setImageResource(mDetailCursor.getString(3));
-        mReleaseDate.setText(mDetailCursor.getString(4));
-        mRating.setText(mDetailCursor.getString(3));
-        mSynopsis.setText(mDetailCursor.getString(2));
-        // set Uri to be displayed
-        mUriText.setText(mUri.toString());
+        mPlot.setText(mDetailCursor.getString(5));
+        mRating.setText(mDetailCursor.getString(4));
+        mDate.setText(mDetailCursor.getString(3));
+
+        Picasso.with(getContext())
+                .load(Config.MOVIE_POSTER_BASE_URL + mDetailCursor.getString(2))
+                .into(mPoster);
+
+        mTitle.setText(mDetailCursor.getString(1));
     }
 
     // reset CursorAdapter on Loader Reset

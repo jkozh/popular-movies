@@ -25,7 +25,7 @@ class Config {
     static final String TMD_TITLE = "title";
     static final String TMD_DATE = "release_date";
     static final String TMD_RATING = "vote_average";
-    static final String TMD_SYNOPSIS = "overview";
+    static final String TMD_PLOT = "overview";
 
     // Constructing an URL for a movie's poster image
     static final String MOVIE_POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185/";

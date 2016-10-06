@@ -211,12 +211,14 @@ public class MoviesProvider extends ContentProvider {
                         }
                         long _id = -1;
                         try {
-                            _id = db.insertOrThrow(MoviesContract.MovieEntry.TABLE_MOVIES,
-                                    null, value);
-                        } catch(SQLiteConstraintException e) {
+                            _id = db.insertOrThrow(MoviesContract.MovieEntry.TABLE_MOVIES, null, value);
+                        } catch (SQLiteConstraintException e) {
                             Log.w(LOG_TAG, "Attempting to insert " +
-                                    value.getAsString(
-                                            MoviesContract.MovieEntry.COLUMN_MOVIE_ID)
+                                    value.getAsString(MoviesContract.MovieEntry.COLUMN_TITLE) + " " +
+                                    value.getAsString(MoviesContract.MovieEntry.COLUMN_RATING) + " " +
+                                    value.getAsString(MoviesContract.MovieEntry.COLUMN_DATE) + " " +
+                                    value.getAsString(MoviesContract.MovieEntry.COLUMN_POSTER) + " " +
+                                    value.getAsString(MoviesContract.MovieEntry.COLUMN_PLOT)
                                     + " but value is already in database.");
                         }
 

@@ -18,20 +18,19 @@ package com.example.julia.popularmovies;
 
 public class Movie {
 
-    String movie_id;
-    String posterUrl;
+    String _id;
+    String poster;
     String title;
-    String releaseDate;
+    String date;
     String rating;
-    String synopsis;
+    String plot;
 
-    public Movie(String movie_id, String posterUrl, String title, String releaseDate,
-                 String rating, String synopsis) {
-        this.movie_id = movie_id;
-        this.posterUrl = posterUrl;
+    public Movie(String _id, String poster, String title, String date, String rating, String plot) {
+        this._id = _id;
+        this.poster = poster;
         this.title = title;
-        this.releaseDate = releaseDate;
+        this.date = date;
         this.rating = rating;
-        this.synopsis = synopsis;
+        this.plot = plot;
     }
 }

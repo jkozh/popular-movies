@@ -30,7 +30,12 @@
                 android:paddingLeft="10dp">
 
                 <TextView
-                    android:id="@+id/detail_vote_average"
+                    android:id="@+id/detail_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+
+                <TextView
+                    android:id="@+id/detail_rating"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent" />
 
@@ -46,7 +51,7 @@
                     android:text="@string/_120_min"/>
 
                 <TextView
-                    android:id="@+id/detail_release_date"
+                    android:id="@+id/detail_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
@@ -59,7 +64,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/detail_overview"
+                android:id="@+id/detail_plot"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
 

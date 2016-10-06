@@ -27,6 +27,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.julia.popularmovies.data.MoviesContract;
 import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
 
 import org.json.JSONArray;
@@ -52,78 +53,6 @@ class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
         mMovieAdapter = movieAdapter;
     }
 
-    /* The date/time conversion code is going to be moved outside the asynctask later,
-     * so for convenience we're breaking it out into its own method now.
-     */
-    private String getReadableDateString(String d){
-        // TODO: code here
-        //Date date = new Date(d);
-        //SimpleDateFormat format = new SimpleDateFormat("E, MMM d");
-        return ""; // format.format(date).toString();
-    }
-
-    private Movie[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
-        try {
-            JSONObject movieJson = new JSONObject(movieJsonStr);
-            JSONArray movieArray = movieJson.getJSONArray(Config.TMD_LIST);
-            int moviesLength = movieArray.length();
-            // Insert the new weather information into the database
-            Vector<ContentValues> cVVector = new Vector<>(moviesLength);
-
-            Movie[] resultMovies = new Movie[moviesLength];
-
-            for (int i = 0; i < moviesLength; i++) {
-                JSONObject movie = movieArray.getJSONObject(i);
-                String posterUrl = Config.MOVIE_POSTER_BASE_URL + movie.getString(Config.TMD_POSTER);
-
-                resultMovies[i] = new Movie(
-                        movie.getString(Config.TMD_ID),
-                        posterUrl,
-                        movie.getString(Config.TMD_TITLE),
-                        movie.getString(Config.TMD_DATE),
-                        movie.getString(Config.TMD_RATING),
-                        movie.getString(Config.TMD_SYNOPSIS)
-                );
-
-                ContentValues movieValues = new ContentValues();
-
-                movieValues.put(MovieEntry.COLUMN_MOVIE_ID, movie.getString(Config.TMD_ID));
-                movieValues.put(MovieEntry.COLUMN_TITLE, movie.getString(Config.TMD_TITLE));
-                movieValues.put(MovieEntry.COLUMN_DATE, movie.getString(Config.TMD_DATE));
-                movieValues.put(MovieEntry.COLUMN_SYNOPSIS, movie.getString(Config.TMD_SYNOPSIS));
-                movieValues.put(MovieEntry.COLUMN_POSTER, movie.getString(Config.TMD_POSTER));
-                movieValues.put(MovieEntry.COLUMN_RATING, movie.getString(Config.TMD_RATING));
-
-                cVVector.add(movieValues);
-
-            }
-            // add to database
-            if ( cVVector.size() > 0 ) {
-                ContentValues[] cvArray = new ContentValues[cVVector.size()];
-                cVVector.toArray(cvArray);
-                mContext.getContentResolver().bulkInsert(MovieEntry.CONTENT_URI, cvArray);
-            }
-
-            Cursor cur = mContext.getContentResolver().query(MovieEntry.CONTENT_URI, null, null, null, null);
-
-            cVVector = new Vector<>(cur.getCount());
-            if ( cur.moveToFirst() ) {
-                do {
-                    ContentValues cv = new ContentValues();
-                    DatabaseUtils.cursorRowToContentValues(cur, cv);
-                    cVVector.add(cv);
-                } while (cur.moveToNext());
-            }
-
-            Log.d(LOG_TAG, "FetchMovieTask Complete. " + cVVector.size() + " Inserted");
-
-            return resultMovies;
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-        }
-        return null;
-    }
 
     private String sortBy() {
         SharedPreferences prefs = PreferenceManager
@@ -210,6 +139,42 @@ class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
             e.printStackTrace();
         }
         // This will only happen if there was an error getting or parsing the movies.
+        return null;
+    }
+
+    private Movie[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
+        try {
+            JSONObject movieJson = new JSONObject(movieJsonStr);
+            JSONArray movieArray = movieJson.getJSONArray(Config.TMD_LIST);
+            int moviesLength = movieArray.length();
+            ContentValues movieValuesArr[] = new ContentValues[moviesLength];
+
+            for (int i = 0; i < moviesLength; i++){
+                JSONObject movie = movieArray.getJSONObject(i);
+                movieValuesArr[i] = new ContentValues();
+                movieValuesArr[i].put(
+                        MovieEntry.COLUMN_TITLE,
+                        movie.getString(Config.TMD_TITLE));
+                movieValuesArr[i].put(
+                        MovieEntry.COLUMN_POSTER,
+                        movie.getString(Config.TMD_POSTER));
+                movieValuesArr[i].put(
+                        MovieEntry.COLUMN_RATING,
+                        movie.getString(Config.TMD_RATING));
+                movieValuesArr[i].put(
+                        MovieEntry.COLUMN_DATE,
+                        movie.getString(Config.TMD_DATE));
+                movieValuesArr[i].put(
+                        MovieEntry.COLUMN_PLOT,
+                        movie.getString(Config.TMD_PLOT));
+            }
+            // bulkInsert our ContentValues array
+            mContext.getContentResolver().bulkInsert(MovieEntry.CONTENT_URI, movieValuesArr);
+
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
         return null;
     }
 /*

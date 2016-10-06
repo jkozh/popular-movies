@@ -41,16 +41,19 @@ class MovieAdapter extends CursorAdapter {
     private static int sLoaderID;
 
     public static class ViewHolder {
+        public final TextView title;
         public final ImageView poster;
-        public final TextView synopsis;
+        public final TextView plot;
         public final TextView rating;
         public final TextView date;
 
+
         public ViewHolder(View view){
+            title = (TextView) view.findViewById((R.id.detail_title));
             poster = (ImageView) view.findViewById(R.id.detail_poster);
-            synopsis = (TextView) view.findViewById(R.id.detail_overview);
-            rating = (TextView) view.findViewById(R.id.detail_vote_average);
-            date = (TextView) view.findViewById(R.id.detail_release_date);
+            plot = (TextView) view.findViewById(R.id.detail_plot);
+            rating = (TextView) view.findViewById(R.id.detail_rating);
+            date = (TextView) view.findViewById(R.id.detail_date);
         }
     }
 
@@ -81,19 +84,24 @@ class MovieAdapter extends CursorAdapter {
 
         Log.d(LOG_TAG, "In bind View");
 
-        int dateIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_DATE);
-        final String date = cursor.getString(dateIndex);
-        viewHolder.date.setText(date);
-
-        int ratingIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_RATING);
-        final String rating = cursor.getString(dateIndex);
-        viewHolder.rating.setText(rating);
+        int titleIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_TITLE);
+        viewHolder.title.setText(cursor.getString(titleIndex));
 
         int imageIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_POSTER);
-        int image = cursor.getInt(imageIndex);
-        Log.i(LOG_TAG, "Image reference extracted: " + image);
+        Picasso.with(context)
+                .load(Config.MOVIE_POSTER_BASE_URL + cursor.getInt(imageIndex))
+                .into(viewHolder.poster);
 
-        viewHolder.poster.setImageResource(image);
+        Log.i(LOG_TAG, "Image reference extracted: " + cursor.getInt(imageIndex));
+
+        int plotIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_PLOT);
+        viewHolder.plot.setText(cursor.getString(plotIndex));
+
+        int ratingIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_RATING);
+        viewHolder.rating.setText(cursor.getString(ratingIndex));
+
+        int dateIndex = cursor.getColumnIndex(MoviesContract.MovieEntry.COLUMN_DATE);
+        viewHolder.date.setText(cursor.getString(dateIndex));
 
     }
 }
