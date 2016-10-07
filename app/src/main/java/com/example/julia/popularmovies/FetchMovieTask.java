@@ -27,7 +27,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.julia.popularmovies.data.MoviesContract;
 import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
 
 import org.json.JSONArray;
@@ -46,13 +45,78 @@ class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
 
     private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
     private Context mContext;
-    private MovieAdapter mMovieAdapter;
+    private MovieListAdapter mMovieListAdapter;
+    public final static String POPULAR = "popular";
+    public final static String TOP_RATED = "top_rated";
+    public final static String FAVORITES = "favorites";
 
-    FetchMovieTask(Context context, MovieAdapter movieAdapter) {
+    FetchMovieTask(Context context, MovieListAdapter movieListAdapter) {
         mContext = context;
-        mMovieAdapter = movieAdapter;
+        mMovieListAdapter = movieListAdapter;
     }
 
+    private Movie[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
+        try {
+            JSONObject movieJson = new JSONObject(movieJsonStr);
+            JSONArray movieArray = movieJson.getJSONArray(Config.TMD_LIST);
+            int moviesLength = movieArray.length();
+            // Insert the new weather information into the database
+            Vector<ContentValues> cVVector = new Vector<>(moviesLength);
+
+            Movie[] resultMovies = new Movie[moviesLength];
+
+            for (int i = 0; i < moviesLength; i++) {
+
+                JSONObject movie = movieArray.getJSONObject(i);
+
+                resultMovies[i] = new Movie(
+                        movie.getLong(Config.TMD_ID),
+                        Config.MOVIE_POSTER_BASE_URL + movie.getString(Config.TMD_POSTER),
+                        movie.getString(Config.TMD_TITLE),
+                        movie.getString(Config.TMD_DATE),
+                        movie.getString(Config.TMD_RATING),
+                        movie.getString(Config.TMD_PLOT)
+                );
+
+                ContentValues movieValues = new ContentValues();
+
+                movieValues.put(MovieEntry.COLUMN_ID, movie.getLong(Config.TMD_ID));
+                movieValues.put(MovieEntry.COLUMN_TITLE, movie.getString(Config.TMD_TITLE));
+                movieValues.put(MovieEntry.COLUMN_DATE, movie.getString(Config.TMD_DATE));
+                movieValues.put(MovieEntry.COLUMN_PLOT, movie.getString(Config.TMD_PLOT));
+                movieValues.put(MovieEntry.COLUMN_POSTER, movie.getString(Config.TMD_POSTER));
+                movieValues.put(MovieEntry.COLUMN_RATING, movie.getString(Config.TMD_RATING));
+
+                cVVector.add(movieValues);
+
+            }
+            // add to database
+            if ( cVVector.size() > 0 ) {
+                ContentValues[] cvArray = new ContentValues[cVVector.size()];
+                cVVector.toArray(cvArray);
+                mContext.getContentResolver().bulkInsert(MovieEntry.CONTENT_URI, cvArray);
+            }
+
+            Cursor cur = mContext.getContentResolver().query(MovieEntry.CONTENT_URI, null, null, null, null);
+
+            cVVector = new Vector<>(cur.getCount());
+            if ( cur.moveToFirst() ) {
+                do {
+                    ContentValues cv = new ContentValues();
+                    DatabaseUtils.cursorRowToContentValues(cur, cv);
+                    cVVector.add(cv);
+                } while (cur.moveToNext());
+            }
+
+            Log.d(LOG_TAG, "FetchMovieTask Complete. " + cVVector.size() + " Inserted");
+
+            return resultMovies;
+        } catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     private String sortBy() {
         SharedPreferences prefs = PreferenceManager
@@ -60,9 +124,9 @@ class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
         String sortType = prefs.getString(
                 mContext.getString(R.string.pref_sort_key),
                 mContext.getString(R.string.pref_sort_popular));
-        String sort = "popular";
+        String sort = POPULAR;
         if (sortType.equals(mContext.getString(R.string.pref_sort_rating))) {
-            sort = "top_rated";
+            sort = TOP_RATED;
         } else if (!sortType.equals(mContext.getString(R.string.pref_sort_popular))) {
             Log.d(LOG_TAG, "Unit type not found: " + sortType);
         }
@@ -142,48 +206,12 @@ class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
         return null;
     }
 
-    private Movie[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
-        try {
-            JSONObject movieJson = new JSONObject(movieJsonStr);
-            JSONArray movieArray = movieJson.getJSONArray(Config.TMD_LIST);
-            int moviesLength = movieArray.length();
-            ContentValues movieValuesArr[] = new ContentValues[moviesLength];
-
-            for (int i = 0; i < moviesLength; i++){
-                JSONObject movie = movieArray.getJSONObject(i);
-                movieValuesArr[i] = new ContentValues();
-                movieValuesArr[i].put(
-                        MovieEntry.COLUMN_TITLE,
-                        movie.getString(Config.TMD_TITLE));
-                movieValuesArr[i].put(
-                        MovieEntry.COLUMN_POSTER,
-                        movie.getString(Config.TMD_POSTER));
-                movieValuesArr[i].put(
-                        MovieEntry.COLUMN_RATING,
-                        movie.getString(Config.TMD_RATING));
-                movieValuesArr[i].put(
-                        MovieEntry.COLUMN_DATE,
-                        movie.getString(Config.TMD_DATE));
-                movieValuesArr[i].put(
-                        MovieEntry.COLUMN_PLOT,
-                        movie.getString(Config.TMD_PLOT));
-            }
-            // bulkInsert our ContentValues array
-            mContext.getContentResolver().bulkInsert(MovieEntry.CONTENT_URI, movieValuesArr);
-
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-        }
-        return null;
-    }
-/*
     @Override
-    protected void onPostExecute(Movie[] result) {
-        if (result != null && mMovieAdapter != null) {
-            mMovieAdapter.clear();
-            for (Movie movie: result) {
-                mMovieAdapter.add(movie);
+    protected void onPostExecute(Movie[] movies) {
+        if (movies != null && mMovieListAdapter != null) {
+            mMovieListAdapter.clear();
+            for (Movie movie: movies) {
+                mMovieListAdapter.add(movie);
             }
         } else {
             Toast.makeText(
@@ -192,5 +220,6 @@ class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
                     Toast.LENGTH_SHORT)
                     .show();
         }
-    }*/
+    }
+
 }

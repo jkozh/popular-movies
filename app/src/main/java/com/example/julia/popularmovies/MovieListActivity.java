@@ -18,25 +18,23 @@ package com.example.julia.popularmovies;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.facebook.stetho.Stetho;
 
-public class MainActivity extends AppCompatActivity {
+public class MovieListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Stetho is a tool created by facebook to view your database in chrome inspect.
-        // The code below integrates Stetho into your app. More information here:
-        // http://facebook.github.io/stetho/
-        setContentView(R.layout.activity_main);
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                new MovieFragment()).commit();
+        setContentView(R.layout.activity_movie_list);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, new MovieFragment())
+                    .commit();
+        }
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(
@@ -45,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
                                 Stetho.defaultInspectorModulesProvider(this))
                         .build());
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -56,9 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));

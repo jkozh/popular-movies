@@ -16,120 +16,52 @@
 
 package com.example.julia.popularmovies;
 
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.net.Uri;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.julia.popularmovies.data.MoviesContract;
 import com.squareup.picasso.Picasso;
 
-public class DetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
-
-    private Cursor mDetailCursor;
-    private int mPosition;
-    private TextView mTitle;
-    private ImageView mPoster;
-    private TextView mDate;
-    private TextView mRating;
-    private TextView mPlot;
-    private Uri mUri;
-    private static final int CURSOR_LOADER_ID = 0;
-
-    public static DetailFragment newInstance(int position, Uri uri) {
-        DetailFragment fragment = new DetailFragment();
-        Bundle args = new Bundle();
-        fragment.mPosition = position;
-        fragment.mUri = uri;
-        args.putInt("id", position);
-        fragment.setArguments(args);
-        return fragment;
-    }
+public class DetailFragment extends Fragment {
 
     public DetailFragment() {
-        // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+        setHasOptionsMenu(true);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-        mTitle = (TextView) rootView.findViewById(R.id.detail_title);
-        mPoster = (ImageView) rootView.findViewById(R.id.detail_poster);
-        mDate = (TextView) rootView.findViewById(R.id.detail_date);
-        mRating = (TextView) rootView.findViewById(R.id.detail_rating);
-        mPlot = (TextView) rootView.findViewById(R.id.detail_plot);
-        Bundle args = this.getArguments();
-        getLoaderManager().initLoader(CURSOR_LOADER_ID, args, DetailFragment.this);
+        Intent intent = getActivity().getIntent();
+        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
+            Movie movie = intent.getParcelableExtra(Intent.EXTRA_TEXT);
 
-        return rootView;
-    }
+            // Set Movie Title
+            //((TextView) rootView.findViewById(R.id.detail_title))
+            //        .setText(movie.title);
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-//        mListener = null;
-    }
+            // Set Movie Release date
+            ((TextView) rootView.findViewById(R.id.detail_date))
+                    .setText(movie.getDate(getContext()));
 
+            // Set Movie Poster
+            Picasso.with(getContext())
+                    .load(movie.getPoster())
+                    .into((ImageView) rootView.findViewById(R.id.detail_poster));
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String selection = null;
-        String [] selectionArgs = null;
-        if (args != null){
-            selection = MoviesContract.MovieEntry._ID;
-            selectionArgs = new String[]{String.valueOf(mPosition)};
+            // Set Movie Rating
+            ((TextView) rootView.findViewById(R.id.detail_rating))
+                    .setText(String.valueOf(movie.getRating()));
+
+            // Set Movie Overview
+            ((TextView) rootView.findViewById(R.id.detail_plot))
+                    .setText(movie.getPlot());
         }
-        return new CursorLoader(getActivity(),
-                mUri,
-                null,
-                selection,
-                selectionArgs,
-                null);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState){
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    // Set the cursor in our CursorAdapter once the Cursor is loaded
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mDetailCursor = data;
-        mDetailCursor.moveToFirst();
-        DatabaseUtils.dumpCursor(data);
-        //mPoster.setImageResource(mDetailCursor.getString(3));
-        mPlot.setText(mDetailCursor.getString(5));
-        mRating.setText(mDetailCursor.getString(4));
-        mDate.setText(mDetailCursor.getString(3));
-
-        Picasso.with(getContext())
-                .load(Config.MOVIE_POSTER_BASE_URL + mDetailCursor.getString(2))
-                .into(mPoster);
-
-        mTitle.setText(mDetailCursor.getString(1));
-    }
-
-    // reset CursorAdapter on Loader Reset
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader){
-        mDetailCursor = null;
+        return rootView;
     }
 }

@@ -29,9 +29,8 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
-
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.detail, new DetailFragment())
+                    .add(R.id.detail_container, new DetailFragment())
                     .commit();
         }
     }

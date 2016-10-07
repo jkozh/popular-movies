@@ -16,21 +16,108 @@
 
 package com.example.julia.popularmovies;
 
-public class Movie {
+import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
 
-    String _id;
-    String poster;
-    String title;
-    String date;
-    String rating;
-    String plot;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
-    public Movie(String _id, String poster, String title, String date, String rating, String plot) {
-        this._id = _id;
-        this.poster = poster;
-        this.title = title;
-        this.date = date;
-        this.rating = rating;
-        this.plot = plot;
+import static com.example.julia.popularmovies.data.MoviesDbHelper.LOG_TAG;
+
+class Movie implements Parcelable {
+
+    private long mId;
+    private String mPoster;
+    private String mTitle;
+    private String mDate;
+    private String mRating;
+    private String mPlot;
+
+    public long getId() {
+        return mId;
+    }
+
+    public String getPoster() {
+        return mPoster;
+    }
+
+    public String getTitle() {
+        return mTitle;
+    }
+
+    public String getDate(Context context) {
+        String inputPattern = "yyyy-MM-dd";
+        SimpleDateFormat inputFormat = new SimpleDateFormat(inputPattern, Locale.US);
+        if (mDate != null && !mDate.isEmpty()) {
+            try {
+                Date date = inputFormat.parse(mDate);
+                return DateFormat.getDateInstance().format(date);
+            } catch (ParseException e) {
+                Log.e(LOG_TAG, "The Release data was not parsed successfully: " + mDate);
+            }
+        } else {
+            mDate = context.getString(R.string.release_date_missing);
+        }
+        return mDate;
+    }
+
+    public String getRating() {
+        // rounding rating from #.## to #.#
+        double rating = Double.parseDouble(mRating);
+        return String.valueOf(Math.round(rating * 10d) / 10d);
+    }
+
+    public String getPlot() {
+        return mPlot;
+    }
+
+    Movie(long id, String poster, String title, String date, String rating, String plot) {
+        this.mId = id;
+        this.mPoster = poster;
+        this.mTitle = title;
+        this.mDate = date;
+        this.mRating = rating;
+        this.mPlot = plot;
+    }
+
+    private Movie(Parcel in) {
+        mId = in.readLong();
+        mPoster = in.readString();
+        mTitle = in.readString();
+        mDate = in.readString();
+        mRating = in.readString();
+        mPlot = in.readString();
+    }
+
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeLong(mId);
+        parcel.writeString(mPoster);
+        parcel.writeString(mTitle);
+        parcel.writeString(mDate);
+        parcel.writeString(mRating);
+        parcel.writeString(mPlot);
     }
 }

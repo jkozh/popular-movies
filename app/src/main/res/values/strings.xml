@@ -14,4 +14,5 @@
     <string name="_120_min">120 min</string>
     <string name="trailers">Trailers</string>
     <string name="review">Review</string>
+    <string name="release_date_missing">Release date is missing</string>
 </resources>
