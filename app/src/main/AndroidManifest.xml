@@ -11,7 +11,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MovieListActivity"
+        <activity android:name=".MovieGridActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,14 +22,14 @@
         <activity
             android:name=".DetailActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".MovieListActivity" />
+            android:parentActivityName=".MovieGridActivity" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MovieListActivity">
+            android:parentActivityName=".MovieGridActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MovieListActivity" />
+                android:value=".MovieGridActivity" />
         </activity>
         <provider
             android:authorities="com.example.julia.popularmovies"

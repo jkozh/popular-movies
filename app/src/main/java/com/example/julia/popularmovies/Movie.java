@@ -21,6 +21,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,17 +35,29 @@ import static com.example.julia.popularmovies.data.MoviesDbHelper.LOG_TAG;
 class Movie implements Parcelable {
 
     private long mId;
-    private String mPoster;
-    private String mTitle;
-    private String mDate;
-    private String mRating;
-    private String mPlot;
+    private String mPoster; // poster's path
+    private String mTitle;  // original title
+    private String mDate;   // release date
+    private String mRating; // vote average
+    private String mPlot;   // overview/synopsis
+
+    Movie(JSONObject movie) throws JSONException {
+        this.mId = movie.getLong(Config.TMD_ID);
+        this.mPoster = movie.getString(Config.TMD_POSTER);;
+        this.mTitle = movie.getString(Config.TMD_TITLE);
+        this.mDate = movie.getString(Config.TMD_DATE);;
+        this.mRating = movie.getString(Config.TMD_RATING);
+        this.mPlot = movie.getString(Config.TMD_PLOT);
+    }
 
     public long getId() {
         return mId;
     }
 
-    public String getPoster() {
+    public String getPoster(Context context) {
+        if (mPoster != null && !mPoster.isEmpty()) {
+            return context.getResources().getString(R.string.poster_url) + mPoster;
+        }
         return mPoster;
     }
 
@@ -85,7 +100,7 @@ class Movie implements Parcelable {
         this.mPlot = plot;
     }
 
-    private Movie(Parcel in) {
+    Movie(Parcel in) {
         mId = in.readLong();
         mPoster = in.readString();
         mTitle = in.readString();

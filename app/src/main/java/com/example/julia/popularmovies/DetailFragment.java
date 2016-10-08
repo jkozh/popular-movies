@@ -41,17 +41,13 @@ public class DetailFragment extends Fragment {
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
             Movie movie = intent.getParcelableExtra(Intent.EXTRA_TEXT);
 
-            // Set Movie Title
-            //((TextView) rootView.findViewById(R.id.detail_title))
-            //        .setText(movie.title);
-
             // Set Movie Release date
             ((TextView) rootView.findViewById(R.id.detail_date))
                     .setText(movie.getDate(getContext()));
 
             // Set Movie Poster
             Picasso.with(getContext())
-                    .load(movie.getPoster())
+                    .load(movie.getPoster(getContext()))
                     .into((ImageView) rootView.findViewById(R.id.detail_poster));
 
             // Set Movie Rating

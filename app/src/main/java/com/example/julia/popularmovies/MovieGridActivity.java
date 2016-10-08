@@ -16,15 +16,25 @@
 
 package com.example.julia.popularmovies;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 
 import com.facebook.stetho.Stetho;
 
-public class MovieListActivity extends AppCompatActivity {
+public class MovieGridActivity extends AppCompatActivity {
+
+    private MenuItem mSpinnerItem1 = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +58,35 @@ public class MovieListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        mSpinnerItem1 = menu.findItem( R.id.spinner);
+        View view1 = mSpinnerItem1.getActionView();
+        if (view1 instanceof Spinner)
+        {
+            final Spinner spinner = (Spinner) view1;
+            ArrayAdapter<CharSequence> listAdapter =ArrayAdapter.createFromResource(this,
+                    R.array.sortby_array,
+                    R.layout.support_simple_spinner_dropdown_item);
+            listAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+            spinner.setAdapter(listAdapter);
+
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+                @Override
+                public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                           int arg2, long arg3) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> arg0) {
+                    // TODO Auto-generated method stub
+
+                }
+            });
+
+        }
+
         return true;
     }
 

@@ -16,23 +16,30 @@
 
 package com.example.julia.popularmovies;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.GridView;
 
 import java.util.ArrayList;
+
+import static com.example.julia.popularmovies.data.MoviesDbHelper.LOG_TAG;
 
 
 public class MovieFragment extends Fragment {
 
-    private MovieListAdapter mMovieListAdapter;
+    private MovieGridAdapter mMovieGridAdapter;
     private ArrayList<Movie> movieList;
 
     public MovieFragment() {
@@ -58,8 +65,7 @@ public class MovieFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            FetchMovieTask movieTask = new FetchMovieTask(getContext(), mMovieListAdapter);
-            movieTask.execute();
+            updateMovie();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -77,21 +83,42 @@ public class MovieFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        final int NUMBER_COLUMNS = 2;
+        GridView mGridView = (GridView) rootView.findViewById(R.id.gridview_movies);
+        mMovieGridAdapter = new MovieGridAdapter(getActivity(), new ArrayList<Movie>());
+        mGridView.setAdapter(mMovieGridAdapter);
 
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.gridview_movie);
-        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), NUMBER_COLUMNS);
-        recyclerView.setLayoutManager(layoutManager);
-
-        mMovieListAdapter = new MovieListAdapter(getActivity(), movieList);
-        recyclerView.setAdapter(mMovieListAdapter);
+    // Think about it
+/*        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Movie movie = mMovieGridAdapter.getItem(position);
+                ((Callback) getActivity()).onItemSelected(movie);
+            }
+        });
+*/
         updateMovie();
         return rootView;
     }
 
+    // TODO: think about this func
+    private String sortBy() {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+        String sortType = prefs.getString(
+                getContext().getString(R.string.pref_sort_key),
+                getContext().getString(R.string.pref_sort_popular));
+        String sort = Config.POPULAR;
+        if (sortType.equals(getContext().getString(R.string.pref_sort_rating))) {
+            sort = Config.TOP_RATED;
+        } else if (!sortType.equals(getContext().getString(R.string.pref_sort_popular))) {
+            Log.d(LOG_TAG, "Unit type not found: " + sortType);
+        }
+        return sort;
+    }
+
     private void updateMovie() {
-        FetchMovieTask movieTask = new FetchMovieTask(getActivity(), mMovieListAdapter);
-        movieTask.execute();
+        // TODO: get sort_by parameter here
+        new FetchMovieTask(getContext(), mMovieGridAdapter).execute("popularity.desc");
     }
 
     @Override

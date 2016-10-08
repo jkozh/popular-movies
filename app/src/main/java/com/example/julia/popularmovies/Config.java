@@ -27,10 +27,13 @@ class Config {
     static final String TMD_RATING = "vote_average";
     static final String TMD_PLOT = "overview";
 
-    // Constructing an URL for a movie's poster image
-    static final String MOVIE_POSTER_BASE_URL = "http://image.tmdb.org/t/p/w185/";
-
     // JSON URL
-    static final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/";
+    static final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
+    static final String SORT_BY_PARAM = "sort_by";
     static final String API_KEY_PARAM = "api_key";
+
+    // Sort options
+    static final String POPULAR = "popular";
+    static final String TOP_RATED = "top_rated";
+    static final String FAVORITES = "favorites";
 }

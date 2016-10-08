@@ -16,18 +16,13 @@
 
 package com.example.julia.popularmovies;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,77 +34,30 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
-class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
+class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
 
     private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
     private Context mContext;
-    private MovieListAdapter mMovieListAdapter;
-    public final static String POPULAR = "popular";
-    public final static String TOP_RATED = "top_rated";
-    public final static String FAVORITES = "favorites";
+    private MovieGridAdapter mMovieGridAdapter;
 
-    FetchMovieTask(Context context, MovieListAdapter movieListAdapter) {
+    FetchMovieTask(Context context, MovieGridAdapter movieGridAdapter) {
         mContext = context;
-        mMovieListAdapter = movieListAdapter;
+        mMovieGridAdapter = movieGridAdapter;
     }
 
-    private Movie[] getMovieDataFromJson(String movieJsonStr) throws JSONException {
+    private List<Movie> getMovieDataFromJson(String movieJsonStr) throws JSONException {
         try {
             JSONObject movieJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = movieJson.getJSONArray(Config.TMD_LIST);
-            int moviesLength = movieArray.length();
-            // Insert the new weather information into the database
-            Vector<ContentValues> cVVector = new Vector<>(moviesLength);
+            List<Movie> resultMovies = new ArrayList<>();
 
-            Movie[] resultMovies = new Movie[moviesLength];
-
-            for (int i = 0; i < moviesLength; i++) {
-
+            for(int i = 0; i < movieArray.length(); i++) {
                 JSONObject movie = movieArray.getJSONObject(i);
-
-                resultMovies[i] = new Movie(
-                        movie.getLong(Config.TMD_ID),
-                        Config.MOVIE_POSTER_BASE_URL + movie.getString(Config.TMD_POSTER),
-                        movie.getString(Config.TMD_TITLE),
-                        movie.getString(Config.TMD_DATE),
-                        movie.getString(Config.TMD_RATING),
-                        movie.getString(Config.TMD_PLOT)
-                );
-
-                ContentValues movieValues = new ContentValues();
-
-                movieValues.put(MovieEntry.COLUMN_ID, movie.getLong(Config.TMD_ID));
-                movieValues.put(MovieEntry.COLUMN_TITLE, movie.getString(Config.TMD_TITLE));
-                movieValues.put(MovieEntry.COLUMN_DATE, movie.getString(Config.TMD_DATE));
-                movieValues.put(MovieEntry.COLUMN_PLOT, movie.getString(Config.TMD_PLOT));
-                movieValues.put(MovieEntry.COLUMN_POSTER, movie.getString(Config.TMD_POSTER));
-                movieValues.put(MovieEntry.COLUMN_RATING, movie.getString(Config.TMD_RATING));
-
-                cVVector.add(movieValues);
-
+                resultMovies.add(new Movie(movie));
             }
-            // add to database
-            if ( cVVector.size() > 0 ) {
-                ContentValues[] cvArray = new ContentValues[cVVector.size()];
-                cVVector.toArray(cvArray);
-                mContext.getContentResolver().bulkInsert(MovieEntry.CONTENT_URI, cvArray);
-            }
-
-            Cursor cur = mContext.getContentResolver().query(MovieEntry.CONTENT_URI, null, null, null, null);
-
-            cVVector = new Vector<>(cur.getCount());
-            if ( cur.moveToFirst() ) {
-                do {
-                    ContentValues cv = new ContentValues();
-                    DatabaseUtils.cursorRowToContentValues(cur, cv);
-                    cVVector.add(cv);
-                } while (cur.moveToNext());
-            }
-
-            Log.d(LOG_TAG, "FetchMovieTask Complete. " + cVVector.size() + " Inserted");
-
             return resultMovies;
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
@@ -118,23 +66,12 @@ class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
         return null;
     }
 
-    private String sortBy() {
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(mContext);
-        String sortType = prefs.getString(
-                mContext.getString(R.string.pref_sort_key),
-                mContext.getString(R.string.pref_sort_popular));
-        String sort = POPULAR;
-        if (sortType.equals(mContext.getString(R.string.pref_sort_rating))) {
-            sort = TOP_RATED;
-        } else if (!sortType.equals(mContext.getString(R.string.pref_sort_popular))) {
-            Log.d(LOG_TAG, "Unit type not found: " + sortType);
-        }
-        return sort;
-    }
-
     @Override
-    protected Movie[] doInBackground(Void... params) {
+    protected List<Movie> doInBackground(String... params) {
+        if (params.length == 0) {
+            Log.e(LOG_TAG, "Length of params equals zero");
+            return null;
+        }
         // These two need to be declared outside the try/catch
         // so that they can be closed in the finally block.
         HttpURLConnection urlConnection = null;
@@ -143,10 +80,9 @@ class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
         // Will contain the raw JSON response as a string.
         String movieJsonStr = null;
         try {
-            String sort_by = sortBy();
 
             Uri builtUri = Uri.parse(Config.MOVIE_BASE_URL).buildUpon()
-                    .appendPath(sort_by)
+                    .appendQueryParameter(Config.SORT_BY_PARAM, params[0])
                     .appendQueryParameter(Config.API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                     .build();
 
@@ -179,7 +115,7 @@ class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
             }
             movieJsonStr = buffer.toString();
         } catch (IOException e) {
-            Log.e("MovieFragment", "Error ", e);
+            Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attemping
             // to parse it.
             return null;
@@ -191,12 +127,14 @@ class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
                 try {
                     reader.close();
                 } catch (final IOException e) {
-                    Log.e("MovieFragment", "Error closing stream", e);
+                    Log.e(LOG_TAG, "Error closing stream", e);
                 }
             }
         }
 
         try {
+
+            Log.e(LOG_TAG, movieJsonStr);
             return getMovieDataFromJson(movieJsonStr);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
@@ -207,19 +145,26 @@ class FetchMovieTask extends AsyncTask<Void, Void, Movie[]> {
     }
 
     @Override
-    protected void onPostExecute(Movie[] movies) {
-        if (movies != null && mMovieListAdapter != null) {
-            mMovieListAdapter.clear();
-            for (Movie movie: movies) {
-                mMovieListAdapter.add(movie);
+    protected void onPostExecute(List<Movie> movies) {
+        if (movies != null) {
+            if (mMovieGridAdapter != null) {
+                mMovieGridAdapter.setData(movies);
+            } else {
+                // TODO: rearrange these Toasts
+                Toast.makeText(
+                        mContext,
+                        "mMovieGridAdapter == null. Something went wrong, please check your internet connection and try again!",
+                        Toast.LENGTH_SHORT)
+                        .show();
             }
         } else {
             Toast.makeText(
                     mContext,
-                    "Something went wrong, please check your internet connection and try again!",
+                    "movies == null. Something went wrong, please check your internet connection and try again!",
                     Toast.LENGTH_SHORT)
                     .show();
         }
+
     }
 
 }
