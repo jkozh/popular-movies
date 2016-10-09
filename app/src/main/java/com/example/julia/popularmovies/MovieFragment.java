@@ -22,6 +22,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,7 +31,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
 
@@ -96,8 +99,7 @@ public class MovieFragment extends Fragment {
             }
         });
 */
-        updateMovie();
-        return rootView;
+     return rootView;
     }
 
     // TODO: think about this func
@@ -116,7 +118,7 @@ public class MovieFragment extends Fragment {
         return sort;
     }
 
-    private void updateMovie() {
+    public void updateMovie() {
         // TODO: get sort_by parameter here
         new FetchMovieTask(getContext(), mMovieGridAdapter).execute("popularity.desc");
     }

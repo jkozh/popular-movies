@@ -16,25 +16,25 @@
 
 package com.example.julia.popularmovies;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
+import android.widget.Toast;
 
 import com.facebook.stetho.Stetho;
 
 public class MovieGridActivity extends AppCompatActivity {
 
-    private MenuItem mSpinnerItem1 = null;
+    private final String LOG_TAG = MovieGridActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,43 +56,57 @@ public class MovieGridActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        mSpinnerItem1 = menu.findItem( R.id.spinner);
-        View view1 = mSpinnerItem1.getActionView();
-        if (view1 instanceof Spinner)
-        {
-            final Spinner spinner = (Spinner) view1;
-            ArrayAdapter<CharSequence> listAdapter =ArrayAdapter.createFromResource(this,
-                    R.array.sortby_array,
-                    R.layout.support_simple_spinner_dropdown_item);
-            listAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-            spinner.setAdapter(listAdapter);
 
-            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        MenuItem item = menu.findItem(R.id.spinner_sortby);
+        final Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
 
-                @Override
-                public void onItemSelected(AdapterView<?> arg0, View arg1,
-                                           int arg2, long arg3) {
-                    // TODO Auto-generated method stub
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.sortby_array, android.R.layout.simple_spinner_item);
 
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Reduce some space between text and an expand arrow icon
+        spinner.setGravity(Gravity.END);
+
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View selectedItemView, int pos, long id) {
+
+                switch (pos) {
+                    case 0:
+                        // popular
+                        break;
+
+                    case 1:
+                        // rated
+                        break;
+                    case 2:
+                        // fav
+                        break;
+                    default:
+                        Log.e(LOG_TAG, "Something went wrong with a spinner");
                 }
+                Toast.makeText(getApplicationContext(),
+                        parent.getItemAtPosition(pos).toString(), Toast.LENGTH_SHORT).show();
+            }
 
-                @Override
-                public void onNothingSelected(AdapterView<?> arg0) {
-                    // TODO Auto-generated method stub
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+            }
 
-                }
-            });
-
-        }
-
+        });
         return true;
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
@@ -100,4 +114,6 @@ public class MovieGridActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }

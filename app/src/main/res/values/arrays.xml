@@ -12,8 +12,8 @@
     </string-array>
 
     <string-array name="sortby_array">
-        <item>Most Popular</item>
+        <item>Popular</item>
         <item>Top Rated</item>
-        <item>Favorite</item>
+        <item>Favorites</item>
     </string-array>
 </resources>

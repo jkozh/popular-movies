@@ -30,6 +30,9 @@ dependencies {
     compile 'com.android.support:support-v4:24.2.1'
     compile 'com.android.support:recyclerview-v7:24.2.1'
     compile 'com.facebook.stetho:stetho:1.4.1'
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
+    compile 'com.facebook.stetho:stetho-okhttp3:1.4.1'
 }
 
 repositories {
