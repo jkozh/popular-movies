@@ -16,7 +16,10 @@
 
 package com.example.julia.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -29,13 +32,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
 import com.squareup.picasso.Picasso;
 
 public class DetailFragment extends Fragment {
 
     private Movie mMovie;
     private ShareActionProvider mShareActionProvider;
+    private ImageView mPosterView;
+    private TextView mTitleView;
+    private TextView mPlotView;
+    private TextView mDateView;
+    private TextView mRatingView;
 
     public DetailFragment() {
     }
@@ -51,10 +61,99 @@ public class DetailFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         if (mMovie != null) {
             inflater.inflate(R.menu.detail, menu);
-
             final MenuItem action_favorite = menu.findItem(R.id.action_favorite);
             MenuItem action_share = menu.findItem(R.id.action_share);
             mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(action_share);
+
+            action_favorite.setIcon(Utility.isFavorited(getActivity(), mMovie.getId()) ?
+                    R.drawable.ic_favorite_white_48dp :
+                    R.drawable.ic_favorite_border_white_48dp);
+
+            new AsyncTask<Void, Void, Boolean>() {
+                @Override
+                protected Boolean doInBackground(Void... params) {
+                    return Utility.isFavorited(getActivity(), mMovie.getId());
+                }
+
+                @Override
+                protected void onPostExecute(Boolean isFavorited) {
+                    action_favorite.setIcon(
+                            isFavorited ?
+                                    R.drawable.ic_favorite_white_48dp :
+                                    R.drawable.ic_favorite_border_white_48dp);
+                }
+            }.execute();
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_favorite:
+                if (mMovie != null) {
+
+                    // check if movie is in favorites or not
+                    new AsyncTask<Void, Void, Boolean>() {
+
+                        @Override
+                        protected Boolean doInBackground(Void... params) {
+                            return Utility.isFavorited(getActivity(), mMovie.getId());
+                        }
+
+                        @Override
+                        protected void onPostExecute(Boolean isFavorited) {
+                            // if it is in favorites
+                            if (isFavorited) {
+                                // delete from favorites
+                                new AsyncTask<Void, Void, Integer>() {
+                                    @Override
+                                    protected Integer doInBackground(Void... params) {
+                                        return getActivity().getContentResolver().delete(
+                                                MovieEntry.CONTENT_URI,
+                                                MovieEntry.COLUMN_ID + " = ?",
+                                                new String[]{Long.toString(mMovie.getId())}
+                                        );
+                                    }
+
+                                    @Override
+                                    protected void onPostExecute(Integer rowsDeleted) {
+                                        item.setIcon(R.drawable.ic_favorite_border_white_48dp);
+                                        Toast.makeText(getActivity(), "Removed from favorites", Toast.LENGTH_SHORT).show();
+                                    }
+                                }.execute();
+                            }
+                            // if it is not in favorites
+                            else {
+                                // add to favorites
+                                new AsyncTask<Void, Void, Uri>() {
+                                    @Override
+                                    protected Uri doInBackground(Void... params) {
+                                        ContentValues values = new ContentValues();
+
+                                        values.put(MovieEntry.COLUMN_ID, mMovie.getId());
+                                        values.put(MovieEntry.COLUMN_TITLE, mMovie.getTitle());
+                                        values.put(MovieEntry.COLUMN_DATE, mMovie.getDate(getContext()));
+                                        values.put(MovieEntry.COLUMN_PLOT, mMovie.getPlot());
+                                        values.put(MovieEntry.COLUMN_POSTER, mMovie.getPoster(getContext()));
+                                        values.put(MovieEntry.COLUMN_RATING, mMovie.getRating());
+
+                                        return getActivity().getContentResolver().insert(
+                                                MovieEntry.CONTENT_URI, values);
+                                    }
+
+                                    @Override
+                                    protected void onPostExecute(Uri returnUri) {
+                                        item.setIcon(R.drawable.ic_favorite_white_48dp);
+                                        Toast.makeText(getActivity(), "Added to favorites", Toast.LENGTH_SHORT).show();
+                                    }
+                                }.execute();
+                            }
+                        }
+                    }.execute();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -62,7 +161,20 @@ public class DetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mMovie = arguments.getParcelable(Config.DETAIL_MOVIE);
+        }
+
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        mPosterView = (ImageView) rootView.findViewById(R.id.detail_poster);
+        mTitleView = (TextView) rootView.findViewById(R.id.detail_title);
+        mPlotView = (TextView) rootView.findViewById(R.id.detail_plot);
+        mDateView = (TextView) rootView.findViewById(R.id.detail_date);
+        mRatingView = (TextView) rootView.findViewById(R.id.detail_rating);
+
+
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
             Movie movie = intent.getParcelableExtra(Intent.EXTRA_TEXT);
