@@ -19,11 +19,11 @@ package com.example.julia.popularmovies;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,16 +34,19 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import static com.example.julia.popularmovies.data.MoviesDbHelper.LOG_TAG;
+public class MovieFragment extends Fragment implements AdapterView.OnItemSelectedListener {
 
-
-public class MovieFragment extends Fragment {
+    private final String LOG_TAG = MovieFragment.class.getSimpleName();
 
     private MovieGridAdapter mMovieGridAdapter;
-    private ArrayList<Movie> movieList;
+    private ArrayList<Movie> mMovies = null;
+    private String mSortBy = Config.POPULARITY_DESC;
+    private Spinner spinner;
+    private Bundle myBundle;
 
     public MovieFragment() {
     }
@@ -52,80 +55,115 @@ public class MovieFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        if (savedInstanceState == null || !savedInstanceState.containsKey("movies")) {
-            movieList = new ArrayList<>();
-        } else {
-            movieList = savedInstanceState.getParcelableArrayList("movies");
-        }
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        GridView mGridView = (GridView) view.findViewById(R.id.gridview_movies);
+        mMovieGridAdapter = new MovieGridAdapter(getActivity(), new ArrayList<Movie>());
+        mGridView.setAdapter(mMovieGridAdapter);
+        return view;
+    }
+
+    private void updateMovies(String sortBy) {
+        new FetchMovieTask(getContext(), mMovieGridAdapter).execute(sortBy);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.moviefragment, menu);
+        inflater.inflate(R.menu.main, menu);
+
+        MenuItem item = menu.findItem(R.id.spinner_sortby);
+        spinner = (Spinner) MenuItemCompat.getActionView(item);
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                getContext(), R.array.sortby_array, android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Reduce some space between text and an expand arrow icon
+        spinner.setGravity(Gravity.END);
+
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+
+        if (this.myBundle != null) {
+            // Retrieve saved selection of spinner
+            spinner.setSelection(myBundle.getInt(Config.SPINNER_KEY, 0));
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            updateMovie();
+            updateMovies(mSortBy);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    //Saves state of activity as parcelable.
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        switch (pos) {
+            case 0:
+                // popular
+                mSortBy = Config.POPULARITY_DESC;
+                updateMovies(mSortBy);
+                break;
+            case 1:
+                // top rated
+                mSortBy = Config.RATING_DESC;
+                updateMovies(mSortBy);
+                break;
+            case 2:
+                // favarite
+                break;
+            default:
+                Log.e(LOG_TAG, "Something went wrong with spinner");
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList("movies", movieList);
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        GridView mGridView = (GridView) rootView.findViewById(R.id.gridview_movies);
-        mMovieGridAdapter = new MovieGridAdapter(getActivity(), new ArrayList<Movie>());
-        mGridView.setAdapter(mMovieGridAdapter);
-
-    // Think about it
-/*        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Movie movie = mMovieGridAdapter.getItem(position);
-                ((Callback) getActivity()).onItemSelected(movie);
-            }
-        });
-*/
-     return rootView;
-    }
-
-    // TODO: think about this func
-    private String sortBy() {
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
-        String sortType = prefs.getString(
-                getContext().getString(R.string.pref_sort_key),
-                getContext().getString(R.string.pref_sort_popular));
-        String sort = Config.POPULAR;
-        if (sortType.equals(getContext().getString(R.string.pref_sort_rating))) {
-            sort = Config.TOP_RATED;
-        } else if (!sortType.equals(getContext().getString(R.string.pref_sort_popular))) {
-            Log.d(LOG_TAG, "Unit type not found: " + sortType);
+        if (!mSortBy.contentEquals(Config.POPULARITY_DESC)) {
+            outState.putString(Config.SORT_SETTING_KEY, mSortBy);
         }
-        return sort;
-    }
-
-    public void updateMovie() {
-        // TODO: get sort_by parameter here
-        new FetchMovieTask(getContext(), mMovieGridAdapter).execute("popularity.desc");
+        if (mMovies != null) {
+            // Save state of activity as parcelable
+            outState.putParcelableArrayList(Config.MOVIES_KEY, mMovies);
+        }
+        // Save selection of spinner
+        outState.putInt(Config.SPINNER_KEY, spinner.getSelectedItemPosition());
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        updateMovie();
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(Config.SORT_SETTING_KEY)) {
+                mSortBy = savedInstanceState.getString(Config.SORT_SETTING_KEY);
+                updateMovies(mSortBy);
+            }
+            if (savedInstanceState.containsKey(Config.MOVIES_KEY)) {
+                mMovies = savedInstanceState.getParcelableArrayList(Config.MOVIES_KEY);
+                mMovieGridAdapter.setData(mMovies);
+            } else {
+                updateMovies(mSortBy);
+            }
+            this.myBundle = savedInstanceState;
+        } else {
+            updateMovies(mSortBy);
+        }
     }
 }

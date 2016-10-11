@@ -32,8 +32,14 @@ class Config {
     static final String SORT_BY_PARAM = "sort_by";
     static final String API_KEY_PARAM = "api_key";
 
+    // Keys
+    static final String SORT_SETTING_KEY = "sort_setting";
+    static final String MOVIES_KEY = "movies";
+
     // Sort options
-    static final String POPULAR = "popular";
-    static final String TOP_RATED = "top_rated";
-    static final String FAVORITES = "favorites";
+    static final String POPULARITY_DESC = "popularity.desc";
+    static final String RATING_DESC = "vote_average.desc";
+    static final String FAVORITE = "favorite";
+    static final String SPINNER_KEY = "spinner";
+    static final String DETAIL_MOVIE = "detail_movie";
 }
