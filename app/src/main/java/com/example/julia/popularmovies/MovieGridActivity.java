@@ -40,10 +40,10 @@ public class MovieGridActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new MovieFragment())
-                    //.addToBackStack(null)
                     .commit();
         }
         Stetho.initialize(

@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,6 +39,8 @@ import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
 import com.squareup.picasso.Picasso;
 
 public class DetailFragment extends Fragment {
+
+    private final String LOG_TAG = DetailFragment.class.getSimpleName();
 
     private Movie mMovie;
     private ShareActionProvider mShareActionProvider;
@@ -65,9 +68,9 @@ public class DetailFragment extends Fragment {
             MenuItem action_share = menu.findItem(R.id.action_share);
             mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(action_share);
 
-            action_favorite.setIcon(Utility.isFavorited(getActivity(), mMovie.getId()) ?
-                    R.drawable.ic_favorite_white_48dp :
-                    R.drawable.ic_favorite_border_white_48dp);
+            action_favorite.setIcon(Utility.isFavorited(
+                    getActivity(), mMovie.getId()) ?
+                    R.drawable.ic_favorite_white_48dp : R.drawable.ic_favorite_border_white_48dp);
 
             new AsyncTask<Void, Void, Boolean>() {
                 @Override
@@ -89,8 +92,11 @@ public class DetailFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_favorite:
+            case R.id.action_favorite: {
+                Toast.makeText(getActivity(), "Pressed", Toast.LENGTH_SHORT).show();
+
                 if (mMovie != null) {
+                    Toast.makeText(getActivity(), "Pressed favorite", Toast.LENGTH_SHORT).show();
 
                     // check if movie is in favorites or not
                     new AsyncTask<Void, Void, Boolean>() {
@@ -152,6 +158,7 @@ public class DetailFragment extends Fragment {
                     }.execute();
                 }
                 return true;
+            }
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -164,6 +171,13 @@ public class DetailFragment extends Fragment {
         Bundle arguments = getArguments();
         if (arguments != null) {
             mMovie = arguments.getParcelable(Config.DETAIL_MOVIE);
+            if (mMovie == null) {
+                Toast.makeText(getActivity(), "null", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "not null", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Log.e(LOG_TAG, "Null Arguments");
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);

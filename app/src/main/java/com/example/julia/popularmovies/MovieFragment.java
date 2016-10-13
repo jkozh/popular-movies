@@ -16,9 +16,7 @@
 
 package com.example.julia.popularmovies;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -34,7 +32,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -69,7 +66,7 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
     }
 
     private void updateMovies(String sortBy) {
-        new FetchMovieTask(getContext(), mMovieGridAdapter).execute(sortBy);
+        new FetchMoviesTask(getContext(), mMovieGridAdapter).execute(sortBy);
     }
 
     @Override
@@ -122,7 +119,10 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
                 updateMovies(mSortBy);
                 break;
             case 2:
-                // favarite
+                // favorite
+                //mSortBy = Config.FAVORITE;
+                //updateMovies(mSortBy);
+                new FetchFavoritesTask(getActivity(), mMovieGridAdapter, mMovies).execute();
                 break;
             default:
                 Log.e(LOG_TAG, "Something went wrong with spinner");

@@ -35,13 +35,13 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
+class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
 
-    private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
+    private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
     private Context mContext;
     private MovieGridAdapter mMovieGridAdapter;
 
-    FetchMovieTask(Context context, MovieGridAdapter movieGridAdapter) {
+    FetchMoviesTask(Context context, MovieGridAdapter movieGridAdapter) {
         mContext = context;
         mMovieGridAdapter = movieGridAdapter;
     }
