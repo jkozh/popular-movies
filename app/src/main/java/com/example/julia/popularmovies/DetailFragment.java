@@ -17,7 +17,7 @@
 package com.example.julia.popularmovies;
 
 import android.content.ContentValues;
-import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -35,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.julia.popularmovies.data.MoviesContract;
 import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
 import com.squareup.picasso.Picasso;
 
@@ -68,22 +69,19 @@ public class DetailFragment extends Fragment {
             MenuItem action_share = menu.findItem(R.id.action_share);
             mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(action_share);
 
-            action_favorite.setIcon(Utility.isFavorited(
-                    getActivity(), mMovie.getId()) ?
-                    R.drawable.ic_favorite_white_48dp : R.drawable.ic_favorite_border_white_48dp);
+            action_favorite.setIcon(isFavorited() ? R.drawable.ic_favorite_white_48dp
+                    : R.drawable.ic_favorite_border_white_48dp);
 
             new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void... params) {
-                    return Utility.isFavorited(getActivity(), mMovie.getId());
+                    return isFavorited();
                 }
 
                 @Override
                 protected void onPostExecute(Boolean isFavorited) {
-                    action_favorite.setIcon(
-                            isFavorited ?
-                                    R.drawable.ic_favorite_white_48dp :
-                                    R.drawable.ic_favorite_border_white_48dp);
+                    action_favorite.setIcon(isFavorited ? R.drawable.ic_favorite_white_48dp
+                                    : R.drawable.ic_favorite_border_white_48dp);
                 }
             }.execute();
         }
@@ -93,17 +91,13 @@ public class DetailFragment extends Fragment {
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_favorite: {
-                Toast.makeText(getActivity(), "Pressed", Toast.LENGTH_SHORT).show();
-
                 if (mMovie != null) {
-                    Toast.makeText(getActivity(), "Pressed favorite", Toast.LENGTH_SHORT).show();
-
                     // check if movie is in favorites or not
                     new AsyncTask<Void, Void, Boolean>() {
 
                         @Override
                         protected Boolean doInBackground(Void... params) {
-                            return Utility.isFavorited(getActivity(), mMovie.getId());
+                            return isFavorited();
                         }
 
                         @Override
@@ -124,7 +118,8 @@ public class DetailFragment extends Fragment {
                                     @Override
                                     protected void onPostExecute(Integer rowsDeleted) {
                                         item.setIcon(R.drawable.ic_favorite_border_white_48dp);
-                                        Toast.makeText(getActivity(), "Removed from favorites", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getActivity(), "Removed from favorites",
+                                                Toast.LENGTH_SHORT).show();
                                     }
                                 }.execute();
                             }
@@ -138,9 +133,11 @@ public class DetailFragment extends Fragment {
 
                                         values.put(MovieEntry.COLUMN_ID, mMovie.getId());
                                         values.put(MovieEntry.COLUMN_TITLE, mMovie.getTitle());
-                                        values.put(MovieEntry.COLUMN_DATE, mMovie.getDate(getContext()));
+                                        values.put(MovieEntry.COLUMN_DATE,
+                                                mMovie.getDate(getContext()));
                                         values.put(MovieEntry.COLUMN_PLOT, mMovie.getPlot());
-                                        values.put(MovieEntry.COLUMN_POSTER, mMovie.getPoster(getContext()));
+                                        values.put(MovieEntry.COLUMN_POSTER,
+                                                mMovie.getPoster(getContext()));
                                         values.put(MovieEntry.COLUMN_RATING, mMovie.getRating());
 
                                         return getActivity().getContentResolver().insert(
@@ -150,7 +147,8 @@ public class DetailFragment extends Fragment {
                                     @Override
                                     protected void onPostExecute(Uri returnUri) {
                                         item.setIcon(R.drawable.ic_favorite_white_48dp);
-                                        Toast.makeText(getActivity(), "Added to favorites", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getActivity(),
+                                                "Marked as favorite", Toast.LENGTH_SHORT).show();
                                     }
                                 }.execute();
                             }
@@ -167,17 +165,11 @@ public class DetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        Bundle arguments = getArguments();
-        if (arguments != null) {
-            mMovie = arguments.getParcelable(Config.DETAIL_MOVIE);
-            if (mMovie == null) {
-                Toast.makeText(getActivity(), "null", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getActivity(), "not null", Toast.LENGTH_SHORT).show();
-            }
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            mMovie = bundle.getParcelable(Config.DETAIL_MOVIE);
         } else {
-            Log.e(LOG_TAG, "Null Arguments");
+            Log.e(LOG_TAG, "Null arguments");
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
@@ -188,28 +180,38 @@ public class DetailFragment extends Fragment {
         mDateView = (TextView) rootView.findViewById(R.id.detail_date);
         mRatingView = (TextView) rootView.findViewById(R.id.detail_rating);
 
+        // Set movie poster
+        Picasso.with(getContext()).load(mMovie.getPoster(getContext())).into(mPosterView);
 
-        Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            Movie movie = intent.getParcelableExtra(Intent.EXTRA_TEXT);
+        // Set movie title
+        mTitleView.setText(mMovie.getTitle());
 
-            // Set Movie Release date
-            ((TextView) rootView.findViewById(R.id.detail_date))
-                    .setText(movie.getDate(getContext()));
+        // Set movie release date
+        mDateView.setText(mMovie.getDate(getContext()));
 
-            // Set Movie Poster
-            Picasso.with(getContext())
-                    .load(movie.getPoster(getContext()))
-                    .into((ImageView) rootView.findViewById(R.id.detail_poster));
+        // Set movie rating
+        mRatingView.setText(mMovie.getRating());
 
-            // Set Movie Rating
-            ((TextView) rootView.findViewById(R.id.detail_rating))
-                    .setText(String.valueOf(movie.getRating()));
-
-            // Set Movie Overview
-            ((TextView) rootView.findViewById(R.id.detail_plot))
-                    .setText(movie.getPlot());
-        }
+        // Set movie overview
+        mPlotView.setText(mMovie.getPlot());
         return rootView;
+    }
+
+    private boolean isFavorited() {
+        Cursor cursor = getContext().getContentResolver().query(
+                MovieEntry.CONTENT_URI,
+                null,
+                MovieEntry.COLUMN_ID + " = ?",
+                new String[] { Long.toString(mMovie.getId()) },
+                null
+        );
+        if (cursor != null) {
+            if (cursor.getCount() == 1) {
+                cursor.close();
+                return true;
+            }
+            cursor.close();
+        }
+        return false;
     }
 }

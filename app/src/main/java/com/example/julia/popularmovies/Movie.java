@@ -62,7 +62,6 @@ public class Movie implements Parcelable {
         mDate = cursor.getString(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry.COLUMN_DATE));
         mRating = cursor.getString(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry.COLUMN_RATING));
         mPlot = cursor.getString(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry.COLUMN_PLOT));
-
     }
 
     public long getId() {
@@ -115,7 +114,7 @@ public class Movie implements Parcelable {
         mPlot = plot;
     }
 
-    Movie(Parcel in) {
+    private Movie(Parcel in) {
         mId = in.readLong();
         mPoster = in.readString();
         mTitle = in.readString();

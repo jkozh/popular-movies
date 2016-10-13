@@ -89,7 +89,7 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
 
-        if (this.myBundle != null) {
+        if (myBundle != null) {
             // Retrieve saved selection of spinner
             spinner.setSelection(myBundle.getInt(Config.SPINNER_KEY, 0));
         }
