@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.FloatProperty;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,6 +35,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +48,7 @@ import com.squareup.picasso.Picasso;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 public class DetailFragment extends Fragment {
@@ -194,11 +197,12 @@ public class DetailFragment extends Fragment {
             // Set movie title
             mTitleView.setText(mMovie.getTitle());
 
-            // Set movie release date
-            mDateView.setText(friendlyDate(mMovie.getDate()));
+            // Set movie release date in user-friendly view
+            mDateView.setText(mMovie.getDate(getContext()));
 
+            setRatingBar(rootView);
             // Set movie rating
-            mRatingView.setText(mMovie.getRating());
+            mRatingView.setText(getResources().getString(R.string.movie_rating, mMovie.getRating()));
 
             // Set movie overview
             mPlotView.setText(mMovie.getPlot());
@@ -206,19 +210,12 @@ public class DetailFragment extends Fragment {
         return rootView;
     }
 
-    private String friendlyDate(String date) {
-        String inputPattern = "yyyy-MM-dd";
-        SimpleDateFormat inputFormat = new SimpleDateFormat(inputPattern, Locale.US);
-        if (date != null && !date.isEmpty()) {
-            try {
-                return DateFormat.getDateInstance().format(inputFormat.parse(date));
-            } catch (ParseException e) {
-                Log.e(LOG_TAG, "The Release date was not parsed successfully: " + date);
-            }
-        } else {
-            date = getContext().getString(R.string.release_date_missing);
+    private void setRatingBar(View view) {
+        if (mMovie.getRating() != null && !mMovie.getRating().isEmpty()) {
+            float rating = Float.valueOf(mMovie.getRating()) / 2;
+            RatingBar ratingBar = (RatingBar) view.findViewById(R.id.rating_bar);
+            ratingBar.setRating(rating);
         }
-        return date;
     }
 
     private boolean isFavorited() {
@@ -227,15 +224,12 @@ public class DetailFragment extends Fragment {
                 null,
                 MovieEntry.COLUMN_ID + " = ?",
                 new String[] { Long.toString(mMovie.getId()) },
-                null
-        );
-        if (cursor != null) {
-            if (cursor.getCount() == 1) {
-                cursor.close();
-                return true;
-            }
+                null);
+        if (cursor != null && cursor.moveToFirst()) {
             cursor.close();
+            return true;
+        } else {
+            return false;
         }
-        return false;
     }
 }

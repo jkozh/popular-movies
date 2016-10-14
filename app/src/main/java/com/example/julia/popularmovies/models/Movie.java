@@ -22,6 +22,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.example.julia.popularmovies.Config;
 import com.example.julia.popularmovies.R;
@@ -30,14 +31,21 @@ import com.example.julia.popularmovies.data.MoviesContract;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class Movie implements Parcelable {
+
+    private final String LOG_TAG = Movie.class.getSimpleName();
 
     private long mId;
     private String mPoster; // poster's path
     private String mTitle;  // original title
     private String mDate;   // release date
     private String mRating; // vote average
-    private String mPlot;   // overview/synopsis
+    private String mPlot;   // overview (synopsis)
 
     public Movie(JSONObject movie) throws JSONException {
         mId = movie.getLong(Config.TMD_ID);
@@ -74,6 +82,22 @@ public class Movie implements Parcelable {
 
     public String getDate() {
         return mDate;
+    }
+
+    public String getDate(Context context) {
+        String date = mDate;
+        String inputPattern = "yyyy-MM-dd";
+        SimpleDateFormat inputFormat = new SimpleDateFormat(inputPattern, Locale.US);
+        if (date != null && !date.isEmpty()) {
+            try {
+                return DateFormat.getDateInstance().format(inputFormat.parse(date));
+            } catch (ParseException e) {
+                Log.e(LOG_TAG, "The Release date was not parsed successfully: " + date);
+            }
+        } else {
+            date = context.getString(R.string.release_date_missing);
+        }
+        return date;
     }
 
     public String getRating() {

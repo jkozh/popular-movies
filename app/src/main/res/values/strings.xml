@@ -13,4 +13,5 @@
     <string name="sort_by">Sort By</string>
     <string name="sortby_spinner">Sort By</string>
     <string name="action_share">Share</string>
+    <string name="movie_rating">%1$s/10</string>
 </resources>

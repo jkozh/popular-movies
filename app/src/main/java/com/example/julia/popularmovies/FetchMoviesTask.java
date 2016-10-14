@@ -129,8 +129,6 @@ class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
         }
 
         try {
-
-            Log.e(LOG_TAG, movieJsonStr);
             return getMoviesDataFromJson(movieJsonStr);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
