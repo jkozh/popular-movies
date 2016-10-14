@@ -19,19 +19,19 @@ package com.example.julia.popularmovies;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.example.julia.popularmovies.details.DetailActivity;
+import com.example.julia.popularmovies.models.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-class MovieGridAdapter extends BaseAdapter {
+public class MovieGridAdapter extends BaseAdapter {
 
     private final static String LOG_TAG = MovieGridAdapter.class.getSimpleName();
     private Context mContext;
@@ -44,7 +44,7 @@ class MovieGridAdapter extends BaseAdapter {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public Context getContext() {
+    private Context getContext() {
         return mContext;
     }
 
@@ -93,7 +93,7 @@ class MovieGridAdapter extends BaseAdapter {
         return mMovies.get(position).getId();
     }
 
-    void clear() {
+    private void clear() {
         mMovies.clear();
         notifyDataSetChanged();
     }

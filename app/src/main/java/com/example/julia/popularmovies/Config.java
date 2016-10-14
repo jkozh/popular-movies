@@ -16,16 +16,16 @@
 
 package com.example.julia.popularmovies;
 
-class Config {
+public class Config {
 
     // Paths used in the JSON String
-    static final String TMD_ID = "id";
+    public static final String TMD_ID = "id";
     static final String TMD_LIST = "results";
-    static final String TMD_POSTER = "poster_path";
-    static final String TMD_TITLE = "title";
-    static final String TMD_DATE = "release_date";
-    static final String TMD_RATING = "vote_average";
-    static final String TMD_PLOT = "overview";
+    public static final String TMD_POSTER = "poster_path";
+    public static final String TMD_TITLE = "title";
+    public static final String TMD_DATE = "release_date";
+    public static final String TMD_RATING = "vote_average";
+    public static final String TMD_PLOT = "overview";
 
     // JSON URL
     static final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
@@ -41,5 +41,5 @@ class Config {
     static final String RATING_DESC = "vote_average.desc";
     static final String FAVORITE = "favorite";
     static final String SPINNER_KEY = "spinner";
-    static final String DETAIL_MOVIE = "detail_movie";
+    public static final String DETAIL_MOVIE = "detail_movie";
 }

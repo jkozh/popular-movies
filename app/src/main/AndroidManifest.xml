@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DetailActivity"
+            android:name=".details.DetailActivity"
             android:label="@string/title_activity_detail"
             android:parentActivityName=".MovieGridActivity">
             <!-- The meta-data element is needed for versions lower than 4.1 -->

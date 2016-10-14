@@ -32,6 +32,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import com.example.julia.popularmovies.details.FetchFavoritesTask;
+import com.example.julia.popularmovies.models.Movie;
 
 import java.util.ArrayList;
 
@@ -40,7 +44,7 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
     private final String LOG_TAG = MovieFragment.class.getSimpleName();
 
     private MovieGridAdapter mMovieGridAdapter;
-    private ArrayList<Movie> mMovies = null;
+    private ArrayList<Movie> mMovie = null;
     private String mSortBy = Config.POPULARITY_DESC;
     private Spinner spinner;
     private Bundle myBundle;
@@ -67,10 +71,16 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
 
     private void updateMovies(String sortBy) {
         if (mSortBy.equals(Config.FAVORITE)) {
-            new FetchFavoritesTask(getActivity(), mMovieGridAdapter, mMovies).execute();
+            new FetchFavoritesTask(getActivity(), mMovieGridAdapter, mMovie).execute();
         } else {
             new FetchMoviesTask(mMovieGridAdapter).execute(sortBy);
         }
+    }
+
+    @Override
+    public void onResume() {  // when press back button a fragment updates
+        super.onResume();
+        updateMovies(mSortBy);
     }
 
     @Override
@@ -140,9 +150,9 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
         if (!mSortBy.contentEquals(Config.POPULARITY_DESC)) {
             outState.putString(Config.SORT_SETTING_KEY, mSortBy);
         }
-        if (mMovies != null) {
+        if (mMovie != null) {
             // Save state of activity as parcelable
-            outState.putParcelableArrayList(Config.MOVIES_KEY, mMovies);
+            outState.putParcelableArrayList(Config.MOVIES_KEY, mMovie);
         }
         // Save selection of spinner
         outState.putInt(Config.SPINNER_KEY, spinner.getSelectedItemPosition());
@@ -157,8 +167,8 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
                 updateMovies(mSortBy);
             }
             if (savedInstanceState.containsKey(Config.MOVIES_KEY)) {
-                mMovies = savedInstanceState.getParcelableArrayList(Config.MOVIES_KEY);
-                mMovieGridAdapter.setData(mMovies);
+                mMovie = savedInstanceState.getParcelableArrayList(Config.MOVIES_KEY);
+                mMovieGridAdapter.setData(mMovie);
             } else {
                 updateMovies(mSortBy);
             }
