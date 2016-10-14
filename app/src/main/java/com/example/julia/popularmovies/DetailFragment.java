@@ -35,29 +35,31 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.julia.popularmovies.data.MoviesContract;
 import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
 import com.squareup.picasso.Picasso;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class DetailFragment extends Fragment {
 
     private final String LOG_TAG = DetailFragment.class.getSimpleName();
 
     private Movie mMovie;
-    private ShareActionProvider mShareActionProvider;
-    private ImageView mPosterView;
-    private TextView mTitleView;
-    private TextView mPlotView;
-    private TextView mDateView;
-    private TextView mRatingView;
 
-    public DetailFragment() {
-    }
+    public DetailFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -67,7 +69,8 @@ public class DetailFragment extends Fragment {
             inflater.inflate(R.menu.detail, menu);
             final MenuItem action_favorite = menu.findItem(R.id.action_favorite);
             MenuItem action_share = menu.findItem(R.id.action_share);
-            mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(action_share);
+            ShareActionProvider mShareActionProvider =
+                    (ShareActionProvider) MenuItemCompat.getActionProvider(action_share);
 
             action_favorite.setIcon(isFavorited() ? R.drawable.ic_favorite_white_48dp
                     : R.drawable.ic_favorite_border_white_48dp);
@@ -101,9 +104,9 @@ public class DetailFragment extends Fragment {
                         }
 
                         @Override
-                        protected void onPostExecute(Boolean isFavorited) {
+                        protected void onPostExecute(Boolean isFavored) {
                             // if it is in favorites
-                            if (isFavorited) {
+                            if (isFavored) {
                                 // delete from favorites
                                 new AsyncTask<Void, Void, Integer>() {
                                     @Override
@@ -123,9 +126,8 @@ public class DetailFragment extends Fragment {
                                     }
                                 }.execute();
                             }
-                            // if it is not in favorites
+                            // if it's not in favorites - add to favorites
                             else {
-                                // add to favorites
                                 new AsyncTask<Void, Void, Uri>() {
                                     @Override
                                     protected Uri doInBackground(Void... params) {
@@ -134,7 +136,7 @@ public class DetailFragment extends Fragment {
                                         values.put(MovieEntry.COLUMN_ID, mMovie.getId());
                                         values.put(MovieEntry.COLUMN_TITLE, mMovie.getTitle());
                                         values.put(MovieEntry.COLUMN_DATE,
-                                                mMovie.getDate(getContext()));
+                                                mMovie.getDate());
                                         values.put(MovieEntry.COLUMN_PLOT, mMovie.getPlot());
                                         values.put(MovieEntry.COLUMN_POSTER,
                                                 mMovie.getPoster(getContext()));
@@ -149,6 +151,7 @@ public class DetailFragment extends Fragment {
                                         item.setIcon(R.drawable.ic_favorite_white_48dp);
                                         Toast.makeText(getActivity(),
                                                 "Marked as favorite", Toast.LENGTH_SHORT).show();
+
                                     }
                                 }.execute();
                             }
@@ -174,27 +177,44 @@ public class DetailFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        mPosterView = (ImageView) rootView.findViewById(R.id.detail_poster);
-        mTitleView = (TextView) rootView.findViewById(R.id.detail_title);
-        mPlotView = (TextView) rootView.findViewById(R.id.detail_plot);
-        mDateView = (TextView) rootView.findViewById(R.id.detail_date);
-        mRatingView = (TextView) rootView.findViewById(R.id.detail_rating);
+        ImageView mPosterView = (ImageView) rootView.findViewById(R.id.detail_poster);
+        TextView mTitleView = (TextView) rootView.findViewById(R.id.detail_title);
+        TextView mPlotView = (TextView) rootView.findViewById(R.id.detail_plot);
+        TextView mDateView = (TextView) rootView.findViewById(R.id.detail_date);
+        TextView mRatingView = (TextView) rootView.findViewById(R.id.detail_rating);
 
-        // Set movie poster
-        Picasso.with(getContext()).load(mMovie.getPoster(getContext())).into(mPosterView);
+        if (mMovie != null) {
+            // Set movie poster
+            Picasso.with(getContext()).load(mMovie.getPoster(getContext())).into(mPosterView);
 
-        // Set movie title
-        mTitleView.setText(mMovie.getTitle());
+            // Set movie title
+            mTitleView.setText(mMovie.getTitle());
 
-        // Set movie release date
-        mDateView.setText(mMovie.getDate(getContext()));
+            // Set movie release date
+            mDateView.setText(friendlyDate(mMovie.getDate()));
 
-        // Set movie rating
-        mRatingView.setText(mMovie.getRating());
+            // Set movie rating
+            mRatingView.setText(mMovie.getRating());
 
-        // Set movie overview
-        mPlotView.setText(mMovie.getPlot());
+            // Set movie overview
+            mPlotView.setText(mMovie.getPlot());
+        }
         return rootView;
+    }
+
+    private String friendlyDate(String date) {
+        String inputPattern = "yyyy-MM-dd";
+        SimpleDateFormat inputFormat = new SimpleDateFormat(inputPattern, Locale.US);
+        if (date != null && !date.isEmpty()) {
+            try {
+                return DateFormat.getDateInstance().format(inputFormat.parse(date));
+            } catch (ParseException e) {
+                Log.e(LOG_TAG, "The Release date was not parsed successfully: " + date);
+            }
+        } else {
+            date = getContext().getString(R.string.release_date_missing);
+        }
+        return date;
     }
 
     private boolean isFavorited() {

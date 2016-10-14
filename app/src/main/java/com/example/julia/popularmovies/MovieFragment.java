@@ -66,7 +66,11 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
     }
 
     private void updateMovies(String sortBy) {
-        new FetchMoviesTask(getContext(), mMovieGridAdapter).execute(sortBy);
+        if (mSortBy.equals(Config.FAVORITE)) {
+            new FetchFavoritesTask(getActivity(), mMovieGridAdapter, mMovies).execute();
+        } else {
+            new FetchMoviesTask(mMovieGridAdapter).execute(sortBy);
+        }
     }
 
     @Override
@@ -111,22 +115,19 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
             case 0:
                 // popular
                 mSortBy = Config.POPULARITY_DESC;
-                updateMovies(mSortBy);
                 break;
             case 1:
                 // top rated
                 mSortBy = Config.RATING_DESC;
-                updateMovies(mSortBy);
                 break;
             case 2:
                 // favorite
-                //mSortBy = Config.FAVORITE;
-                //updateMovies(mSortBy);
-                new FetchFavoritesTask(getActivity(), mMovieGridAdapter, mMovies).execute();
+                mSortBy = Config.FAVORITE;
                 break;
             default:
                 Log.e(LOG_TAG, "Something went wrong with spinner");
         }
+        updateMovies(mSortBy);
     }
 
     @Override

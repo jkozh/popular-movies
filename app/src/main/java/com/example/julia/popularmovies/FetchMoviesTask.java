@@ -16,11 +16,9 @@
 
 package com.example.julia.popularmovies;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,15 +36,13 @@ import java.util.List;
 class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
 
     private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
-    private Context mContext;
     private MovieGridAdapter mMovieGridAdapter;
 
-    FetchMoviesTask(Context context, MovieGridAdapter movieGridAdapter) {
-        mContext = context;
+    FetchMoviesTask(MovieGridAdapter movieGridAdapter) {
         mMovieGridAdapter = movieGridAdapter;
     }
 
-    private List<Movie> getMovieDataFromJson(String movieJsonStr) throws JSONException {
+    private List<Movie> getMoviesDataFromJson(String movieJsonStr) throws JSONException {
         try {
             JSONObject movieJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = movieJson.getJSONArray(Config.TMD_LIST);
@@ -133,7 +129,7 @@ class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
         try {
 
             Log.e(LOG_TAG, movieJsonStr);
-            return getMovieDataFromJson(movieJsonStr);
+            return getMoviesDataFromJson(movieJsonStr);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
@@ -148,21 +144,10 @@ class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
             if (mMovieGridAdapter != null) {
                 mMovieGridAdapter.setData(movies);
             } else {
-                // TODO: rearrange these Toasts
-                Toast.makeText(
-                        mContext,
-                        "mMovieGridAdapter == null. Something went wrong, please check your internet connection and try again!",
-                        Toast.LENGTH_SHORT)
-                        .show();
+                Log.e(LOG_TAG, "mMovieGridAdapter == null");
             }
         } else {
-            Toast.makeText(
-                    mContext,
-                    "movies == null. Something went wrong, please check your internet connection and try again!",
-                    Toast.LENGTH_SHORT)
-                    .show();
+            Log.e(LOG_TAG, "movies == null");
         }
-
     }
-
 }

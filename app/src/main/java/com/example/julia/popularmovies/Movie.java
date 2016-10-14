@@ -35,7 +35,7 @@ import java.util.Locale;
 
 import static com.example.julia.popularmovies.data.MoviesDbHelper.LOG_TAG;
 
-public class Movie implements Parcelable {
+class Movie implements Parcelable {
 
     private long mId;
     private String mPoster; // poster's path
@@ -55,8 +55,8 @@ public class Movie implements Parcelable {
         mPlot = movie.getString(Config.TMD_PLOT);
     }
 
-    public Movie(Cursor cursor) {
-        mId = cursor.getLong(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry._ID));
+    Movie(Cursor cursor) {
+        mId = cursor.getLong(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry.COLUMN_ID));
         mPoster = cursor.getString(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry.COLUMN_POSTER));
         mTitle = cursor.getString(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry.COLUMN_TITLE));
         mDate = cursor.getString(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry.COLUMN_DATE));
@@ -68,7 +68,7 @@ public class Movie implements Parcelable {
         return mId;
     }
 
-    public String getPoster(Context context) {
+    String getPoster(Context context) {
         if (mPoster != null && !mPoster.isEmpty()) {
             return context.getResources().getString(R.string.poster_url) + mPoster;
         }
@@ -79,29 +79,17 @@ public class Movie implements Parcelable {
         return mTitle;
     }
 
-    public String getDate(Context context) {
-        String inputPattern = "yyyy-MM-dd";
-        SimpleDateFormat inputFormat = new SimpleDateFormat(inputPattern, Locale.US);
-        if (mDate != null && !mDate.isEmpty()) {
-            try {
-                Date date = inputFormat.parse(mDate);
-                return DateFormat.getDateInstance().format(date);
-            } catch (ParseException e) {
-                Log.e(LOG_TAG, "The Release data was not parsed successfully: " + mDate);
-            }
-        } else {
-            mDate = context.getString(R.string.release_date_missing);
-        }
+    String getDate() {
         return mDate;
     }
 
-    public String getRating() {
+    String getRating() {
         // rounding rating from #.## to #.#
         double rating = Double.parseDouble(mRating);
         return String.valueOf(Math.round(rating * 10d) / 10d);
     }
 
-    public String getPlot() {
+    String getPlot() {
         return mPlot;
     }
 

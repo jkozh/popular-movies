@@ -18,6 +18,7 @@ package com.example.julia.popularmovies;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.example.julia.popularmovies.data.MoviesContract;
 
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 class FetchFavoritesTask extends AsyncTask<Void, Void, List<Movie>> {
+
+    private final String LOG_TAG = FetchFavoritesTask.class.getSimpleName();
 
     private Context mContext;
     private MovieGridAdapter mMovieGridAdapter;
@@ -40,7 +43,9 @@ class FetchFavoritesTask extends AsyncTask<Void, Void, List<Movie>> {
         List<Movie> results = new ArrayList<>();
         if (cursor != null && cursor.moveToFirst()) {
             do {
+
                 Movie movie = new Movie(cursor);
+                Log.e(LOG_TAG, Long.toString(movie.getId()));
                 results.add(movie);
             } while (cursor.moveToNext());
             cursor.close();
@@ -52,7 +57,7 @@ class FetchFavoritesTask extends AsyncTask<Void, Void, List<Movie>> {
     protected List<Movie> doInBackground(Void... params) {
         Cursor cursor = mContext.getContentResolver().query(
                 MoviesContract.MovieEntry.CONTENT_URI,
-                null, // TODO: change?
+                null,
                 null,
                 null,
                 null
