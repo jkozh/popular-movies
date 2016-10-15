@@ -78,6 +78,8 @@ class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
         try {
 
             Uri builtUri = Uri.parse(Config.MOVIE_BASE_URL).buildUpon()
+                    .appendPath(Config.DISCOVER_PARAM)
+                    .appendPath(Config.MOVIE_PARAM)
                     .appendQueryParameter(Config.SORT_BY_PARAM, params[0])
                     .appendQueryParameter(Config.API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                     .build();

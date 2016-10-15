@@ -98,10 +98,11 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"/>
 
-            <TextView
-                android:text="@string/trailers"
+            <ListView
+                android:id="@+id/detail_trailers"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="match_parent">
+            </ListView>
 
             <TextView
                 android:text="@string/review"

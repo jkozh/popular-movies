@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
-import android.util.FloatProperty;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,6 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,19 +43,18 @@ import com.example.julia.popularmovies.Config;
 import com.example.julia.popularmovies.models.Movie;
 import com.example.julia.popularmovies.R;
 import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
+import com.example.julia.popularmovies.models.Trailer;
 import com.squareup.picasso.Picasso;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Locale;
+import java.util.ArrayList;
 
 public class DetailFragment extends Fragment {
 
     private final String LOG_TAG = DetailFragment.class.getSimpleName();
 
     private Movie mMovie;
+    private TrailerListAdapter mTrailerListAdapter;
+    private ListView mTrailersView;
 
     public DetailFragment() {}
 
@@ -68,6 +67,7 @@ public class DetailFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        new FetchTrailersTask(mTrailerListAdapter).execute(Long.toString(mMovie.getId()));
     }
 
     @Override
@@ -80,8 +80,7 @@ public class DetailFragment extends Fragment {
             ShareActionProvider mShareActionProvider =
                     (ShareActionProvider) MenuItemCompat.getActionProvider(action_share);
 
-            action_favorite.setIcon(isFavorited() ? R.drawable.ic_favorite_white_48dp
-                    : R.drawable.ic_favorite_border_white_48dp);
+            action_favorite.setIcon(setFavoriteIcon(isFavorited()));
 
             new AsyncTask<Void, Void, Boolean>() {
                 @Override
@@ -91,10 +90,18 @@ public class DetailFragment extends Fragment {
 
                 @Override
                 protected void onPostExecute(Boolean isFavorited) {
-                    action_favorite.setIcon(isFavorited ? R.drawable.ic_favorite_white_48dp
-                                    : R.drawable.ic_favorite_border_white_48dp);
+                    action_favorite.setIcon(setFavoriteIcon(isFavorited));
+
                 }
             }.execute();
+        }
+    }
+
+    private int setFavoriteIcon(boolean isFavorited) {
+        if (isFavorited) {
+            return R.drawable.ic_favorite_white_48dp;
+        } else {
+            return R.drawable.ic_favorite_border_white_48dp;
         }
     }
 
@@ -189,6 +196,11 @@ public class DetailFragment extends Fragment {
         TextView mPlotView = (TextView) rootView.findViewById(R.id.detail_plot);
         TextView mDateView = (TextView) rootView.findViewById(R.id.detail_date);
         TextView mRatingView = (TextView) rootView.findViewById(R.id.detail_rating);
+
+        mTrailersView = (ListView) rootView.findViewById(R.id.detail_trailers);
+
+        mTrailerListAdapter = new TrailerListAdapter(getActivity(), new ArrayList<Trailer>());
+        mTrailersView.setAdapter(mTrailerListAdapter);
 
         if (mMovie != null) {
             // Set movie poster

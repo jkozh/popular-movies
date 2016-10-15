@@ -49,36 +49,6 @@ public class MovieGridAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        ViewHolder viewHolder;
-
-        if (view == null) {
-            view = mInflater.inflate(R.layout.grid_item_movie, parent, false);
-            viewHolder = new ViewHolder(view);
-            view.setTag(viewHolder);
-        }
-
-        final Movie movie = getItem(position);
-        viewHolder = (ViewHolder) view.getTag();
-        Picasso.with(getContext()).load(movie.getPoster(getContext())).into(viewHolder.image);
-
-        viewHolder.image.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, movie);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getContext().startActivity(intent);
-                notifyDataSetChanged();
-            }
-        });
-
-        return view;
-    }
-
-    @Override
     public int getCount() {
         return mMovies.size();
     }
@@ -108,6 +78,36 @@ public class MovieGridAdapter extends BaseAdapter {
         for (Movie movie: movies) {
             add(movie);
         }
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = convertView;
+        ViewHolder viewHolder;
+
+        if (view == null) {
+            view = mInflater.inflate(R.layout.grid_item_movie, parent, false);
+            viewHolder = new ViewHolder(view);
+            view.setTag(viewHolder);
+        }
+
+        final Movie movie = getItem(position);
+        viewHolder = (ViewHolder) view.getTag();
+        Picasso.with(getContext()).load(movie.getPoster(getContext())).into(viewHolder.image);
+
+        viewHolder.image.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), DetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, movie);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getContext().startActivity(intent);
+                notifyDataSetChanged();
+            }
+        });
+
+        return view;
     }
 
     public static class ViewHolder {
