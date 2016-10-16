@@ -16,13 +16,11 @@
 
 package com.example.julia.popularmovies.details;
 
-import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.julia.popularmovies.R;
 import com.example.julia.popularmovies.models.Trailer;
@@ -30,21 +28,12 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-class TrailerListAdapter extends BaseAdapter {
-
-    private final Context mContext;
-    private final LayoutInflater mInflater;
+class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHolder>  {
 
     private List<Trailer> mTrailers;
 
-    public TrailerListAdapter(Context context, List<Trailer> objects) {
-        mContext = context;
-        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mTrailers = objects;
-    }
-
-    public Context getContext() {
-        return mContext;
+    TrailerListAdapter(List<Trailer> trailers) {
+        mTrailers = trailers;
     }
 
     public void add(Trailer object) {
@@ -52,56 +41,42 @@ class TrailerListAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public void clear() {
+    void clear() {
         mTrailers.clear();
         notifyDataSetChanged();
     }
 
     @Override
-    public int getCount() {
-        return mTrailers.size();
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_movie_trailer, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public Trailer getItem(int position) {
-        return mTrailers.get(position);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        final Trailer trailer = mTrailers.get(position);
+        Picasso.with(holder.imageView.getContext())
+                .load("http://img.youtube.com/vi/" + trailer.getKey() + "/0.jpg")
+                .into(holder.imageView);
     }
 
     @Override
     public long getItemId(int position) {
-        //return Long.parseLong(mTrailers.get(position).getId());
         return position;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        ViewHolder viewHolder;
-
-        if (view == null) {
-            view = mInflater.inflate(R.layout.item_movie_trailer, parent, false);
-            viewHolder = new ViewHolder(view);
-            view.setTag(viewHolder);
-        }
-
-        final Trailer trailer = getItem(position);
-
-        viewHolder = (ViewHolder) view.getTag();
-
-        Picasso.with(getContext())
-                .load( "http://img.youtube.com/vi/" + trailer.getKey() + "/0.jpg")
-                .into(viewHolder.imageView);
-        viewHolder.nameView.setText(trailer.getName());
-        return view;
+    public int getItemCount() {
+        return mTrailers.size();
     }
 
-    public static class ViewHolder {
-        public final ImageView imageView;
-        public final TextView nameView;
+    class ViewHolder extends RecyclerView.ViewHolder  {
+        final ImageView imageView;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
+            super(view);
             imageView = (ImageView) view.findViewById(R.id.trailer_image);
-            nameView = (TextView) view.findViewById(R.id.trailer_name);
         }
     }
 }

@@ -25,6 +25,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.LinearLayoutCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +37,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -54,7 +58,6 @@ public class DetailFragment extends Fragment {
 
     private Movie mMovie;
     private TrailerListAdapter mTrailerListAdapter;
-    private ListView mTrailersView;
 
     public DetailFragment() {}
 
@@ -197,9 +200,11 @@ public class DetailFragment extends Fragment {
         TextView mDateView = (TextView) rootView.findViewById(R.id.detail_date);
         TextView mRatingView = (TextView) rootView.findViewById(R.id.detail_rating);
 
-        mTrailersView = (ListView) rootView.findViewById(R.id.detail_trailers);
-
-        mTrailerListAdapter = new TrailerListAdapter(getActivity(), new ArrayList<Trailer>());
+        mTrailerListAdapter = new TrailerListAdapter(new ArrayList<Trailer>());
+        LinearLayoutManager horizontalLayoutManager
+                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView mTrailersView = (RecyclerView) rootView.findViewById(R.id.detail_trailers);
+        mTrailersView.setLayoutManager(horizontalLayoutManager);
         mTrailersView.setAdapter(mTrailerListAdapter);
 
         if (mMovie != null) {

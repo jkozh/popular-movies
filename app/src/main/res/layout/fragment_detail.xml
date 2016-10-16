@@ -96,19 +96,18 @@
             <TextView
                 android:id="@+id/detail_plot"
                 android:layout_height="wrap_content"
-                android:layout_width="match_parent"/>
+                android:layout_width="match_parent"
+                android:paddingBottom="20dp"/>
 
-            <ListView
+            <android.support.v7.widget.RecyclerView
                 android:id="@+id/detail_trailers"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </ListView>
+                android:layout_height="180dp"/>
 
             <TextView
                 android:text="@string/review"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-
 
         </LinearLayout>
 
