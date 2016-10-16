@@ -24,8 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:context=".details.DetailFragment"
-        android:orientation="vertical"
-        android:padding="10dp">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -102,7 +101,9 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/detail_trailers"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"/>
+                android:layout_height="200dp"
+
+                />
 
             <TextView
                 android:text="@string/review"

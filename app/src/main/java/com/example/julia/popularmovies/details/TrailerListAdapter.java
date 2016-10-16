@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.julia.popularmovies.Config;
 import com.example.julia.popularmovies.R;
 import com.example.julia.popularmovies.models.Trailer;
 import com.squareup.picasso.Picasso;
@@ -36,8 +37,8 @@ class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHol
         mTrailers = trailers;
     }
 
-    public void add(Trailer object) {
-        mTrailers.add(object);
+    public void add(Trailer trailer) {
+        mTrailers.add(trailer);
         notifyDataSetChanged();
     }
 
@@ -57,8 +58,9 @@ class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHol
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Trailer trailer = mTrailers.get(position);
         Picasso.with(holder.imageView.getContext())
-                .load("http://img.youtube.com/vi/" + trailer.getKey() + "/0.jpg")
+                .load(Config.TMD_TRAILER_YOUTUBE_URL + trailer.getKey() + Config.YOUTUBE_IMAGE_PATH)
                 .into(holder.imageView);
+
     }
 
     @Override

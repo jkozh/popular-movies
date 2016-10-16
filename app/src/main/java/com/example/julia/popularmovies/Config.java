@@ -54,4 +54,7 @@ public class Config {
     public static final String TMD_TRAILER_YOUTUBE = "YouTube";
 
     public static final String VIDEOS_PARAM = "videos";
+    public static final String TMD_TRAILER_YOUTUBE_URL = "http://img.youtube.com/vi/";
+    public static final String YOUTUBE_IMAGE_PATH = "/0.jpg";
+
 }
