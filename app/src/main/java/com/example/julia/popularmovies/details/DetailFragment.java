@@ -59,6 +59,7 @@ public class DetailFragment extends Fragment {
 
     private Movie mMovie;
     private TrailerListAdapter mTrailerListAdapter;
+    RecyclerView mTrailersView;
 
     public DetailFragment() {}
 
@@ -71,7 +72,9 @@ public class DetailFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        new FetchTrailersTask(mTrailerListAdapter).execute(Long.toString(mMovie.getId()));
+        if (mMovie != null) {
+            new FetchTrailersTask(mTrailerListAdapter, mTrailersView).execute(Long.toString(mMovie.getId()));
+        }
     }
 
     @Override
@@ -204,7 +207,7 @@ public class DetailFragment extends Fragment {
         mTrailerListAdapter = new TrailerListAdapter(new ArrayList<Trailer>());
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        RecyclerView mTrailersView = (RecyclerView) rootView.findViewById(R.id.detail_trailers);
+        mTrailersView = (RecyclerView) rootView.findViewById(R.id.detail_trailers);
         mTrailersView.setLayoutManager(horizontalLayoutManager);
         mTrailersView.setAdapter(mTrailerListAdapter);
 

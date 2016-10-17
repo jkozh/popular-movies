@@ -18,6 +18,7 @@ package com.example.julia.popularmovies.details;
 
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
@@ -44,10 +45,12 @@ class FetchTrailersTask extends AsyncTask<String, Void, List<Trailer>> {
     private final String LOG_TAG = FetchTrailersTask.class.getSimpleName();
 
     private TrailerListAdapter mTrailerListAdapter;
+    private RecyclerView mTrailersView;
     //private Trailer mTrailer;
 
-    FetchTrailersTask(TrailerListAdapter trailerListAdapter/*, Trailer trailer*/) {
+    FetchTrailersTask(TrailerListAdapter trailerListAdapter, RecyclerView trailersView/*, Trailer trailer*/) {
         mTrailerListAdapter = trailerListAdapter;
+        mTrailersView = trailersView;
         //mTrailer = trailer;
     }
 
@@ -138,6 +141,8 @@ class FetchTrailersTask extends AsyncTask<String, Void, List<Trailer>> {
                 //if (mShareActionProvider != null) {
                 //    mShareActionProvider.setShareIntent(createShareMovieIntent());
                 //}
+            } else {
+                mTrailersView.setVisibility(View.GONE);
             }
         }
     }
