@@ -15,16 +15,21 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="wrap_content"
-              android:layout_height="match_parent">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content">
 
-<ImageView
-    android:id="@+id/trailer_image"
-    android:layout_width="match_parent"
-    android:layout_height="fill_parent"
-    android:adjustViewBounds="true"
-    android:paddingRight="20dp"/>
+    <ImageView
+        android:id="@+id/trailer_image"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:adjustViewBounds="true"
+        android:paddingRight="5dp"
+        android:paddingLeft="5dp" />
 
-</LinearLayout>
+    <ImageView  android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/ic_play_circle_outline_white_48dp"
+                android:id="@+id/imagePlayIcon"
+                android:layout_gravity="center"/>
+</FrameLayout>

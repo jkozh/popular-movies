@@ -16,6 +16,9 @@
 
 package com.example.julia.popularmovies.details;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,10 +35,12 @@ import java.util.List;
 class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHolder>  {
 
     private List<Trailer> mTrailers;
+    private Context mContext;
 
     TrailerListAdapter(List<Trailer> trailers) {
         mTrailers = trailers;
     }
+
 
     public void add(Trailer trailer) {
         mTrailers.add(trailer);
@@ -49,7 +54,8 @@ class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHol
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+        mContext = parent.getContext();
+        View view = LayoutInflater.from(mContext)
                 .inflate(R.layout.item_movie_trailer, parent, false);
         return new ViewHolder(view);
     }
@@ -57,10 +63,18 @@ class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHol
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Trailer trailer = mTrailers.get(position);
-        Picasso.with(holder.imageView.getContext())
+        Picasso.with(mContext)
                 .load(Config.TMD_TRAILER_YOUTUBE_URL + trailer.getKey() + Config.YOUTUBE_IMAGE_PATH)
                 .into(holder.imageView);
 
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(Config.TMD_TRAILER_YOUTUBE_WATCH + trailer.getKey()));
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
