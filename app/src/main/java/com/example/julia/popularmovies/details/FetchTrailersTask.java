@@ -18,13 +18,10 @@ package com.example.julia.popularmovies.details;
 
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
 
 import com.example.julia.popularmovies.BuildConfig;
 import com.example.julia.popularmovies.Config;
-import com.example.julia.popularmovies.MovieGridAdapter;
 import com.example.julia.popularmovies.models.Trailer;
 
 import org.json.JSONArray;
@@ -38,28 +35,25 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
-class FetchTrailersTask extends AsyncTask<String, Void, List<Trailer>> {
+class FetchTrailersTask extends AsyncTask<String, Void, ArrayList<Trailer>> {
 
     private final String LOG_TAG = FetchTrailersTask.class.getSimpleName();
+    private final Listener mListener;
 
-    private TrailerListAdapter mTrailerListAdapter;
-    private RecyclerView mTrailersView;
-    //private Trailer mTrailer;
-
-    FetchTrailersTask(TrailerListAdapter trailerListAdapter, RecyclerView trailersView/*, Trailer trailer*/) {
-        mTrailerListAdapter = trailerListAdapter;
-        mTrailersView = trailersView;
-        //mTrailer = trailer;
+    // Interface definition for a callback to be invoked when trailers are loaded
+    interface Listener {
+        void onFetchFinished(ArrayList<Trailer> trailers);
     }
 
-    private List<Trailer> getTrailersDataFromJson(String jsonStr) throws JSONException {
+    public FetchTrailersTask(Listener listener) {
+        mListener = listener;
+    }
+
+    private ArrayList<Trailer> getTrailersDataFromJson(String jsonStr) throws JSONException {
         JSONObject trailerJson = new JSONObject(jsonStr);
         JSONArray trailerArray = trailerJson.getJSONArray(Config.TMD_LIST);
-
-        List<Trailer> results = new ArrayList<>();
-
+        ArrayList<Trailer> results = new ArrayList<>();
         for(int i = 0; i < trailerArray.length(); i++) {
             JSONObject trailer = trailerArray.getJSONObject(i);
             // Show Trailers that on Youtube only
@@ -72,7 +66,7 @@ class FetchTrailersTask extends AsyncTask<String, Void, List<Trailer>> {
     }
 
     @Override
-    protected List<Trailer> doInBackground(String... params) {
+    protected ArrayList<Trailer> doInBackground(String... params) {
         if (params.length == 0) {
             Log.e(LOG_TAG, "Length of params equals zero");
             return null;
@@ -128,22 +122,11 @@ class FetchTrailersTask extends AsyncTask<String, Void, List<Trailer>> {
     }
 
     @Override
-    protected void onPostExecute(List<Trailer> trailers) {
+    protected void onPostExecute(ArrayList<Trailer> trailers) {
         if (trailers != null) {
-            if (trailers.size() > 0) {
-                if (mTrailerListAdapter != null) {
-                    mTrailerListAdapter.clear();
-                    for (Trailer trailer : trailers) {
-                        mTrailerListAdapter.add(trailer);
-                    }
-                }
-                //mTrailer = trailers.get(0);
-                //if (mShareActionProvider != null) {
-                //    mShareActionProvider.setShareIntent(createShareMovieIntent());
-                //}
-            } else {
-                mTrailersView.setVisibility(View.GONE);
-            }
+            mListener.onFetchFinished(trailers);
+        } else {
+            mListener.onFetchFinished(new ArrayList<Trailer>());
         }
     }
 }

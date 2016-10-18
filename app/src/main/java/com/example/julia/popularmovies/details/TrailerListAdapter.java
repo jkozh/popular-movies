@@ -30,24 +30,34 @@ import com.example.julia.popularmovies.R;
 import com.example.julia.popularmovies.models.Trailer;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHolder>  {
 
-    private List<Trailer> mTrailers;
+    private ArrayList<Trailer> mTrailers;
     private Context mContext;
 
-    TrailerListAdapter(List<Trailer> trailers) {
+    TrailerListAdapter(ArrayList<Trailer> trailers) {
         mTrailers = trailers;
     }
-
 
     public void add(Trailer trailer) {
         mTrailers.add(trailer);
         notifyDataSetChanged();
     }
 
-    void clear() {
+    public void add(ArrayList<Trailer> trailers) {
+        mTrailers.clear();
+        mTrailers.addAll(trailers);
+        notifyDataSetChanged();
+    }
+
+    public ArrayList<Trailer> getTrailers() {
+        return mTrailers;
+    }
+
+    public void clear() {
         mTrailers.clear();
         notifyDataSetChanged();
     }
@@ -71,7 +81,7 @@ class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHol
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(Config.TMD_TRAILER_YOUTUBE_WATCH + trailer.getKey()));
+                intent.setData(Uri.parse(trailer.getTrailerUrl()));
                 mContext.startActivity(intent);
             }
         });

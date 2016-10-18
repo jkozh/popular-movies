@@ -35,8 +35,8 @@ public class DetailActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             Bundle bundle = new Bundle();
-            bundle.putParcelable(
-                    Config.DETAIL_MOVIE, getIntent().getParcelableExtra(Intent.EXTRA_TEXT));
+            bundle.putParcelable(Config.DETAIL_MOVIE,
+                    getIntent().getParcelableExtra(Intent.EXTRA_TEXT));
 
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(bundle);

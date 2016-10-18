@@ -154,8 +154,8 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
             // Save state of activity as parcelable
             outState.putParcelableArrayList(Config.MOVIES_KEY, mMovie);
             // Save selection of spinner
-            outState.putInt(Config.SPINNER_KEY, spinner.getSelectedItemPosition());
         }
+        outState.putInt(Config.SPINNER_KEY, spinner.getSelectedItemPosition());
 
     }
 

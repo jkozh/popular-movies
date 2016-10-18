@@ -16,12 +16,15 @@
 
 package com.example.julia.popularmovies.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.example.julia.popularmovies.Config;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Trailer {
+public class Trailer implements Parcelable {
 
     private String mId;
     private String mKey;
@@ -40,6 +43,26 @@ public class Trailer {
         mType = trailer.getString(Config.TMD_TRAILER_TYPE);
     }
 
+    private Trailer(Parcel in) {
+        mId = in.readString();
+        mKey = in.readString();
+        mName = in.readString();
+        mSite = in.readString();
+        mType = in.readString();
+    }
+
+    public static final Creator<Trailer> CREATOR = new Creator<Trailer>() {
+        @Override
+        public Trailer createFromParcel(Parcel in) {
+            return new Trailer(in);
+        }
+
+        @Override
+        public Trailer[] newArray(int size) {
+            return new Trailer[size];
+        }
+    };
+
     public String getId() {
         return mId;
     }
@@ -51,4 +74,22 @@ public class Trailer {
     public String getSite() { return mSite; }
 
     public String getType() { return mType; }
+
+    public String getTrailerUrl() {
+        return Config.TMD_TRAILER_YOUTUBE_WATCH + mKey;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mId);
+        dest.writeString(mKey);
+        dest.writeString(mName);
+        dest.writeString(mSite);
+        dest.writeString(mType);
+    }
 }

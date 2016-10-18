@@ -18,6 +18,7 @@
 
 package com.example.julia.popularmovies.details;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -26,7 +27,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
@@ -38,8 +38,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,16 +50,20 @@ import com.example.julia.popularmovies.models.Trailer;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class DetailFragment extends Fragment {
+public class DetailFragment extends Fragment implements FetchTrailersTask.Listener {
 
+    private static final String EXTRA_TRAILERS = "EXTRA_TRAILERS";
     private final String LOG_TAG = DetailFragment.class.getSimpleName();
 
     private Movie mMovie;
     private TrailerListAdapter mTrailerListAdapter;
-    RecyclerView mTrailersView;
+    private ShareActionProvider mShareActionProvider;
+    private RecyclerView mTrailersView;
 
-    public DetailFragment() {}
+    public DetailFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,24 +72,26 @@ public class DetailFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        if (mMovie != null) {
-            new FetchTrailersTask(mTrailerListAdapter, mTrailersView).execute(Long.toString(mMovie.getId()));
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        ArrayList<Trailer> trailers = mTrailerListAdapter.getTrailers();
+        if (trailers != null && !trailers.isEmpty()) {
+            outState.putParcelableArrayList(EXTRA_TRAILERS, trailers);
         }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
         if (mMovie != null) {
             inflater.inflate(R.menu.detail, menu);
             final MenuItem action_favorite = menu.findItem(R.id.action_favorite);
+            action_favorite.setIcon(setFavoriteIcon(isFavorited()));
+
             MenuItem action_share = menu.findItem(R.id.action_share);
-            ShareActionProvider mShareActionProvider =
+            mShareActionProvider =
                     (ShareActionProvider) MenuItemCompat.getActionProvider(action_share);
 
-            action_favorite.setIcon(setFavoriteIcon(isFavorited()));
+            // TODO: something wrong with mShareActionProvider
 
             new AsyncTask<Void, Void, Boolean>() {
                 @Override
@@ -98,9 +102,50 @@ public class DetailFragment extends Fragment {
                 @Override
                 protected void onPostExecute(Boolean isFavorited) {
                     action_favorite.setIcon(setFavoriteIcon(isFavorited));
-
                 }
             }.execute();
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public void onFetchFinished(ArrayList<Trailer> trailers) {
+        mTrailerListAdapter.add(trailers);
+        if (mTrailerListAdapter.getItemCount() > 0) {
+            Trailer trailer = mTrailerListAdapter.getTrailers().get(0);
+            updateShareActionProvider(trailer);
+        } else {
+            mTrailersView.setVisibility(View.GONE);
+        }
+    }
+
+//    public void refreshMenu(Activity activity) {
+//        activity.invalidateOptionsMenu();
+//        if (mShareActionProvider != null) {
+//            Log.e(LOG_TAG, "mShareActionProvider != null");
+//        } else {
+//            Log.e(LOG_TAG, "mShareActionProvider == null");
+//        }
+//    }
+
+    private void updateShareActionProvider(Trailer trailer) {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mMovie.getTitle());
+        shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, trailer.getName() + ": "
+                + trailer.getTrailerUrl());
+        // need it because trailers had been fetched by AsyncTask before the menu created
+        //refreshMenu(getActivity());
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(shareIntent);
+        } else {
+            Log.e(LOG_TAG, "mShareActionProvider == null");
         }
     }
 
@@ -211,24 +256,32 @@ public class DetailFragment extends Fragment {
         mTrailersView.setLayoutManager(horizontalLayoutManager);
         mTrailersView.setAdapter(mTrailerListAdapter);
 
+        // Fetch trailers only if there is no trailers fetched yet
+        if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
+            ArrayList<Trailer> trailers = savedInstanceState.getParcelableArrayList(EXTRA_TRAILERS);
+            mTrailerListAdapter.add(trailers);
+        } else {
+            fetchTrailers();
+        }
         if (mMovie != null) {
             // Set movie poster
             Picasso.with(getContext()).load(mMovie.getPoster(getContext())).into(mPosterView);
-
             // Set movie title
             mTitleView.setText(mMovie.getTitle());
-
             // Set movie release date in user-friendly view
             mDateView.setText(mMovie.getDate(getContext()));
-
             setRatingBar(rootView);
             // Set movie rating
             mRatingView.setText(getResources().getString(R.string.movie_rating, mMovie.getRating()));
-
             // Set movie overview
             mPlotView.setText(mMovie.getPlot());
         }
         return rootView;
+    }
+
+    private void fetchTrailers() {
+        FetchTrailersTask task = new FetchTrailersTask(this);
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Long.toString(mMovie.getId()));
     }
 
     private void setRatingBar(View view) {
