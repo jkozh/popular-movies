@@ -32,7 +32,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.example.julia.popularmovies.details.FetchFavoritesTask;
 import com.example.julia.popularmovies.models.Movie;
@@ -78,7 +77,7 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
     }
 
     @Override
-    public void onResume() {  // when press back button a fragment updates
+    public void onResume() {  // when press back button a fragment need updates
         super.onResume();
         updateMovies(mSortBy);
     }

@@ -1,24 +1,23 @@
 /*
  *
- *  * Copyright 2016.  Julia Kozhukhovskaya
- *  *
- *  * Licensed under the Apache License, Version 2.0 (the "License");
- *  * you may not use this file except in compliance with the License.
- *  * You may obtain a copy of the License at
- *  *
- *  *     http://www.apache.org/licenses/LICENSE-2.0
- *  *
- *  * Unless required by applicable law or agreed to in writing, software
- *  * distributed under the License is distributed on an "AS IS" BASIS,
- *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  * See the License for the specific language governing permissions and
- *  * limitations under the License.
+ * Copyright 2016.  Julia Kozhukhovskaya
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
  */
 
 package com.example.julia.popularmovies.details;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -46,21 +45,27 @@ import com.example.julia.popularmovies.Config;
 import com.example.julia.popularmovies.models.Movie;
 import com.example.julia.popularmovies.R;
 import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
+import com.example.julia.popularmovies.models.Review;
 import com.example.julia.popularmovies.models.Trailer;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DetailFragment extends Fragment implements FetchTrailersTask.Listener {
+public class DetailFragment extends Fragment implements FetchTrailersTask.Listener,
+        FetchReviewsTask.Listener {
+
+    private final String LOG_TAG = DetailFragment.class.getSimpleName();
 
     private static final String EXTRA_TRAILERS = "EXTRA_TRAILERS";
-    private final String LOG_TAG = DetailFragment.class.getSimpleName();
+    private static final String EXTRA_REVIEWS = "EXTRA_REVIEWS";
 
     private Movie mMovie;
     private TrailerListAdapter mTrailerListAdapter;
+    private ReviewListAdapter mReviewListAdapter;
     private ShareActionProvider mShareActionProvider;
     private RecyclerView mTrailersView;
+    private RecyclerView mReviewsView;
 
     public DetailFragment() {
     }
@@ -91,8 +96,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
             mShareActionProvider =
                     (ShareActionProvider) MenuItemCompat.getActionProvider(action_share);
 
-            // TODO: something wrong with mShareActionProvider
-
             new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void... params) {
@@ -114,34 +117,31 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     }
 
     @Override
-    public void onFetchFinished(ArrayList<Trailer> trailers) {
+    public void onTrailersFetchFinished(ArrayList<Trailer> trailers) {
         mTrailerListAdapter.add(trailers);
         if (mTrailerListAdapter.getItemCount() > 0) {
             Trailer trailer = mTrailerListAdapter.getTrailers().get(0);
-            updateShareActionProvider(trailer);
+            setShareActionProvider(trailer);
         } else {
             mTrailersView.setVisibility(View.GONE);
         }
     }
 
-//    public void refreshMenu(Activity activity) {
-//        activity.invalidateOptionsMenu();
-//        if (mShareActionProvider != null) {
-//            Log.e(LOG_TAG, "mShareActionProvider != null");
-//        } else {
-//            Log.e(LOG_TAG, "mShareActionProvider == null");
-//        }
-//    }
+    @Override
+    public void onReviewsFetchFinished(ArrayList<Review> reviews) {
+        mReviewListAdapter.add(reviews);
+        if (mReviewListAdapter.getItemCount() == 0) {
+            mReviewsView.setVisibility(View.GONE);
+        }
+    }
 
-    private void updateShareActionProvider(Trailer trailer) {
+    private void setShareActionProvider(Trailer trailer) {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, mMovie.getTitle());
         shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, trailer.getName() + ": "
                 + trailer.getTrailerUrl());
-        // need it because trailers had been fetched by AsyncTask before the menu created
-        //refreshMenu(getActivity());
         if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(shareIntent);
         } else {
@@ -249,6 +249,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         TextView mDateView = (TextView) rootView.findViewById(R.id.detail_date);
         TextView mRatingView = (TextView) rootView.findViewById(R.id.detail_rating);
 
+        // horizontal list layout for trailers
         mTrailerListAdapter = new TrailerListAdapter(new ArrayList<Trailer>());
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -256,13 +257,30 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         mTrailersView.setLayoutManager(horizontalLayoutManager);
         mTrailersView.setAdapter(mTrailerListAdapter);
 
-        // Fetch trailers only if there is no trailers fetched yet
+        // vertical list layout for reviews
+        mReviewListAdapter = new ReviewListAdapter(new ArrayList<Review>());
+        LinearLayoutManager verticalLayoutManager
+                = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        mReviewsView = (RecyclerView) rootView.findViewById(R.id.detail_reviews);
+        mReviewsView.setLayoutManager(verticalLayoutManager);
+        mReviewsView.setAdapter(mReviewListAdapter);
+
+        // fetch trailers only if there is no trailers fetched yet
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
             ArrayList<Trailer> trailers = savedInstanceState.getParcelableArrayList(EXTRA_TRAILERS);
             mTrailerListAdapter.add(trailers);
         } else {
             fetchTrailers();
         }
+
+        // fetch reviews only if there is no reviews fetched yet
+        if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_REVIEWS)) {
+            List<Review> reviews = savedInstanceState.getParcelableArrayList(EXTRA_REVIEWS);
+            mReviewListAdapter.add(reviews);
+        } else {
+            fetchReviews();
+        }
+
         if (mMovie != null) {
             // Set movie poster
             Picasso.with(getContext()).load(mMovie.getPoster(getContext())).into(mPosterView);
@@ -280,8 +298,11 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     }
 
     private void fetchTrailers() {
-        FetchTrailersTask task = new FetchTrailersTask(this);
-        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Long.toString(mMovie.getId()));
+        new FetchTrailersTask(this).execute(Long.toString(mMovie.getId()));
+    }
+
+    private void fetchReviews() {
+        new FetchReviewsTask(this).execute(Long.toString(mMovie.getId()));
     }
 
     private void setRatingBar(View view) {

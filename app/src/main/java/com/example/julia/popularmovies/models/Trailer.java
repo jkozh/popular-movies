@@ -32,11 +32,8 @@ public class Trailer implements Parcelable {
     private String mSite;
     private String mType;
 
-    public Trailer() {
-    }
-
     public Trailer(JSONObject trailer) throws JSONException {
-        mId = trailer.getString(Config.TMD_TRAILER_ID);
+        mId = trailer.getString(Config.TMD_ID);
         mKey = trailer.getString(Config.TMD_TRAILER_KEY);
         mName = trailer.getString(Config.TMD_TRAILER_NAME);
         mSite = trailer.getString(Config.TMD_TRAILER_SITE);
@@ -70,10 +67,6 @@ public class Trailer implements Parcelable {
     public String getKey() { return mKey; }
 
     public String getName() { return mName; }
-
-    public String getSite() { return mSite; }
-
-    public String getType() { return mType; }
 
     public String getTrailerUrl() {
         return Config.TMD_TRAILER_YOUTUBE_WATCH + mKey;

@@ -31,7 +31,6 @@ import com.example.julia.popularmovies.models.Trailer;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHolder>  {
 
@@ -53,13 +52,8 @@ class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHol
         notifyDataSetChanged();
     }
 
-    public ArrayList<Trailer> getTrailers() {
+    ArrayList<Trailer> getTrailers() {
         return mTrailers;
-    }
-
-    public void clear() {
-        mTrailers.clear();
-        notifyDataSetChanged();
     }
 
     @Override

@@ -33,6 +33,8 @@ public class Config {
     public static final String MOVIE_PARAM = "movie";
     static final String SORT_BY_PARAM = "sort_by";
     public static final String API_KEY_PARAM = "api_key";
+    public static final String VIDEOS_PARAM = "videos";
+    public static final String REVIEWS_PARAM = "reviews";
 
     // Keys
     static final String SORT_SETTING_KEY = "sort_setting";
@@ -46,16 +48,18 @@ public class Config {
     public static final String DETAIL_MOVIE = "detail_movie";
 
     // Paths used in JSON for trailers
-    public static final String TMD_TRAILER_ID = "id";
     public static final String TMD_TRAILER_KEY = "key";
     public static final String TMD_TRAILER_NAME = "name";
     public static final String TMD_TRAILER_SITE = "site";
     public static final String TMD_TRAILER_TYPE = "type";
     public static final String TMD_TRAILER_YOUTUBE = "YouTube";
 
-    public static final String VIDEOS_PARAM = "videos";
     public static final String TMD_TRAILER_YOUTUBE_URL = "http://img.youtube.com/vi/";
     public static final String YOUTUBE_IMAGE_PATH = "/0.jpg";
     public static final String TMD_TRAILER_YOUTUBE_WATCH = "http://www.youtube.com/watch?v=";
+
+    public static final String TMD_REVIEW_AUTHOR = "author";
+    public static final String TMD_REVIEW_CONTENT = "content";
+    public static final String TMD_REVIEW_URL = "url";
 
 }

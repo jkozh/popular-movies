@@ -23,7 +23,6 @@ import android.util.Log;
 import com.example.julia.popularmovies.BuildConfig;
 import com.example.julia.popularmovies.Config;
 import com.example.julia.popularmovies.models.Review;
-import com.example.julia.popularmovies.models.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,38 +35,36 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
-class FetchTrailersTask extends AsyncTask<String, Void, ArrayList<Trailer>> {
+class FetchReviewsTask extends AsyncTask<String, Void, ArrayList<Review>> {
 
-    private final String LOG_TAG = FetchTrailersTask.class.getSimpleName();
+    public static String LOG_TAG = FetchReviewsTask.class.getSimpleName();
     private final Listener mListener;
 
-    // Interface definition for a callback to be invoked when trailers are loaded
+    // Interface definition for a callback to be invoked when reviews are loaded
     interface Listener {
-        void onTrailersFetchFinished(ArrayList<Trailer> trailers);
+        void onReviewsFetchFinished(ArrayList<Review> reviews);
     }
 
-    FetchTrailersTask(Listener listener) {
+    FetchReviewsTask(Listener listener) {
         mListener = listener;
     }
 
-    private ArrayList<Trailer> getTrailersDataFromJson(String jsonStr) throws JSONException {
-        JSONObject trailerJson = new JSONObject(jsonStr);
-        JSONArray trailerArray = trailerJson.getJSONArray(Config.TMD_LIST);
-        ArrayList<Trailer> results = new ArrayList<>();
-        for(int i = 0; i < trailerArray.length(); i++) {
-            JSONObject trailer = trailerArray.getJSONObject(i);
-            // Show Trailers that on Youtube only
-            if (trailer.getString(Config.TMD_TRAILER_SITE).contentEquals(Config.TMD_TRAILER_YOUTUBE)) {
-                Trailer trailerModel = new Trailer(trailer);
-                results.add(trailerModel);
-            }
+    private ArrayList<Review> getReviewsDataFromJson(String jsonStr) throws JSONException {
+        JSONObject reviewJson = new JSONObject(jsonStr);
+        JSONArray reviewArray = reviewJson.getJSONArray("results");
+        ArrayList<Review> results = new ArrayList<>();
+        for(int i = 0; i < reviewArray.length(); i++) {
+            JSONObject review = reviewArray.getJSONObject(i);
+            results.add(new Review(review));
         }
         return results;
     }
 
+
     @Override
-    protected ArrayList<Trailer> doInBackground(String... params) {
+    protected ArrayList<Review> doInBackground(String... params) {
         if (params.length == 0) {
             Log.e(LOG_TAG, "Length of params equals zero");
             return null;
@@ -79,7 +76,7 @@ class FetchTrailersTask extends AsyncTask<String, Void, ArrayList<Trailer>> {
             Uri builtUri = Uri.parse(Config.MOVIE_BASE_URL).buildUpon()
                     .appendPath(Config.MOVIE_PARAM)
                     .appendPath(params[0])
-                    .appendPath(Config.VIDEOS_PARAM)
+                    .appendPath(Config.REVIEWS_PARAM)
                     .appendQueryParameter(Config.API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                     .build();
 
@@ -89,11 +86,13 @@ class FetchTrailersTask extends AsyncTask<String, Void, ArrayList<Trailer>> {
             urlConnection.connect();
             InputStream inputStream = urlConnection.getInputStream();
             StringBuilder buffer = new StringBuilder();
-            if (inputStream == null) { return null; }
+            if (inputStream == null) {
+                return null;
+            }
             reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
             while ((line = reader.readLine()) != null) {
-                buffer.append(line).append("\n");
+              buffer.append(line).append("\n");
             }
             if (buffer.length() == 0) { return null; }
             jsonStr = buffer.toString();
@@ -114,7 +113,7 @@ class FetchTrailersTask extends AsyncTask<String, Void, ArrayList<Trailer>> {
         }
         try {
             Log.e(LOG_TAG, jsonStr);
-            return getTrailersDataFromJson(jsonStr);
+            return getReviewsDataFromJson(jsonStr);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
@@ -123,11 +122,11 @@ class FetchTrailersTask extends AsyncTask<String, Void, ArrayList<Trailer>> {
     }
 
     @Override
-    protected void onPostExecute(ArrayList<Trailer> trailers) {
-        if (trailers != null) {
-            mListener.onTrailersFetchFinished(trailers);
+    protected void onPostExecute(ArrayList<Review> reviews) {
+        if (reviews != null) {
+            mListener.onReviewsFetchFinished(reviews);
         } else {
-            mListener.onTrailersFetchFinished(new ArrayList<Trailer>());
+            mListener.onReviewsFetchFinished(new ArrayList<Review>());
         }
     }
 }
