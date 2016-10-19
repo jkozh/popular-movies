@@ -16,6 +16,8 @@
 
 package com.example.julia.popularmovies.details;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,11 +30,11 @@ import com.example.julia.popularmovies.models.Review;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.ViewHolder> {
+class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.ViewHolder> {
 
     private final ArrayList<Review> mReviews;
 
-    public ReviewListAdapter(ArrayList<Review> reviews) {
+    ReviewListAdapter(ArrayList<Review> reviews) {
         mReviews = reviews;
     }
 
@@ -54,7 +56,7 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         final Review review = mReviews.get(position);
         holder.mReview = review;
         holder.mContentView.setText(review.getContent());
@@ -63,7 +65,7 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //mCallbacks.read(review, holder.getAdapterPosition());
+                holder.mView.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(review.getUrl())));
             }
         });
     }
@@ -77,7 +79,7 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
         final View mView;
         TextView mContentView;
         TextView mAuthorView;
-        public Review mReview;
+        Review mReview;
 
         ViewHolder(View view) {
             super(view);

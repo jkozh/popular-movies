@@ -3,15 +3,13 @@
     <string name="action_refresh">Refresh</string>
 
     <string name="title_activity_detail">Detail</string>
-    <string name="mark_as_favorite">Mark as favorite</string>
-    <string name="_120_min">120 min</string>
     <string name="trailers">Trailers</string>
     <string name="review">Review</string>
     <string name="release_date_missing">Release date is missing</string>
-    <string name="poster_url">http://image.tmdb.org/t/p/w185</string>
     <string name="action_favorite">Mark as favorite</string>
     <string name="sort_by">Sort By</string>
     <string name="sortby_spinner">Sort By</string>
     <string name="action_share">Share</string>
     <string name="movie_rating">%1$s/10</string>
+    <string name="reviews">Reviews</string>
 </resources>

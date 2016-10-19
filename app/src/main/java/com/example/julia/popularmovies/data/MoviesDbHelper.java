@@ -26,7 +26,7 @@ import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
 public class MoviesDbHelper extends SQLiteOpenHelper {
     public static final String LOG_TAG = MoviesDbHelper.class.getSimpleName();
 
-    private static final int DATABASE_VERSION = 17;
+    private static final int DATABASE_VERSION = 18;
     public static final String DATABASE_NAME = "movie.db";
 
     public MoviesDbHelper(Context context) {
@@ -42,7 +42,8 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 MovieEntry.COLUMN_DATE + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_PLOT + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_POSTER + " TEXT NOT NULL, " +
-                MovieEntry.COLUMN_RATING + " REAL NOT NULL" +
+                MovieEntry.COLUMN_RATING + " REAL NOT NULL, " +
+                MovieEntry.COLUMN_BACKDROP + " TEXT NOT NULL " +
                 " );";
         db.execSQL(SQL_CREATE_MOVIE_TABLE);
     }

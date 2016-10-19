@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -132,6 +133,11 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         mReviewListAdapter.add(reviews);
         if (mReviewListAdapter.getItemCount() == 0) {
             mReviewsView.setVisibility(View.GONE);
+            if (getView() != null) {
+                getView().findViewById(R.id.detail_reviews_title).setVisibility(View.GONE);
+            } else {
+                Log.e(LOG_TAG, "getView() is null");
+            }
         }
     }
 
@@ -206,7 +212,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                                                 mMovie.getDate());
                                         values.put(MovieEntry.COLUMN_PLOT, mMovie.getPlot());
                                         values.put(MovieEntry.COLUMN_POSTER,
-                                                mMovie.getPoster(getContext()));
+                                                mMovie.getPoster());
                                         values.put(MovieEntry.COLUMN_RATING, mMovie.getRating());
 
                                         return getActivity().getContentResolver().insert(
@@ -243,6 +249,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
+        ImageView mBackdrop = (ImageView) rootView.findViewById(R.id.detail_backdrop);
         ImageView mPosterView = (ImageView) rootView.findViewById(R.id.detail_poster);
         TextView mTitleView = (TextView) rootView.findViewById(R.id.detail_title);
         TextView mPlotView = (TextView) rootView.findViewById(R.id.detail_plot);
@@ -282,8 +289,11 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         }
 
         if (mMovie != null) {
+            Log.e(LOG_TAG, mMovie.getBackdrop() + " *");
+            // Set movie backdrop
+            Picasso.with(getContext()).load(mMovie.getBackdrop()).into(mBackdrop);
             // Set movie poster
-            Picasso.with(getContext()).load(mMovie.getPoster(getContext())).into(mPosterView);
+            Picasso.with(getContext()).load(mMovie.getPoster()).into(mPosterView);
             // Set movie title
             mTitleView.setText(mMovie.getTitle());
             // Set movie release date in user-friendly view

@@ -41,11 +41,12 @@ public class Movie implements Parcelable {
     private final String LOG_TAG = Movie.class.getSimpleName();
 
     private long mId;
-    private String mPoster; // poster's path
-    private String mTitle;  // original title
-    private String mDate;   // release date
-    private String mRating; // vote average
-    private String mPlot;   // overview (synopsis)
+    private String mPoster;   // poster's path
+    private String mTitle;    // original title
+    private String mDate;     // release date
+    private String mRating;   // vote average
+    private String mPlot;     // overview (synopsis)
+    private String mBackdrop; // backdrop_path
 
     public Movie(JSONObject movie) throws JSONException {
         mId = movie.getLong(Config.TMD_ID);
@@ -54,26 +55,35 @@ public class Movie implements Parcelable {
         mDate = movie.getString(Config.TMD_DATE);
         mRating = movie.getString(Config.TMD_RATING);
         mPlot = movie.getString(Config.TMD_PLOT);
+        mBackdrop = movie.getString(Config.TMD_BACKDROP);
     }
 
     public Movie(Cursor cursor) {
-        mId = cursor.getLong(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry.COLUMN_ID));
-        mPoster = cursor.getString(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry.COLUMN_POSTER));
-        mTitle = cursor.getString(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry.COLUMN_TITLE));
-        mDate = cursor.getString(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry.COLUMN_DATE));
-        mRating = cursor.getString(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry.COLUMN_RATING));
-        mPlot = cursor.getString(cursor.getColumnIndexOrThrow(MoviesContract.MovieEntry.COLUMN_PLOT));
+        mId = cursor.getLong(cursor.getColumnIndexOrThrow(
+                MoviesContract.MovieEntry.COLUMN_ID));
+        mPoster = cursor.getString(cursor.getColumnIndexOrThrow(
+                MoviesContract.MovieEntry.COLUMN_POSTER));
+        mTitle = cursor.getString(cursor.getColumnIndexOrThrow(
+                MoviesContract.MovieEntry.COLUMN_TITLE));
+        mDate = cursor.getString(cursor.getColumnIndexOrThrow(
+                MoviesContract.MovieEntry.COLUMN_DATE));
+        mRating = cursor.getString(cursor.getColumnIndexOrThrow(
+                MoviesContract.MovieEntry.COLUMN_RATING));
+        mPlot = cursor.getString(cursor.getColumnIndexOrThrow(
+                MoviesContract.MovieEntry.COLUMN_PLOT));
+        mBackdrop = cursor.getString(cursor.getColumnIndexOrThrow(
+                MoviesContract.MovieEntry.COLUMN_BACKDROP));
     }
 
     public long getId() {
         return mId;
     }
 
-    public String getPoster(Context context) {
+    public String getPoster() {
         if (mPoster != null && !mPoster.isEmpty()) {
-            return context.getResources().getString(R.string.poster_url) + mPoster;
+            return Config.POSTER_URL + mPoster;
         }
-        return mPoster;
+        return null;
     }
 
     public String getTitle() {
@@ -110,6 +120,13 @@ public class Movie implements Parcelable {
         return mPlot;
     }
 
+    public String getBackdrop() {
+        if (mBackdrop != null && !mBackdrop.isEmpty()) {
+            return Config.POSTER_URL + mBackdrop;
+        }
+        return null;
+    }
+
     private Movie(Parcel in) {
         mId = in.readLong();
         mPoster = in.readString();
@@ -117,6 +134,7 @@ public class Movie implements Parcelable {
         mDate = in.readString();
         mRating = in.readString();
         mPlot = in.readString();
+        mBackdrop = in.readString();
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -144,5 +162,6 @@ public class Movie implements Parcelable {
         parcel.writeString(mDate);
         parcel.writeString(mRating);
         parcel.writeString(mPlot);
+        parcel.writeString(mBackdrop);
     }
 }

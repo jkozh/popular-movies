@@ -26,9 +26,11 @@ public class Config {
     public static final String TMD_DATE = "release_date";
     public static final String TMD_RATING = "vote_average";
     public static final String TMD_PLOT = "overview";
+    public static final String TMD_BACKDROP = "backdrop_path";
 
     // JSON URL
     public static final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/";
+    public static final String POSTER_URL = "http://image.tmdb.org/t/p/w185";
     static final String DISCOVER_PARAM = "discover";
     public static final String MOVIE_PARAM = "movie";
     static final String SORT_BY_PARAM = "sort_by";
