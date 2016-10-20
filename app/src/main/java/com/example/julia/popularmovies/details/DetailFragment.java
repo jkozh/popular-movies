@@ -124,20 +124,24 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         if (mTrailerListAdapter.getItemCount() > 0) {
             Trailer trailer = mTrailerListAdapter.getTrailers().get(0);
             setShareActionProvider(trailer);
-        } else {
-            mTrailersView.setVisibility(View.GONE);
+            View view = getView();
+            if (view != null) {
+                view.findViewById(R.id.film_reel_top).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.film_reel_bottom).setVisibility(View.VISIBLE);
+                mTrailersView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
     @Override
     public void onReviewsFetchFinished(ArrayList<Review> reviews) {
         mReviewListAdapter.add(reviews);
-        if (mReviewListAdapter.getItemCount() == 0) {
-            mReviewsView.setVisibility(View.GONE);
-            if (getView() != null) {
-                getView().findViewById(R.id.detail_reviews_title).setVisibility(View.GONE);
-            } else {
-                Log.e(LOG_TAG, "getView() is null");
+        if (mReviewListAdapter.getItemCount() > 0) {
+            mReviewsView.setVisibility(View.VISIBLE);
+            View view = getView();
+            if (view != null) {
+                view.findViewById(R.id.detail_reviews_title).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.detail_reviews_title).setVisibility(View.VISIBLE);
             }
         }
     }

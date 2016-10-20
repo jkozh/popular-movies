@@ -15,22 +15,17 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp">
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+<item>
+    <shape android:shape="rectangle" >
+        <solid android:color="#222" />
+    </shape>
+</item>
 
-    <TextView
-        android:id="@+id/review_author"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20dp"/>
-
-    <TextView
-        android:id="@+id/review_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:maxLines="5"
-        android:ellipsize="end" />
-</FrameLayout>
+<item>
+    <bitmap
+        android:src="@drawable/ic_stop_white_18dp"
+        android:tileMode="repeat"
+        android:alpha=".7" />
+</item>
+</layer-list>
