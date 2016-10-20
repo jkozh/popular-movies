@@ -61,27 +61,7 @@ class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
         }
         return null;
     }
-/*
-    public static String buildPosterUrl(String imagePath, int width) {
-        String widthPath;
 
-        if (width <= 92)
-            widthPath = "/w92";
-        else if (width <= 154)
-            widthPath = "/w154";
-        else if (width <= 185)
-            widthPath = "/w185";
-        else if (width <= 342)
-            widthPath = "/w342";
-        else if (width <= 500)
-            widthPath = "/w500";
-        else
-            widthPath = "/w780";
-
-        //Timber.v("buildPosterUrl: widthPath=" + widthPath);
-        return BASE_URL + widthPath + imagePath;
-    }
-*/
     @Override
     protected List<Movie> doInBackground(String... params) {
         if (params.length == 0) {

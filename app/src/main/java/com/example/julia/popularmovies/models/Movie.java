@@ -27,6 +27,7 @@ import android.util.Log;
 import com.example.julia.popularmovies.Config;
 import com.example.julia.popularmovies.R;
 import com.example.julia.popularmovies.data.MoviesContract;
+import com.example.julia.popularmovies.details.DetailFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -79,11 +80,33 @@ public class Movie implements Parcelable {
         return mId;
     }
 
-    public String getPoster() {
+    public String getPoster(Context context) {
         if (mPoster != null && !mPoster.isEmpty()) {
-            return Config.POSTER_URL + mPoster;
+            return Config.POSTER_URL + getImageSizeParam(context, 120) + mPoster;
         }
         return null;
+    }
+
+    private String getImageSizeParam(Context context, float dp) {
+        // 120dp for posters
+        // full dp for backdrops
+        float widthPx = dp * context.getResources().getDisplayMetrics().density;
+        String widthParam;
+
+        if (widthPx <= 92) {
+            widthParam = "w92";
+        } else if (widthPx <= 154) {
+            widthParam = "w154";
+        } else if (widthPx <= 185) {
+            widthParam = "w185";
+        } else if (widthPx <= 342) {
+            widthParam = "w342";
+        } else if (widthPx <= 500) {
+            widthParam = "w500";
+        } else {
+            widthParam = "w780";
+        }
+        return widthParam;
     }
 
     public String getTitle() {
@@ -120,9 +143,10 @@ public class Movie implements Parcelable {
         return mPlot;
     }
 
-    public String getBackdrop() {
+    public String getBackdrop(Context context) {
         if (mBackdrop != null && !mBackdrop.isEmpty()) {
-            return Config.POSTER_URL + mBackdrop;
+            return Config.POSTER_URL + getImageSizeParam(context,
+                    context.getResources().getDisplayMetrics().densityDpi) + mBackdrop;
         }
         return null;
     }

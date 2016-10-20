@@ -30,6 +30,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -212,8 +213,10 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                                                 mMovie.getDate());
                                         values.put(MovieEntry.COLUMN_PLOT, mMovie.getPlot());
                                         values.put(MovieEntry.COLUMN_POSTER,
-                                                mMovie.getPoster());
+                                                mMovie.getPoster(getContext()));
                                         values.put(MovieEntry.COLUMN_RATING, mMovie.getRating());
+                                        values.put(MovieEntry.COLUMN_BACKDROP,
+                                                mMovie.getBackdrop(getContext()));
 
                                         return getActivity().getContentResolver().insert(
                                                 MovieEntry.CONTENT_URI, values);
@@ -289,11 +292,10 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         }
 
         if (mMovie != null) {
-            Log.e(LOG_TAG, mMovie.getBackdrop() + " *");
             // Set movie backdrop
-            Picasso.with(getContext()).load(mMovie.getBackdrop()).into(mBackdrop);
+            Picasso.with(getContext()).load(mMovie.getBackdrop(getContext())).into(mBackdrop);
             // Set movie poster
-            Picasso.with(getContext()).load(mMovie.getPoster()).into(mPosterView);
+            Picasso.with(getContext()).load(mMovie.getPoster(getContext())).into(mPosterView);
             // Set movie title
             mTitleView.setText(mMovie.getTitle());
             // Set movie release date in user-friendly view
