@@ -30,7 +30,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -182,7 +181,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
 
     @Override
     public void onMovieInfoFetchFinished(String runtime) {
-        Log.e(LOG_TAG, "onMovieInfoFetchFinished:" + runtime);
         if (runtime != null) {
             mMovie.setRuntime(runtime);
             mRuntimeView.setText(mMovie.getReadableRuntime());
@@ -198,8 +196,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                 + trailer.getTrailerUrl());
         if (mShareActionProvider != null) {
             mShareActionProvider.setShareIntent(shareIntent);
-        } else {
-            Log.e(LOG_TAG, "mShareActionProvider == null");
         }
     }
 
@@ -295,8 +291,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         Bundle bundle = getArguments();
         if (bundle != null) {
             mMovie = bundle.getParcelable(Config.DETAIL_MOVIE);
-        } else {
-            Log.e(LOG_TAG, "Null arguments");
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
@@ -323,12 +317,12 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
 
         // vertical list layout for reviews
         mReviewListAdapter = new ReviewListAdapter(new ArrayList<Review>());
-        LinearLayoutManager verticalLayoutManager
-                = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager verticalLayoutManager = new LinearLayoutManager(getContext());
         mReviewsRecyclerView = (RecyclerView) rootView.findViewById(R.id.detail_reviews);
         mReviewsRecyclerView.setLayoutManager(verticalLayoutManager);
         mReviewsRecyclerView.setAdapter(mReviewListAdapter);
 
+        // fetch runtime info for a movie
         fetchMovieInfo();
 
         // fetch trailers only if there is no trailers fetched yet
@@ -364,7 +358,11 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
             // Set movie title
             mTitleView.setText(mMovie.getTitle());
             // Set genres
-            mGenresView.setText(mMovie.getReadableGenres());
+            if (mMovie.getReadableGenres() != null) {
+                mGenresView.setText(mMovie.getReadableGenres());
+            } else {
+                mGenresView.setVisibility(View.GONE);
+            }
             // Set movie release date in user-friendly view
             mDateView.setText(mMovie.getDate(getContext()));
             setRatingBar(rootView);

@@ -103,7 +103,6 @@ class FetchMovieInfoTask extends AsyncTask<String, Void, String> {
             }
         }
         try {
-            Log.e(LOG_TAG, jsonStr);
             return getRuntimeDataFromJson(jsonStr);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);

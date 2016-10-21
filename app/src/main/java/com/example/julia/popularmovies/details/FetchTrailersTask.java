@@ -113,7 +113,6 @@ class FetchTrailersTask extends AsyncTask<String, Void, ArrayList<Trailer>> {
             }
         }
         try {
-            Log.e(LOG_TAG, jsonStr);
             return getTrailersDataFromJson(jsonStr);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);

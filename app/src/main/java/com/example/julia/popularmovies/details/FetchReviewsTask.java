@@ -112,7 +112,6 @@ class FetchReviewsTask extends AsyncTask<String, Void, ArrayList<Review>> {
             }
         }
         try {
-            Log.e(LOG_TAG, jsonStr);
             return getReviewsDataFromJson(jsonStr);
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);

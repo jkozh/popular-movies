@@ -18,6 +18,7 @@ package com.example.julia.popularmovies.details;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,10 +43,6 @@ class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.ViewHolde
         mReviews.clear();
         mReviews.addAll(reviews);
         notifyDataSetChanged();
-    }
-
-    public ArrayList<Review> getReviews() {
-        return mReviews;
     }
 
     @Override
@@ -76,6 +73,7 @@ class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.ViewHolde
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
+        CardView cardview;
         final View mView;
         TextView mContentView;
         TextView mAuthorView;
@@ -83,6 +81,7 @@ class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.ViewHolde
 
         ViewHolder(View view) {
             super(view);
+            cardview = (CardView) view.findViewById(R.id.cardview_detail_reviews);
             mView = view;
             mContentView = (TextView) view.findViewById(R.id.review_content);
             mAuthorView = (TextView) view.findViewById(R.id.review_author);

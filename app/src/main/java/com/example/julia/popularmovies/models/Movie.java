@@ -18,24 +18,21 @@
 
 package com.example.julia.popularmovies.models;
 
-import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
 
 import com.example.julia.popularmovies.Config;
 import com.example.julia.popularmovies.R;
 import com.example.julia.popularmovies.data.MoviesContract;
-import com.example.julia.popularmovies.details.DetailFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -165,7 +162,8 @@ public class Movie implements Parcelable {
     public String getRating() {
         // rounding rating from #.## to #.#
         double rating = Double.parseDouble(mRating);
-        return String.valueOf(Math.round(rating * 10d) / 10d);
+        DecimalFormat format = new DecimalFormat("0.#");
+        return format.format(Math.round(rating * 10d) / 10d);
     }
 
     public String getPlot() {
@@ -239,12 +237,15 @@ public class Movie implements Parcelable {
                     case 37:
                         genres += "Western";
                         break;
+                    default:
+                        genres += "Unknown";
+                        break;
                 }
                 genres += " | ";
             }
             return genres.substring(0, genres.length() - 3);
         }
-        return "";
+        return null;
     }
 
     public String getRuntime() {
@@ -259,6 +260,11 @@ public class Movie implements Parcelable {
             int t = Integer.parseInt(getRuntime());
             int hours = t / 60;
             int minutes = t % 60;
+            if (hours == 0) {
+                return minutes + "m";
+            } else if(minutes == 0) {
+                return hours + "h";
+            }
             return hours + "h " + minutes + "m";
         }
         return "unavailable";
