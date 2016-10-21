@@ -38,6 +38,8 @@ public class MoviesContract {
         public static final String COLUMN_POSTER = "poster";
         public static final String COLUMN_RATING = "rating";
         public static final String COLUMN_BACKDROP = "backdrop_path";
+        public static final String COLUMN_GENRES = "genre_ids";
+        public static final String COLUMN_RUNTIME = "runtime";
 
 
         // create content uri

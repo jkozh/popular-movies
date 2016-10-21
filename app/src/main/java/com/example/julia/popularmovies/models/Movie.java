@@ -51,6 +51,11 @@ public class Movie implements Parcelable {
     private String mRating;   // vote average
     private String mPlot;     // overview (synopsis)
     private String mBackdrop; // backdrop_path
+    private String mGenres;   // genres ids
+    private String mRuntime;
+
+    public Movie() {
+    }
 
     public Movie(JSONObject movie) throws JSONException {
         mId = movie.getLong(Config.TMD_ID);
@@ -60,6 +65,8 @@ public class Movie implements Parcelable {
         mRating = movie.getString(Config.TMD_RATING);
         mPlot = movie.getString(Config.TMD_PLOT);
         mBackdrop = movie.getString(Config.TMD_BACKDROP);
+        mGenres = movie.getString(Config.TMD_GENRES);
+
     }
 
     public Movie(Cursor cursor) {
@@ -77,6 +84,10 @@ public class Movie implements Parcelable {
                 MoviesContract.MovieEntry.COLUMN_PLOT));
         mBackdrop = cursor.getString(cursor.getColumnIndexOrThrow(
                 MoviesContract.MovieEntry.COLUMN_BACKDROP));
+        mGenres = cursor.getString(cursor.getColumnIndexOrThrow(
+                MoviesContract.MovieEntry.COLUMN_GENRES));
+        mRuntime = cursor.getString(cursor.getColumnIndexOrThrow(
+                MoviesContract.MovieEntry.COLUMN_RUNTIME));
     }
 
     public long getId() {
@@ -161,7 +172,101 @@ public class Movie implements Parcelable {
         return mPlot;
     }
 
+    public String getGenres() {
+        return mGenres;
+    }
 
+    public String getReadableGenres() {
+        if (getGenres().length() > 2) {
+            String[] genreIds = getGenres().substring(1, getGenres().length() - 1).split(",");
+            String genres = "";
+            for (String value : genreIds) {
+                switch (Integer.parseInt(value)) {
+                    case 28:
+                        genres += "Action";
+                        break;
+                    case 12:
+                        genres += "Adventure";
+                        break;
+                    case 16:
+                        genres += "Animation";
+                        break;
+                    case 35:
+                        genres += "Comedy";
+                        break;
+                    case 80:
+                        genres += "Crime";
+                        break;
+                    case 99:
+                        genres += "Documentary";
+                        break;
+                    case 18:
+                        genres += "Drama";
+                        break;
+                    case 10751:
+                        genres += "Family";
+                        break;
+                    case 14:
+                        genres += "Fantasy";
+                        break;
+                    case 36:
+                        genres += "History";
+                        break;
+                    case 27:
+                        genres += "Horror";
+                        break;
+                    case 10402:
+                        genres += "Music";
+                        break;
+                    case 9648:
+                        genres += "Mystery";
+                        break;
+                    case 10749:
+                        genres += "Romance";
+                        break;
+                    case 878:
+                        genres += "Science Fiction";
+                        break;
+                    case 10770:
+                        genres += "TV Movie";
+                        break;
+                    case 53:
+                        genres += "Thriller";
+                        break;
+                    case 10752:
+                        genres += "War";
+                        break;
+                    case 37:
+                        genres += "Western";
+                        break;
+                }
+                genres += " | ";
+            }
+            return genres.substring(0, genres.length() - 3);
+        }
+        return "";
+    }
+
+    public String getRuntime() {
+        if (mRuntime != null && !mRuntime.isEmpty()) {
+            return mRuntime;
+        }
+        return null;
+    }
+
+    public String getReadableRuntime() {
+        if (getRuntime() != null && !getRuntime().equals("0")) {
+            int t = Integer.parseInt(getRuntime());
+            int hours = t / 60;
+            int minutes = t % 60;
+            return hours + "h " + minutes + "m";
+        }
+        return "unavailable";
+    }
+
+    public void setRuntime(String runtime) {
+        mRuntime = runtime;
+    }
 
     private Movie(Parcel in) {
         mId = in.readLong();
@@ -171,6 +276,8 @@ public class Movie implements Parcelable {
         mRating = in.readString();
         mPlot = in.readString();
         mBackdrop = in.readString();
+        mGenres = in.readString();
+        mRuntime = in.readString();
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -199,5 +306,7 @@ public class Movie implements Parcelable {
         parcel.writeString(mRating);
         parcel.writeString(mPlot);
         parcel.writeString(mBackdrop);
+        parcel.writeString(mGenres);
+        parcel.writeString(mRuntime);
     }
 }

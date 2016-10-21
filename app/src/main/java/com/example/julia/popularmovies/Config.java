@@ -27,6 +27,8 @@ public class Config {
     public static final String TMD_RATING = "vote_average";
     public static final String TMD_PLOT = "overview";
     public static final String TMD_BACKDROP = "backdrop_path";
+    public static final String TMD_GENRES = "genre_ids";
+    public static final String TMD_RUNTIME = "runtime";
 
     // JSON URL
     public static final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/";

@@ -30,7 +30,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,6 +38,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,20 +55,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DetailFragment extends Fragment implements FetchTrailersTask.Listener,
-        FetchReviewsTask.Listener {
+        FetchReviewsTask.Listener, FetchMovieInfoTask.Listener {
 
     private final String LOG_TAG = DetailFragment.class.getSimpleName();
 
     private static final String EXTRA_TRAILERS = "EXTRA_TRAILERS";
     private static final String EXTRA_REVIEWS = "EXTRA_REVIEWS";
+    private static final String ICON_PLAY_BACKDROP = "ICON_PLAY_BACKDROP";
+    private static final String TRAILERS_VIEW = "TRAILERS_VIEW";
 
     private Movie mMovie;
     private TrailerListAdapter mTrailerListAdapter;
     private ReviewListAdapter mReviewListAdapter;
     private ShareActionProvider mShareActionProvider;
-    private RecyclerView mTrailersView;
-    private RecyclerView mReviewsView;
-    private ImageView mBackdrop;
+    private RecyclerView mReviewsRecyclerView;
+    private ImageView mBackdropView;
+    private ImageView mIconPlayBackdrop;
+    private LinearLayout mTrailersView;
+    private TextView mRuntimeView;
 
     public DetailFragment() {
     }
@@ -85,6 +89,27 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         ArrayList<Trailer> trailers = mTrailerListAdapter.getTrailers();
         if (trailers != null && !trailers.isEmpty()) {
             outState.putParcelableArrayList(EXTRA_TRAILERS, trailers);
+        }
+        if (mIconPlayBackdrop != null) {
+            outState.putBoolean(ICON_PLAY_BACKDROP,
+                    mIconPlayBackdrop.getVisibility() == View.VISIBLE);
+        }
+        if (mTrailersView != null) {
+            outState.putBoolean(TRAILERS_VIEW, mTrailersView.getVisibility() == View.VISIBLE);
+        }
+
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getBoolean(ICON_PLAY_BACKDROP)) {
+                mIconPlayBackdrop.setVisibility(View.VISIBLE);
+            }
+            if (savedInstanceState.getBoolean(TRAILERS_VIEW)) {
+                mTrailersView.setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -125,11 +150,9 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         if (mTrailerListAdapter.getItemCount() > 0) {
             Trailer trailer = mTrailerListAdapter.getTrailers().get(0);
             setShareActionProvider(trailer);
-            //mIconPlay.setVisibility(View.VISIBLE);
-            mBackdrop.setOnClickListener(new View.OnClickListener() {
+            mBackdropView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.e(LOG_TAG, "CLICK!");
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     Trailer trailer = mTrailerListAdapter.getTrailers().get(0);
                     intent.setData(Uri.parse(trailer.getTrailerUrl()));
@@ -138,10 +161,8 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
             });
             View view = getView();
             if (view != null) {
-                view.findViewById(R.id.film_reel_top).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.film_reel_bottom).setVisibility(View.VISIBLE);
+                mIconPlayBackdrop.setVisibility(View.VISIBLE);
                 mTrailersView.setVisibility(View.VISIBLE);
-                view.findViewById(R.id.image_play_icon_backdrop).setVisibility(View.VISIBLE);
             }
         }
     }
@@ -150,12 +171,21 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     public void onReviewsFetchFinished(ArrayList<Review> reviews) {
         mReviewListAdapter.add(reviews);
         if (mReviewListAdapter.getItemCount() > 0) {
-            mReviewsView.setVisibility(View.VISIBLE);
+            mReviewsRecyclerView.setVisibility(View.VISIBLE);
             View view = getView();
             if (view != null) {
                 view.findViewById(R.id.detail_reviews_title).setVisibility(View.VISIBLE);
                 view.findViewById(R.id.detail_reviews_title).setVisibility(View.VISIBLE);
             }
+        }
+    }
+
+    @Override
+    public void onMovieInfoFetchFinished(String runtime) {
+        Log.e(LOG_TAG, "onMovieInfoFetchFinished:" + runtime);
+        if (runtime != null) {
+            mMovie.setRuntime(runtime);
+            mRuntimeView.setText(mMovie.getReadableRuntime());
         }
     }
 
@@ -234,6 +264,8 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                                         values.put(MovieEntry.COLUMN_RATING, mMovie.getRating());
                                         values.put(MovieEntry.COLUMN_BACKDROP,
                                                 mMovie.getBackdrop());
+                                        values.put(MovieEntry.COLUMN_GENRES, mMovie.getGenres());
+                                        values.put(MovieEntry.COLUMN_RUNTIME, mMovie.getRuntime());
 
                                         return getActivity().getContentResolver().insert(
                                                 MovieEntry.CONTENT_URI, values);
@@ -269,29 +301,35 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        mBackdrop = (ImageView) rootView.findViewById(R.id.detail_backdrop);
+        mBackdropView = (ImageView) rootView.findViewById(R.id.detail_backdrop);
         ImageView mPosterView = (ImageView) rootView.findViewById(R.id.detail_poster);
         TextView mTitleView = (TextView) rootView.findViewById(R.id.detail_title);
         TextView mPlotView = (TextView) rootView.findViewById(R.id.detail_plot);
         TextView mDateView = (TextView) rootView.findViewById(R.id.detail_date);
         TextView mRatingView = (TextView) rootView.findViewById(R.id.detail_rating);
-        ImageView mIconPlay = (ImageView) rootView.findViewById(R.id.image_play_icon_backdrop);
+        TextView mGenresView = (TextView) rootView.findViewById((R.id.detail_genres));
+        mIconPlayBackdrop = (ImageView) rootView.findViewById(R.id.image_play_icon_backdrop);
+        mTrailersView = (LinearLayout) rootView.findViewById(R.id.trailers_view);
+        mRuntimeView = (TextView) rootView.findViewById(R.id.detail_runtime);
+
 
         // horizontal list layout for trailers
         mTrailerListAdapter = new TrailerListAdapter(new ArrayList<Trailer>());
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        mTrailersView = (RecyclerView) rootView.findViewById(R.id.detail_trailers);
-        mTrailersView.setLayoutManager(horizontalLayoutManager);
-        mTrailersView.setAdapter(mTrailerListAdapter);
+        RecyclerView mTrailersRecyclerView = (RecyclerView) rootView.findViewById(R.id.detail_trailers);
+        mTrailersRecyclerView.setLayoutManager(horizontalLayoutManager);
+        mTrailersRecyclerView.setAdapter(mTrailerListAdapter);
 
         // vertical list layout for reviews
         mReviewListAdapter = new ReviewListAdapter(new ArrayList<Review>());
         LinearLayoutManager verticalLayoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        mReviewsView = (RecyclerView) rootView.findViewById(R.id.detail_reviews);
-        mReviewsView.setLayoutManager(verticalLayoutManager);
-        mReviewsView.setAdapter(mReviewListAdapter);
+        mReviewsRecyclerView = (RecyclerView) rootView.findViewById(R.id.detail_reviews);
+        mReviewsRecyclerView.setLayoutManager(verticalLayoutManager);
+        mReviewsRecyclerView.setAdapter(mReviewListAdapter);
+
+        fetchMovieInfo();
 
         // fetch trailers only if there is no trailers fetched yet
         if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
@@ -317,7 +355,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                                 getContext(),
                                 getContext().getResources().getDisplayMetrics().densityDpi,
                                 mMovie.getBackdrop()))
-                        .into(mBackdrop);
+                        .into(mBackdropView);
             }
             // Set movie poster
             Picasso.with(getContext())
@@ -325,6 +363,8 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                     .into(mPosterView);
             // Set movie title
             mTitleView.setText(mMovie.getTitle());
+            // Set genres
+            mGenresView.setText(mMovie.getReadableGenres());
             // Set movie release date in user-friendly view
             mDateView.setText(mMovie.getDate(getContext()));
             setRatingBar(rootView);
@@ -342,6 +382,10 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
 
     private void fetchReviews() {
         new FetchReviewsTask(this).execute(Long.toString(mMovie.getId()));
+    }
+
+    private void fetchMovieInfo() {
+        new FetchMovieInfoTask(this).execute(Long.toString(mMovie.getId()));
     }
 
     private void setRatingBar(View view) {
