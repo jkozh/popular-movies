@@ -18,11 +18,14 @@
 
 package com.example.julia.popularmovies.models;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.example.julia.popularmovies.Config;
 import com.example.julia.popularmovies.R;
@@ -80,12 +83,27 @@ public class Movie implements Parcelable {
         return mId;
     }
 
-    public String getPoster(Context context) {
+    public String getPoster() {
         if (mPoster != null && !mPoster.isEmpty()) {
-            return Config.POSTER_URL + getImageSizeParam(context, 120) + mPoster;
+            return mPoster;
         }
         return null;
     }
+
+    public String getImagePath(Context context, float dp, String path) {
+        return Config.POSTER_URL + getImageSizeParam(context, dp) + path;
+
+    }
+
+    public String getBackdrop() {
+        if (mBackdrop != null && !mBackdrop.isEmpty()) {
+            return mBackdrop;
+        }
+        return null;
+    }
+
+    //((Activity) context).findViewById(R.id.image_play_icon_backdrop).setVisibility(View.VISIBLE);
+    // getImageSizeParam(context, context.getResources().getDisplayMetrics().densityDpi)
 
     private String getImageSizeParam(Context context, float dp) {
         // 120dp for posters
@@ -143,13 +161,7 @@ public class Movie implements Parcelable {
         return mPlot;
     }
 
-    public String getBackdrop(Context context) {
-        if (mBackdrop != null && !mBackdrop.isEmpty()) {
-            return Config.POSTER_URL + getImageSizeParam(context,
-                    context.getResources().getDisplayMetrics().densityDpi) + mBackdrop;
-        }
-        return null;
-    }
+
 
     private Movie(Parcel in) {
         mId = in.readLong();

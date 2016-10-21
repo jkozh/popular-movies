@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:paddingLeft="10dp"
@@ -25,7 +26,7 @@
         android:id="@+id/review_author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20dp"/>
+        android:textSize="15sp"/>
 
     <TextView
         android:id="@+id/review_content"
@@ -33,4 +34,4 @@
         android:layout_height="wrap_content"
         android:maxLines="5"
         android:ellipsize="end" />
-</FrameLayout>
+</LinearLayout>

@@ -68,6 +68,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     private ShareActionProvider mShareActionProvider;
     private RecyclerView mTrailersView;
     private RecyclerView mReviewsView;
+    private ImageView mBackdrop;
 
     public DetailFragment() {
     }
@@ -124,11 +125,23 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         if (mTrailerListAdapter.getItemCount() > 0) {
             Trailer trailer = mTrailerListAdapter.getTrailers().get(0);
             setShareActionProvider(trailer);
+            //mIconPlay.setVisibility(View.VISIBLE);
+            mBackdrop.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e(LOG_TAG, "CLICK!");
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    Trailer trailer = mTrailerListAdapter.getTrailers().get(0);
+                    intent.setData(Uri.parse(trailer.getTrailerUrl()));
+                    getContext().startActivity(intent);
+                }
+            });
             View view = getView();
             if (view != null) {
                 view.findViewById(R.id.film_reel_top).setVisibility(View.VISIBLE);
                 view.findViewById(R.id.film_reel_bottom).setVisibility(View.VISIBLE);
                 mTrailersView.setVisibility(View.VISIBLE);
+                view.findViewById(R.id.image_play_icon_backdrop).setVisibility(View.VISIBLE);
             }
         }
     }
@@ -217,10 +230,10 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                                                 mMovie.getDate());
                                         values.put(MovieEntry.COLUMN_PLOT, mMovie.getPlot());
                                         values.put(MovieEntry.COLUMN_POSTER,
-                                                mMovie.getPoster(getContext()));
+                                                mMovie.getPoster());
                                         values.put(MovieEntry.COLUMN_RATING, mMovie.getRating());
                                         values.put(MovieEntry.COLUMN_BACKDROP,
-                                                mMovie.getBackdrop(getContext()));
+                                                mMovie.getBackdrop());
 
                                         return getActivity().getContentResolver().insert(
                                                 MovieEntry.CONTENT_URI, values);
@@ -256,12 +269,13 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        ImageView mBackdrop = (ImageView) rootView.findViewById(R.id.detail_backdrop);
+        mBackdrop = (ImageView) rootView.findViewById(R.id.detail_backdrop);
         ImageView mPosterView = (ImageView) rootView.findViewById(R.id.detail_poster);
         TextView mTitleView = (TextView) rootView.findViewById(R.id.detail_title);
         TextView mPlotView = (TextView) rootView.findViewById(R.id.detail_plot);
         TextView mDateView = (TextView) rootView.findViewById(R.id.detail_date);
         TextView mRatingView = (TextView) rootView.findViewById(R.id.detail_rating);
+        ImageView mIconPlay = (ImageView) rootView.findViewById(R.id.image_play_icon_backdrop);
 
         // horizontal list layout for trailers
         mTrailerListAdapter = new TrailerListAdapter(new ArrayList<Trailer>());
@@ -297,9 +311,18 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
 
         if (mMovie != null) {
             // Set movie backdrop
-            Picasso.with(getContext()).load(mMovie.getBackdrop(getContext())).into(mBackdrop);
+            if (!mMovie.getBackdrop().equals("null")) {
+                Picasso.with(getContext())
+                        .load(mMovie.getImagePath(
+                                getContext(),
+                                getContext().getResources().getDisplayMetrics().densityDpi,
+                                mMovie.getBackdrop()))
+                        .into(mBackdrop);
+            }
             // Set movie poster
-            Picasso.with(getContext()).load(mMovie.getPoster(getContext())).into(mPosterView);
+            Picasso.with(getContext())
+                    .load(mMovie.getImagePath(getContext(), 120, mMovie.getPoster()))
+                    .into(mPosterView);
             // Set movie title
             mTitleView.setText(mMovie.getTitle());
             // Set movie release date in user-friendly view

@@ -12,4 +12,9 @@
     <string name="action_share">Share</string>
     <string name="movie_rating">%1$s/10</string>
     <string name="reviews">Reviews</string>
+    <string name="image_for_trailer">Image for trailer</string>
+    <string name="play_icon">Play Icon</string>
+    <string name="image_for_backdrop">Image for backdrop</string>
+    <string name="play_icon_for_backdrop">Play icon for backdrop</string>
+    <string name="image_for_poster">Image for poster</string>
 </resources>

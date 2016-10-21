@@ -93,7 +93,9 @@ public class MovieGridAdapter extends BaseAdapter {
 
         final Movie movie = getItem(position);
         viewHolder = (ViewHolder) view.getTag();
-        Picasso.with(getContext()).load(movie.getPoster(getContext())).into(viewHolder.image);
+        Picasso.with(getContext())
+                .load(movie.getImagePath(getContext(), 120, movie.getPoster()))
+                .into(viewHolder.image);
 
         viewHolder.image.setOnClickListener(new View.OnClickListener() {
 
@@ -110,10 +112,10 @@ public class MovieGridAdapter extends BaseAdapter {
         return view;
     }
 
-    public static class ViewHolder {
+    private static class ViewHolder {
         public final ImageView image;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             image = (ImageView) view.findViewById(R.id.grid_item_movie_image);
         }
     }
