@@ -47,6 +47,7 @@ public class Config {
     static final String RATING_DESC = "vote_average.desc";
     static final String FAVORITE = "favorite";
     static final String SPINNER_KEY = "spinner";
+    static final String MOVIES_KEY = "movies";
 
     // Paths used in JSON for trailers
     public static final String TMD_TRAILER_KEY = "key";

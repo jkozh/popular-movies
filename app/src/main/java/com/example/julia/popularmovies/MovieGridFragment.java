@@ -16,10 +16,14 @@
 
 package com.example.julia.popularmovies;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -44,10 +48,10 @@ public class MovieGridFragment extends Fragment {
 
     private MovieGridAdapter mMovieGridAdapter;
     private ArrayList<Movie> mMovies = null;
+    private RecyclerView mGridRecyclerView;
     private String mSortBy = Config.POPULARITY_DESC;
     private Spinner spinner;
     private Bundle mBundle;
-    private static final String MOVIES_KEY = "movies";
 
     public MovieGridFragment() {
     }
@@ -62,9 +66,14 @@ public class MovieGridFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        GridView mGridView = (GridView) view.findViewById(R.id.gridview_movies);
-        mMovieGridAdapter = new MovieGridAdapter(getActivity(), new ArrayList<Movie>());
-        mGridView.setAdapter(mMovieGridAdapter);
+        mMovieGridAdapter = new MovieGridAdapter(new ArrayList<Movie>());
+        mGridRecyclerView = (RecyclerView) view.findViewById(R.id.gridview_movies);
+        int gridColsNumber = getResources().getInteger(R.integer.grid_number_cols);
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            gridColsNumber = getResources().getInteger(R.integer.grid_number_cols_portrait);
+        }
+        mGridRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), gridColsNumber));
+        mGridRecyclerView.setAdapter(mMovieGridAdapter);
         return view;
     }
 
@@ -154,7 +163,7 @@ public class MovieGridFragment extends Fragment {
         }
         if (mMovies != null) {
             // Save state of activity as parcelable
-            outState.putParcelableArrayList(MOVIES_KEY, mMovies);
+            outState.putParcelableArrayList(Config.MOVIES_KEY, mMovies);
         }
         // Save active selection for spinner
         outState.putInt(Config.SPINNER_KEY, spinner.getSelectedItemPosition());
@@ -167,8 +176,8 @@ public class MovieGridFragment extends Fragment {
             if (savedInstanceState.containsKey(Config.SORT_SETTING_KEY)) {
                 mSortBy = savedInstanceState.getString(Config.SORT_SETTING_KEY);
             }
-            if (savedInstanceState.containsKey(MOVIES_KEY)) {
-                mMovies = savedInstanceState.getParcelableArrayList(MOVIES_KEY);
+            if (savedInstanceState.containsKey(Config.MOVIES_KEY)) {
+                mMovies = savedInstanceState.getParcelableArrayList(Config.MOVIES_KEY);
                 mMovieGridAdapter.setData(mMovies);
             } else {
                 updateMovies(mSortBy);

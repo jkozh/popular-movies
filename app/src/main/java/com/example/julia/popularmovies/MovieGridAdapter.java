@@ -18,6 +18,10 @@ package com.example.julia.popularmovies;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,36 +34,65 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class MovieGridAdapter extends BaseAdapter {
+public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.ViewHolder> {
 
-    private final static String LOG_TAG = MovieGridAdapter.class.getSimpleName();
-    private Context mContext;
     private List<Movie> mMovies;
-    private final LayoutInflater mInflater;
 
-    MovieGridAdapter(Activity context, List<Movie> movies){
-        mContext = context;
+    MovieGridAdapter(List<Movie> movies){
         mMovies = movies;
-        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    private Context getContext() {
-        return mContext;
-    }
-
-    @Override
-    public int getCount() {
-        return mMovies.size();
+    // A callback interface that all activities containing this fragment must implement.
+    // This mechanism allows activities to be notified of item selections.
+    interface Callback {
+        void onItemSelected(Movie movie);
     }
 
     @Override
-    public Movie getItem(int position) {
-        return mMovies.get(position);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.grid_item_movie, parent, false);
+        final Context context = view.getContext();
+        int gridColsNumber = context.getResources().getInteger(R.integer.grid_number_cols);
+        if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            gridColsNumber = context.getResources().getInteger(R.integer.grid_number_cols_portrait);
+        }
+        view.getLayoutParams().height = (int) (parent.getWidth() / gridColsNumber * 1.5f);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        final Movie movie = mMovies.get(position);
+        final Context context = holder.image.getContext();
+        String posterUrl = movie.getPoster();
+        if (!posterUrl.equals("null")) {
+            Picasso.with(context)
+                    .load(movie.getImagePath(context, 120, posterUrl))
+                    .into(holder.image);
+        } else {
+            String uri = "@drawable/ic_wallpaper_white_18dp";
+            int imageResource = context.getResources().getIdentifier(uri, null,
+                    context.getPackageName());
+            Drawable res = context.getResources().getDrawable(imageResource);
+            holder.image.setImageDrawable(res);
+        }
+        holder.image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((Callback) context).onItemSelected(movie);
+            }
+        });
     }
 
     @Override
     public long getItemId(int position) {
         return mMovies.get(position).getId();
+    }
+
+    @Override
+    public int getItemCount() {
+        return mMovies.size();
     }
 
     private void clear() {
@@ -79,45 +112,11 @@ public class MovieGridAdapter extends BaseAdapter {
         }
     }
 
-    // A callback interface that all activities containing this fragment must implement.
-    // This mechanism allows activities to be notified of item selections.
-    interface Callback {
-        void onItemSelected(Movie movie);
-    }
-
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        ViewHolder viewHolder;
-
-        if (view == null) {
-            view = mInflater.inflate(R.layout.grid_item_movie, parent, false);
-            viewHolder = new ViewHolder(view);
-            view.setTag(viewHolder);
-        }
-
-        final Movie movie = getItem(position);
-        viewHolder = (ViewHolder) view.getTag();
-        Picasso.with(getContext())
-                .load(movie.getImagePath(getContext(), 120, movie.getPoster()))
-                .into(viewHolder.image);
-
-        viewHolder.image.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                ((Callback) getContext()).onItemSelected(movie);
-            }
-        });
-
-        return view;
-    }
-
-    private static class ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         public final ImageView image;
 
         ViewHolder(View view) {
+            super(view);
             image = (ImageView) view.findViewById(R.id.grid_item_movie_image);
         }
     }

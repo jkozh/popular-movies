@@ -206,9 +206,10 @@
                 android:layout_width="match_parent"
                 android:textSize="20sp"
                 android:text="@string/reviews"
-                android:padding="10dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingLeft="30dp"
                 android:background="#f5f5f5"
-                android:visibility="gone"
                 android:textColor="@color/colorAccent"/>
 
         </LinearLayout>
@@ -218,7 +219,8 @@
             android:layout_height="wrap_content"
             android:scrollbars="vertical"
             android:id="@+id/detail_reviews"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:paddingBottom="20dp"/>
 
     </LinearLayout>
 </ScrollView>

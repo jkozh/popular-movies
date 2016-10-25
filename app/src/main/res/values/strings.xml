@@ -19,4 +19,5 @@
     <string name="image_for_poster">Image for poster</string>
     <string name="runtime">Runtime:</string>
     <string name="view_all">view all</string>
+    <string name="no_reviews_found">NO REVIEWS FOUND</string>
 </resources>

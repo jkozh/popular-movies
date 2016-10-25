@@ -14,12 +14,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<GridView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.RecyclerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/gridview_movies"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:numColumns="auto_fit"
     android:columnWidth="@dimen/grid_item_movie_width"
-    android:verticalSpacing="0dp"
-    android:horizontalSpacing="0dp"
-    android:drawSelectorOnTop="true" />
+    android:clipToPadding="false"
+    android:scrollbars="vertical" />

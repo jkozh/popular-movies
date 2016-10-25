@@ -21,6 +21,7 @@ package com.example.julia.popularmovies.details;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -74,6 +75,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     private ImageView mIconPlayBackdrop;
     private LinearLayout mTrailersView;
     private TextView mRuntimeView;
+    private TextView mReviewsTitleView;
 
     public DetailFragment() {
     }
@@ -252,6 +254,8 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         mIconPlayBackdrop = (ImageView) rootView.findViewById(R.id.image_play_icon_backdrop);
         mTrailersView = (LinearLayout) rootView.findViewById(R.id.trailers_view);
         mRuntimeView = (TextView) rootView.findViewById(R.id.detail_runtime);
+        mReviewsTitleView = (TextView) rootView.findViewById(R.id.detail_reviews_title);
+
 
         // horizontal list layout for trailers
         mTrailerListAdapter = new TrailerListAdapter(new ArrayList<Trailer>());
@@ -299,9 +303,18 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                         .into(mBackdropView);
             }
             // Set movie poster
-            Picasso.with(getContext())
-                    .load(mMovie.getImagePath(getContext(), 120, mMovie.getPoster()))
-                    .into(mPosterView);
+            String posterUrl = mMovie.getPoster();
+            if (!posterUrl.equals("null")) {
+                Picasso.with(getContext())
+                        .load(mMovie.getImagePath(getContext(), 120, posterUrl))
+                        .into(mPosterView);
+            } else {
+                String uri = "@drawable/ic_wallpaper_white_18dp";
+                int imageResource = getContext().getResources().getIdentifier(uri, null,
+                        getContext().getPackageName());
+                Drawable res = getContext().getResources().getDrawable(imageResource);
+                mPosterView.setImageDrawable(res);
+            }
             // Set movie title
             mTitleView.setText(mMovie.getTitle());
             // Set movie genres
@@ -349,11 +362,8 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         mReviewListAdapter.add(reviews);
         if (mReviewListAdapter.getItemCount() > 0) {
             mReviewsRecyclerView.setVisibility(View.VISIBLE);
-            View view = getView();
-            if (view != null) {
-                view.findViewById(R.id.detail_reviews_title).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.detail_reviews_title).setVisibility(View.VISIBLE);
-            }
+        } else {
+            mReviewsTitleView.setText(R.string.no_reviews_found);
         }
     }
 
