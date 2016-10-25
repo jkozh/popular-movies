@@ -44,7 +44,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.julia.popularmovies.Config;
 import com.example.julia.popularmovies.models.Movie;
 import com.example.julia.popularmovies.R;
 import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
@@ -60,7 +59,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
 
     private final String LOG_TAG = DetailFragment.class.getSimpleName();
 
-    public static final String TAG = DetailFragment.class.getSimpleName();
     public static final String DETAIL_MOVIE = "DETAIL_MOVIE";
     private static final String EXTRA_TRAILERS = "EXTRA_TRAILERS";
     private static final String EXTRA_REVIEWS = "EXTRA_REVIEWS";
@@ -78,24 +76,12 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     private TextView mRuntimeView;
 
     public DetailFragment() {
-        Log.e(LOG_TAG, "Constructor");
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        Log.e(LOG_TAG, "onCreate");
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (mMovie != null) {
-            new FetchTrailersTask(this).execute(Long.toString(mMovie.getId()));
-            new FetchReviewsTask(this).execute(Long.toString(mMovie.getId()));
-            new FetchMovieInfoTask(this).execute(Long.toString(mMovie.getId()));
-        }
     }
 
     @Override
@@ -112,7 +98,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         if (mTrailersView != null) {
             outState.putBoolean(TRAILERS_VIEW, mTrailersView.getVisibility() == View.VISIBLE);
         }
-        Log.e(LOG_TAG, "onSaveInstanceState");
     }
 
     @Override
@@ -126,7 +111,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                 mTrailersView.setVisibility(View.VISIBLE);
             }
         }
-        Log.e(LOG_TAG, "onViewStateRestored");
     }
 
     @Override
@@ -153,12 +137,188 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
             }.execute();
         }
         super.onCreateOptionsMenu(menu, inflater);
-        Log.e(LOG_TAG, "onCreateOptionsMenu");
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_favorite: {
+                if (mMovie != null) {
+                    // check if movie is in favorites or not
+                    new AsyncTask<Void, Void, Boolean>() {
+
+                        @Override
+                        protected Boolean doInBackground(Void... params) {
+                            return isFavorited();
+                        }
+
+                        @Override
+                        protected void onPostExecute(Boolean isFavored) {
+                            // if it is in favorites
+                            if (isFavored) {
+                                // delete from favorites
+                                new AsyncTask<Void, Void, Integer>() {
+                                    @Override
+                                    protected Integer doInBackground(Void... params) {
+                                        return getActivity().getContentResolver().delete(
+                                                MovieEntry.CONTENT_URI,
+                                                MovieEntry.COLUMN_ID + " = ?",
+                                                new String[]{Long.toString(mMovie.getId())}
+                                        );
+                                    }
+
+                                    @Override
+                                    protected void onPostExecute(Integer rowsDeleted) {
+                                        item.setIcon(R.drawable.ic_favorite_border_white_48dp);
+                                        Toast.makeText(getActivity(), "Removed from favorites",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }.execute();
+                            }
+                            // if it's not in favorites - add to favorites
+                            else {
+                                new AsyncTask<Void, Void, Uri>() {
+                                    @Override
+                                    protected Uri doInBackground(Void... params) {
+                                        ContentValues values = new ContentValues();
+
+                                        values.put(MovieEntry.COLUMN_ID, mMovie.getId());
+                                        values.put(MovieEntry.COLUMN_TITLE, mMovie.getTitle());
+                                        values.put(MovieEntry.COLUMN_DATE,
+                                                mMovie.getDate());
+                                        values.put(MovieEntry.COLUMN_PLOT, mMovie.getPlot());
+                                        values.put(MovieEntry.COLUMN_POSTER,
+                                                mMovie.getPoster());
+                                        values.put(MovieEntry.COLUMN_RATING, mMovie.getRating());
+                                        values.put(MovieEntry.COLUMN_BACKDROP,
+                                                mMovie.getBackdrop());
+                                        values.put(MovieEntry.COLUMN_GENRES, mMovie.getGenres());
+                                        values.put(MovieEntry.COLUMN_RUNTIME, mMovie.getRuntime());
+
+                                        return getActivity().getContentResolver().insert(
+                                                MovieEntry.CONTENT_URI, values);
+                                    }
+                                    @Override
+                                    protected void onPostExecute(Uri returnUri) {
+                                        item.setIcon(R.drawable.ic_favorite_white_48dp);
+                                        Toast.makeText(getActivity(),
+                                                "Marked as favorite", Toast.LENGTH_SHORT).show();
+                                    }
+                                }.execute();
+                            }
+                        }
+                    }.execute();
+                }
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            mMovie = bundle.getParcelable(DetailFragment.DETAIL_MOVIE);
+        } else {
+            Log.e(LOG_TAG,"a bundle in onCreateView is null");
+        }
+
+        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        ScrollView mDetailLayout = (ScrollView) rootView.findViewById(R.id.detail_layout);
+
+        if (mMovie != null) {
+            mDetailLayout.setVisibility(View.VISIBLE);
+        } else {
+            mDetailLayout.setVisibility(View.INVISIBLE);
+        }
+
+        mBackdropView = (ImageView) rootView.findViewById(R.id.detail_backdrop);
+        ImageView mPosterView = (ImageView) rootView.findViewById(R.id.detail_poster);
+        TextView mTitleView = (TextView) rootView.findViewById(R.id.detail_title);
+        TextView mPlotView = (TextView) rootView.findViewById(R.id.detail_plot);
+        TextView mDateView = (TextView) rootView.findViewById(R.id.detail_date);
+        TextView mRatingView = (TextView) rootView.findViewById(R.id.detail_rating);
+        TextView mGenresView = (TextView) rootView.findViewById((R.id.detail_genres));
+        mIconPlayBackdrop = (ImageView) rootView.findViewById(R.id.image_play_icon_backdrop);
+        mTrailersView = (LinearLayout) rootView.findViewById(R.id.trailers_view);
+        mRuntimeView = (TextView) rootView.findViewById(R.id.detail_runtime);
+
+        // horizontal list layout for trailers
+        mTrailerListAdapter = new TrailerListAdapter(new ArrayList<Trailer>());
+        LinearLayoutManager horizontalLayoutManager
+                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        RecyclerView mTrailersRecyclerView = (RecyclerView) rootView.findViewById(R.id.detail_trailers);
+        mTrailersRecyclerView.setLayoutManager(horizontalLayoutManager);
+        mTrailersRecyclerView.setAdapter(mTrailerListAdapter);
+
+        // vertical list layout for reviews
+        mReviewListAdapter = new ReviewListAdapter(new ArrayList<Review>());
+        LinearLayoutManager verticalLayoutManager = new LinearLayoutManager(getContext());
+        mReviewsRecyclerView = (RecyclerView) rootView.findViewById(R.id.detail_reviews);
+        mReviewsRecyclerView.setLayoutManager(verticalLayoutManager);
+        mReviewsRecyclerView.setAdapter(mReviewListAdapter);
+
+        if (mMovie != null) {
+
+            // fetch trailers only if there is no trailers fetched yet
+            if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
+                ArrayList<Trailer> trailers = savedInstanceState.getParcelableArrayList(EXTRA_TRAILERS);
+                mTrailerListAdapter.add(trailers);
+            } else {
+                new FetchTrailersTask(this).execute(Long.toString(mMovie.getId()));
+            }
+
+            // fetch reviews only if there is no reviews fetched yet
+            if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_REVIEWS)) {
+                List<Review> reviews = savedInstanceState.getParcelableArrayList(EXTRA_REVIEWS);
+                mReviewListAdapter.add(reviews);
+            } else {
+                new FetchReviewsTask(this).execute(Long.toString(mMovie.getId()));
+            }
+
+            // fetch runtime info for a movie
+            new FetchMovieInfoTask(this).execute(Long.toString(mMovie.getId()));
+
+            // Set movie backdrop
+            if (!mMovie.getBackdrop().equals("null")) {
+                Picasso.with(getContext())
+                        .load(mMovie.getImagePath(
+                                getContext(),
+                                getContext().getResources().getDisplayMetrics().densityDpi,
+                                mMovie.getBackdrop()))
+                        .into(mBackdropView);
+            }
+            // Set movie poster
+            Picasso.with(getContext())
+                    .load(mMovie.getImagePath(getContext(), 120, mMovie.getPoster()))
+                    .into(mPosterView);
+            // Set movie title
+            mTitleView.setText(mMovie.getTitle());
+            // Set movie genres
+            if (mMovie.getReadableGenres() != null) {
+                mGenresView.setText(mMovie.getReadableGenres());
+            } else {
+                mGenresView.setVisibility(View.GONE);
+            }
+            // Set movie release date in user-friendly view
+            mDateView.setText(mMovie.getDate(getContext()));
+            setRatingBar(rootView);
+            // Set movie rating
+            mRatingView.setText(getResources().getString(R.string.movie_rating, mMovie.getRating()));
+            // Set movie overview
+            mPlotView.setText(mMovie.getPlot());
+        }
+        return rootView;
     }
 
     @Override
@@ -223,205 +383,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         } else {
             return R.drawable.ic_favorite_border_white_48dp;
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_favorite: {
-                if (mMovie != null) {
-                    // check if movie is in favorites or not
-                    new AsyncTask<Void, Void, Boolean>() {
-
-                        @Override
-                        protected Boolean doInBackground(Void... params) {
-                            return isFavorited();
-                        }
-
-                        @Override
-                        protected void onPostExecute(Boolean isFavored) {
-                            // if it is in favorites
-                            if (isFavored) {
-                                // delete from favorites
-                                new AsyncTask<Void, Void, Integer>() {
-                                    @Override
-                                    protected Integer doInBackground(Void... params) {
-                                        return getActivity().getContentResolver().delete(
-                                                MovieEntry.CONTENT_URI,
-                                                MovieEntry.COLUMN_ID + " = ?",
-                                                new String[]{Long.toString(mMovie.getId())}
-                                        );
-                                    }
-
-                                    @Override
-                                    protected void onPostExecute(Integer rowsDeleted) {
-                                        item.setIcon(R.drawable.ic_favorite_border_white_48dp);
-                                        Toast.makeText(getActivity(), "Removed from favorites",
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                }.execute();
-                            }
-                            // if it's not in favorites - add to favorites
-                            else {
-                                new AsyncTask<Void, Void, Uri>() {
-                                    @Override
-                                    protected Uri doInBackground(Void... params) {
-                                        ContentValues values = new ContentValues();
-
-                                        values.put(MovieEntry.COLUMN_ID, mMovie.getId());
-                                        values.put(MovieEntry.COLUMN_TITLE, mMovie.getTitle());
-                                        values.put(MovieEntry.COLUMN_DATE,
-                                                mMovie.getDate());
-                                        values.put(MovieEntry.COLUMN_PLOT, mMovie.getPlot());
-                                        values.put(MovieEntry.COLUMN_POSTER,
-                                                mMovie.getPoster());
-                                        values.put(MovieEntry.COLUMN_RATING, mMovie.getRating());
-                                        values.put(MovieEntry.COLUMN_BACKDROP,
-                                                mMovie.getBackdrop());
-                                        values.put(MovieEntry.COLUMN_GENRES, mMovie.getGenres());
-                                        values.put(MovieEntry.COLUMN_RUNTIME, mMovie.getRuntime());
-
-                                        return getActivity().getContentResolver().insert(
-                                                MovieEntry.CONTENT_URI, values);
-                                    }
-
-                                    @Override
-                                    protected void onPostExecute(Uri returnUri) {
-                                        item.setIcon(R.drawable.ic_favorite_white_48dp);
-                                        Toast.makeText(getActivity(),
-                                                "Marked as favorite", Toast.LENGTH_SHORT).show();
-                                    }
-                                }.execute();
-                            }
-                        }
-                    }.execute();
-                }
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        Log.e(LOG_TAG, "onCreateView");
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            mMovie = bundle.getParcelable(DetailFragment.DETAIL_MOVIE);
-            Log.e(LOG_TAG, "mMovie id = " + mMovie.getId());
-        } else {
-            Log.e(LOG_TAG,"Bundle == null");
-        }
-
-        View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-
-        ScrollView mDetailLayout = (ScrollView) rootView.findViewById(R.id.detail_layout);
-
-        if (mMovie != null) {
-            mDetailLayout.setVisibility(View.VISIBLE);
-        } else {
-            mDetailLayout.setVisibility(View.INVISIBLE);
-        }
-
-        mBackdropView = (ImageView) rootView.findViewById(R.id.detail_backdrop);
-        ImageView mPosterView = (ImageView) rootView.findViewById(R.id.detail_poster);
-        TextView mTitleView = (TextView) rootView.findViewById(R.id.detail_title);
-        TextView mPlotView = (TextView) rootView.findViewById(R.id.detail_plot);
-        TextView mDateView = (TextView) rootView.findViewById(R.id.detail_date);
-        TextView mRatingView = (TextView) rootView.findViewById(R.id.detail_rating);
-        TextView mGenresView = (TextView) rootView.findViewById((R.id.detail_genres));
-        mIconPlayBackdrop = (ImageView) rootView.findViewById(R.id.image_play_icon_backdrop);
-        mTrailersView = (LinearLayout) rootView.findViewById(R.id.trailers_view);
-        mRuntimeView = (TextView) rootView.findViewById(R.id.detail_runtime);
-
-
-        // horizontal list layout for trailers
-        mTrailerListAdapter = new TrailerListAdapter(new ArrayList<Trailer>());
-        LinearLayoutManager horizontalLayoutManager
-                = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        RecyclerView mTrailersRecyclerView = (RecyclerView) rootView.findViewById(R.id.detail_trailers);
-        mTrailersRecyclerView.setLayoutManager(horizontalLayoutManager);
-        mTrailersRecyclerView.setAdapter(mTrailerListAdapter);
-
-        // vertical list layout for reviews
-        mReviewListAdapter = new ReviewListAdapter(new ArrayList<Review>());
-        LinearLayoutManager verticalLayoutManager = new LinearLayoutManager(getContext());
-        mReviewsRecyclerView = (RecyclerView) rootView.findViewById(R.id.detail_reviews);
-        mReviewsRecyclerView.setLayoutManager(verticalLayoutManager);
-        mReviewsRecyclerView.setAdapter(mReviewListAdapter);
-
-/*        // fetch trailers only if there is no trailers fetched yet
-        if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
-            ArrayList<Trailer> trailers = savedInstanceState.getParcelableArrayList(EXTRA_TRAILERS);
-            mTrailerListAdapter.add(trailers);
-        } else {
-            fetchTrailers();
-        }
-
-        // fetch reviews only if there is no reviews fetched yet
-        if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_REVIEWS)) {
-            List<Review> reviews = savedInstanceState.getParcelableArrayList(EXTRA_REVIEWS);
-            mReviewListAdapter.add(reviews);
-        } else {
-            fetchReviews();
-        }
-
-        // fetch runtime info for a movie
-        fetchMovieInfo();
-*/
-        if (mMovie != null) {
-            // Set movie backdrop
-            if (!mMovie.getBackdrop().equals("null")) {
-                Picasso.with(getContext())
-                        .load(mMovie.getImagePath(
-                                getContext(),
-                                getContext().getResources().getDisplayMetrics().densityDpi,
-                                mMovie.getBackdrop()))
-                        .into(mBackdropView);
-            }
-            // Set movie poster
-            Picasso.with(getContext())
-                    .load(mMovie.getImagePath(getContext(), 120, mMovie.getPoster()))
-                    .into(mPosterView);
-            // Set movie title
-            mTitleView.setText(mMovie.getTitle());
-            // Set genres
-            if (mMovie.getReadableGenres() != null) {
-                mGenresView.setText(mMovie.getReadableGenres());
-            } else {
-                mGenresView.setVisibility(View.GONE);
-            }
-            // Set movie release date in user-friendly view
-            mDateView.setText(mMovie.getDate(getContext()));
-            setRatingBar(rootView);
-            // Set movie rating
-            mRatingView.setText(getResources().getString(R.string.movie_rating, mMovie.getRating()));
-            // Set movie overview
-            mPlotView.setText(mMovie.getPlot());
-        }
-        return rootView;
-    }
-
-    private void fetchTrailers() {
-        if (mMovie != null) {
-            new FetchTrailersTask(this).execute(Long.toString(mMovie.getId()));
-        } else {
-            Log.e(LOG_TAG, "mMovie in fetchTrailers is null");
-        }
-    }
-
-    private void fetchReviews() {
-        if (mMovie != null) {
-            new FetchReviewsTask(this).execute(Long.toString(mMovie.getId()));
-        } else {
-            Log.e(LOG_TAG, "mMovie in fetchReviews is null");
-        }
-    }
-
-    private void fetchMovieInfo() {
-        new FetchMovieInfoTask(this).execute(Long.toString(mMovie.getId()));
     }
 
     private void setRatingBar(View view) {

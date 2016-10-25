@@ -18,13 +18,10 @@
 
 package com.example.julia.popularmovies.details;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 
-import com.example.julia.popularmovies.Config;
 import com.example.julia.popularmovies.R;
 
 public class DetailActivity extends AppCompatActivity {
@@ -36,7 +33,6 @@ public class DetailActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
-            Log.e("DetailActivity", "OnCreate");
             arguments.putParcelable(DetailFragment.DETAIL_MOVIE,
                     getIntent().getParcelableExtra(DetailFragment.DETAIL_MOVIE));
 

@@ -28,7 +28,6 @@ public class Config {
     public static final String TMD_PLOT = "overview";
     public static final String TMD_BACKDROP = "backdrop_path";
     public static final String TMD_GENRES = "genre_ids";
-    public static final String TMD_RUNTIME = "runtime";
 
     // JSON URL
     public static final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/";
@@ -42,14 +41,12 @@ public class Config {
 
     // Keys
     static final String SORT_SETTING_KEY = "sort_setting";
-    static final String MOVIES_KEY = "movies";
 
     // Sort options
     static final String POPULARITY_DESC = "popularity.desc";
     static final String RATING_DESC = "vote_average.desc";
     static final String FAVORITE = "favorite";
     static final String SPINNER_KEY = "spinner";
-    public static final String DETAIL_MOVIE = "detail_movie";
 
     // Paths used in JSON for trailers
     public static final String TMD_TRAILER_KEY = "key";
@@ -65,5 +62,4 @@ public class Config {
     public static final String TMD_REVIEW_AUTHOR = "author";
     public static final String TMD_REVIEW_CONTENT = "content";
     public static final String TMD_REVIEW_URL = "url";
-
 }

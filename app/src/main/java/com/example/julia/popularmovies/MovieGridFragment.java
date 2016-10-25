@@ -42,13 +42,11 @@ public class MovieGridFragment extends Fragment {
 
     private final String LOG_TAG = MovieGridFragment.class.getSimpleName();
 
-
-    private GridView mGridView;
     private MovieGridAdapter mMovieGridAdapter;
     private ArrayList<Movie> mMovies = null;
     private String mSortBy = Config.POPULARITY_DESC;
     private Spinner spinner;
-    private Bundle myBundle;
+    private Bundle mBundle;
     private static final String MOVIES_KEY = "movies";
 
     public MovieGridFragment() {
@@ -60,24 +58,13 @@ public class MovieGridFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        mGridView = (GridView) view.findViewById(R.id.gridview_movies);
+        GridView mGridView = (GridView) view.findViewById(R.id.gridview_movies);
         mMovieGridAdapter = new MovieGridAdapter(getActivity(), new ArrayList<Movie>());
         mGridView.setAdapter(mMovieGridAdapter);
-//        Log.e(LOG_TAG,"onCreateView");
-//
-//        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Log.e(LOG_TAG,"CLICK!!!!!!!!!!!");
-//                Movie movie = mMovieGridAdapter.getItem(i);
-//                ((Callback) getActivity()).onItemSelected(movie);
-//            }
-//        });
         return view;
     }
 
@@ -141,9 +128,11 @@ public class MovieGridFragment extends Fragment {
             }
         });
 
-        if (myBundle != null) {
+        if (mBundle != null) {
             // Retrieve saved selection of spinner
-            spinner.setSelection(myBundle.getInt(Config.SPINNER_KEY, 0));
+            spinner.setSelection(mBundle.getInt(Config.SPINNER_KEY, 0));
+        } else {
+            Log.e(LOG_TAG, "mBundle in onCreateOptionsMenu is null");
         }
     }
 
@@ -167,9 +156,8 @@ public class MovieGridFragment extends Fragment {
             // Save state of activity as parcelable
             outState.putParcelableArrayList(MOVIES_KEY, mMovies);
         }
-        // Save selection for spinner
+        // Save active selection for spinner
         outState.putInt(Config.SPINNER_KEY, spinner.getSelectedItemPosition());
-
     }
 
     @Override
@@ -185,7 +173,7 @@ public class MovieGridFragment extends Fragment {
             } else {
                 updateMovies(mSortBy);
             }
-            this.myBundle = savedInstanceState;
+            this.mBundle = savedInstanceState;
         } else {
             updateMovies(mSortBy);
         }

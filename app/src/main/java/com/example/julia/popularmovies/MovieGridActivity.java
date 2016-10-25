@@ -19,7 +19,6 @@ package com.example.julia.popularmovies;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.example.julia.popularmovies.details.DetailActivity;
 import com.example.julia.popularmovies.details.DetailFragment;
@@ -36,14 +35,10 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
 
         if (findViewById(R.id.movie_detail_container) != null) {
             mTwoPane = true;
-            Log.e("MovieGridActivity", "THO PANE!!!!");
             if (savedInstanceState == null) {
-                Log.e("MovieGridActivity", "savedInstanceState == null");
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.movie_detail_container,  new DetailFragment(),
-                                DetailFragment.TAG)
+                        .replace(R.id.movie_detail_container,  new DetailFragment())
                         .commit();
-                Log.e("MovieGridActivity", "after replace");
             }
         }else {
             mTwoPane = false;
@@ -52,7 +47,6 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
 
     @Override
     public void onItemSelected(Movie movie) {
-        Log.e("MainActivity", "onItemSelected");
         if (mTwoPane) {
             Bundle arguments = new Bundle();
             arguments.putParcelable(DetailFragment.DETAIL_MOVIE, movie);
@@ -61,7 +55,7 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
             fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.movie_detail_container, fragment, DetailFragment.TAG)
+                    .replace(R.id.movie_detail_container, fragment)
                     .commit();
         } else {
             Intent intent = new Intent(this, DetailActivity.class)

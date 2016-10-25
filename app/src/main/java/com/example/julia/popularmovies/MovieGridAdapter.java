@@ -18,7 +18,6 @@ package com.example.julia.popularmovies;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +25,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-import com.example.julia.popularmovies.details.DetailActivity;
 import com.example.julia.popularmovies.models.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -38,7 +36,6 @@ public class MovieGridAdapter extends BaseAdapter {
     private Context mContext;
     private List<Movie> mMovies;
     private final LayoutInflater mInflater;
-    private final Movie mLock = new Movie();  // для чего??
 
     MovieGridAdapter(Activity context, List<Movie> movies){
         mContext = context;
@@ -66,16 +63,12 @@ public class MovieGridAdapter extends BaseAdapter {
     }
 
     private void clear() {
-        synchronized (mLock) {
-            mMovies.clear();
-        }
+        mMovies.clear();
         notifyDataSetChanged();
     }
 
     public void add(Movie movie) {
-        synchronized (mLock) {
-            mMovies.add(movie);
-        }
+        mMovies.add(movie);
         notifyDataSetChanged();
     }
 
@@ -88,7 +81,7 @@ public class MovieGridAdapter extends BaseAdapter {
 
     // A callback interface that all activities containing this fragment must implement.
     // This mechanism allows activities to be notified of item selections.
-    public interface Callback {
+    interface Callback {
         void onItemSelected(Movie movie);
     }
 
@@ -114,14 +107,7 @@ public class MovieGridAdapter extends BaseAdapter {
 
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(getContext(), DetailActivity.class)
-//                        .putExtra(Intent.EXTRA_TEXT, movie);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                getContext().startActivity(intent);
-//                notifyDataSetChanged();
-                Log.e(LOG_TAG,"hCLICK!!!!!!!!!!!");
                 ((Callback) getContext()).onItemSelected(movie);
-
             }
         });
 
@@ -135,6 +121,4 @@ public class MovieGridAdapter extends BaseAdapter {
             image = (ImageView) view.findViewById(R.id.grid_item_movie_image);
         }
     }
-
-
 }
