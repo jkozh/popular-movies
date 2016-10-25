@@ -18,40 +18,55 @@ package com.example.julia.popularmovies;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.facebook.stetho.Stetho;
+import com.example.julia.popularmovies.details.DetailActivity;
+import com.example.julia.popularmovies.details.DetailFragment;
+import com.example.julia.popularmovies.models.Movie;
 
-public class MovieGridActivity extends AppCompatActivity {
+public class MovieGridActivity extends AppCompatActivity implements MovieGridAdapter.Callback {
 
-    private final String LOG_TAG = MovieGridActivity.class.getSimpleName();
+    private boolean mTwoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new MovieFragment())
-                    .commit();
+        if (findViewById(R.id.movie_detail_container) != null) {
+            mTwoPane = true;
+            Log.e("MovieGridActivity", "THO PANE!!!!");
+            if (savedInstanceState == null) {
+                Log.e("MovieGridActivity", "savedInstanceState == null");
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.movie_detail_container,  new DetailFragment(),
+                                DetailFragment.TAG)
+                        .commit();
+                Log.e("MovieGridActivity", "after replace");
+            }
+        }else {
+            mTwoPane = false;
         }
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(
-                                Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(
-                                Stetho.defaultInspectorModulesProvider(this))
-                        .build());
+    }
+
+    @Override
+    public void onItemSelected(Movie movie) {
+        Log.e("MainActivity", "onItemSelected");
+        if (mTwoPane) {
+            Bundle arguments = new Bundle();
+            arguments.putParcelable(DetailFragment.DETAIL_MOVIE, movie);
+
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(arguments);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.movie_detail_container, fragment, DetailFragment.TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .putExtra(DetailFragment.DETAIL_MOVIE, movie);
+            startActivity(intent);
+        }
     }
 }

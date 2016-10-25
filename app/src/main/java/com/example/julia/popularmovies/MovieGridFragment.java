@@ -38,17 +38,20 @@ import com.example.julia.popularmovies.models.Movie;
 
 import java.util.ArrayList;
 
-public class MovieFragment extends Fragment implements AdapterView.OnItemSelectedListener {
+public class MovieGridFragment extends Fragment {
 
-    private final String LOG_TAG = MovieFragment.class.getSimpleName();
+    private final String LOG_TAG = MovieGridFragment.class.getSimpleName();
 
+
+    private GridView mGridView;
     private MovieGridAdapter mMovieGridAdapter;
-    private ArrayList<Movie> mMovie = null;
+    private ArrayList<Movie> mMovies = null;
     private String mSortBy = Config.POPULARITY_DESC;
     private Spinner spinner;
     private Bundle myBundle;
+    private static final String MOVIES_KEY = "movies";
 
-    public MovieFragment() {
+    public MovieGridFragment() {
     }
 
     @Override
@@ -62,15 +65,25 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        GridView mGridView = (GridView) view.findViewById(R.id.gridview_movies);
+        mGridView = (GridView) view.findViewById(R.id.gridview_movies);
         mMovieGridAdapter = new MovieGridAdapter(getActivity(), new ArrayList<Movie>());
         mGridView.setAdapter(mMovieGridAdapter);
+//        Log.e(LOG_TAG,"onCreateView");
+//
+//        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                Log.e(LOG_TAG,"CLICK!!!!!!!!!!!");
+//                Movie movie = mMovieGridAdapter.getItem(i);
+//                ((Callback) getActivity()).onItemSelected(movie);
+//            }
+//        });
         return view;
     }
 
     private void updateMovies(String sortBy) {
         if (mSortBy.equals(Config.FAVORITE)) {
-            new FetchFavoritesTask(getActivity(), mMovieGridAdapter, mMovie).execute();
+            new FetchFavoritesTask(getActivity(), mMovieGridAdapter, mMovies).execute();
         } else {
             new FetchMoviesTask(mMovieGridAdapter).execute(sortBy);
         }
@@ -100,7 +113,33 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
 
         // Apply the adapter to the spinner
         spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(this);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (i) {
+                    case 0:
+                        // popular
+                        mSortBy = Config.POPULARITY_DESC;
+                        break;
+                    case 1:
+                        // top rated
+                        mSortBy = Config.RATING_DESC;
+                        break;
+                    case 2:
+                        // favorite
+                        mSortBy = Config.FAVORITE;
+                        break;
+                    default:
+                        Log.e(LOG_TAG, "Something went wrong with spinner");
+                }
+                updateMovies(mSortBy);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         if (myBundle != null) {
             // Retrieve saved selection of spinner
@@ -119,41 +158,16 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
     }
 
     @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-        switch (pos) {
-            case 0:
-                // popular
-                mSortBy = Config.POPULARITY_DESC;
-                break;
-            case 1:
-                // top rated
-                mSortBy = Config.RATING_DESC;
-                break;
-            case 2:
-                // favorite
-                mSortBy = Config.FAVORITE;
-                break;
-            default:
-                Log.e(LOG_TAG, "Something went wrong with spinner");
-        }
-        updateMovies(mSortBy);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (!mSortBy.contentEquals(Config.POPULARITY_DESC)) {
             outState.putString(Config.SORT_SETTING_KEY, mSortBy);
         }
-        if (mMovie != null) {
+        if (mMovies != null) {
             // Save state of activity as parcelable
-            outState.putParcelableArrayList(Config.MOVIES_KEY, mMovie);
-            // Save selection of spinner
+            outState.putParcelableArrayList(MOVIES_KEY, mMovies);
         }
+        // Save selection for spinner
         outState.putInt(Config.SPINNER_KEY, spinner.getSelectedItemPosition());
 
     }
@@ -164,11 +178,10 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemSelecte
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(Config.SORT_SETTING_KEY)) {
                 mSortBy = savedInstanceState.getString(Config.SORT_SETTING_KEY);
-                updateMovies(mSortBy);
             }
-            if (savedInstanceState.containsKey(Config.MOVIES_KEY)) {
-                mMovie = savedInstanceState.getParcelableArrayList(Config.MOVIES_KEY);
-                mMovieGridAdapter.setData(mMovie);
+            if (savedInstanceState.containsKey(MOVIES_KEY)) {
+                mMovies = savedInstanceState.getParcelableArrayList(MOVIES_KEY);
+                mMovieGridAdapter.setData(mMovies);
             } else {
                 updateMovies(mSortBy);
             }

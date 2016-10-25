@@ -21,6 +21,7 @@ package com.example.julia.popularmovies.details;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.julia.popularmovies.Config;
@@ -34,13 +35,13 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
 
         if (savedInstanceState == null) {
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(Config.DETAIL_MOVIE,
-                    getIntent().getParcelableExtra(Intent.EXTRA_TEXT));
+            Bundle arguments = new Bundle();
+            Log.e("DetailActivity", "OnCreate");
+            arguments.putParcelable(DetailFragment.DETAIL_MOVIE,
+                    getIntent().getParcelableExtra(DetailFragment.DETAIL_MOVIE));
 
             DetailFragment fragment = new DetailFragment();
-            fragment.setArguments(bundle);
-
+            fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.detail_container, fragment)
                     .commit();

@@ -110,9 +110,6 @@ public class Movie implements Parcelable {
         return null;
     }
 
-    //((Activity) context).findViewById(R.id.image_play_icon_backdrop).setVisibility(View.VISIBLE);
-    // getImageSizeParam(context, context.getResources().getDisplayMetrics().densityDpi)
-
     private String getImageSizeParam(Context context, float dp) {
         // 120dp for posters
         // full dp for backdrops

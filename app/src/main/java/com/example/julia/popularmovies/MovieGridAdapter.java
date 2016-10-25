@@ -19,6 +19,7 @@ package com.example.julia.popularmovies;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ public class MovieGridAdapter extends BaseAdapter {
     private Context mContext;
     private List<Movie> mMovies;
     private final LayoutInflater mInflater;
+    private final Movie mLock = new Movie();  // для чего??
 
     MovieGridAdapter(Activity context, List<Movie> movies){
         mContext = context;
@@ -64,12 +66,16 @@ public class MovieGridAdapter extends BaseAdapter {
     }
 
     private void clear() {
-        mMovies.clear();
+        synchronized (mLock) {
+            mMovies.clear();
+        }
         notifyDataSetChanged();
     }
 
     public void add(Movie movie) {
-        mMovies.add(movie);
+        synchronized (mLock) {
+            mMovies.add(movie);
+        }
         notifyDataSetChanged();
     }
 
@@ -79,6 +85,13 @@ public class MovieGridAdapter extends BaseAdapter {
             add(movie);
         }
     }
+
+    // A callback interface that all activities containing this fragment must implement.
+    // This mechanism allows activities to be notified of item selections.
+    public interface Callback {
+        void onItemSelected(Movie movie);
+    }
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -101,11 +114,14 @@ public class MovieGridAdapter extends BaseAdapter {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, movie);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getContext().startActivity(intent);
-                notifyDataSetChanged();
+//                Intent intent = new Intent(getContext(), DetailActivity.class)
+//                        .putExtra(Intent.EXTRA_TEXT, movie);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                getContext().startActivity(intent);
+//                notifyDataSetChanged();
+                Log.e(LOG_TAG,"hCLICK!!!!!!!!!!!");
+                ((Callback) getContext()).onItemSelected(movie);
+
             }
         });
 
