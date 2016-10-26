@@ -26,11 +26,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.ShareActionProvider;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -227,6 +229,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
         Bundle bundle = getArguments();
         if (bundle != null) {
             mMovie = bundle.getParcelable(DetailFragment.DETAIL_MOVIE);
@@ -236,7 +239,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        ScrollView mDetailLayout = (ScrollView) rootView.findViewById(R.id.detail_layout);
+        CoordinatorLayout mDetailLayout = (CoordinatorLayout) rootView.findViewById(R.id.detail_layout);
 
         if (mMovie != null) {
             mDetailLayout.setVisibility(View.VISIBLE);

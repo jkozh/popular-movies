@@ -47,27 +47,41 @@ public class MovieGridFragment extends Fragment {
     private final String LOG_TAG = MovieGridFragment.class.getSimpleName();
 
     private MovieGridAdapter mMovieGridAdapter;
-    private ArrayList<Movie> mMovies = null;
-    private RecyclerView mGridRecyclerView;
+    private ArrayList<Movie> mMovies;
     private String mSortBy = Config.POPULARITY_DESC;
-    private Spinner spinner;
-    private Bundle mBundle;
 
-    public MovieGridFragment() {
+    // newInstance constructor for creating fragment with arguments
+    public static MovieGridFragment newInstance(String sortBy) {
+        MovieGridFragment fragment = new MovieGridFragment();
+        Bundle args = new Bundle();
+        args.putString(Config.SORT_SETTING_KEY, sortBy);
+        fragment.setArguments(args);
+        return fragment;
     }
 
+    public MovieGridFragment() {
+        // Required empty public constructor
+    }
+
+    // Store instance variables based on arguments passed
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+       if (getArguments()!=null) {
+            mSortBy = getArguments().getString(Config.SORT_SETTING_KEY);
+            Log.e(LOG_TAG, "SORT_BY="+mSortBy);
+            updateMovies(mSortBy);
+       } else {
+           Log.e(LOG_TAG, "NOTHING WAS PASSED!");
+       }
     }
 
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        mMovieGridAdapter = new MovieGridAdapter(new ArrayList<Movie>());
-        mGridRecyclerView = (RecyclerView) view.findViewById(R.id.gridview_movies);
+        mMovieGridAdapter = new MovieGridAdapter(getContext(), new ArrayList<Movie>());
+        RecyclerView mGridRecyclerView = (RecyclerView) view.findViewById(R.id.gridview_movies);
         int gridColsNumber = getResources().getInteger(R.integer.grid_number_cols);
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             gridColsNumber = getResources().getInteger(R.integer.grid_number_cols_portrait);
@@ -77,112 +91,40 @@ public class MovieGridFragment extends Fragment {
         return view;
     }
 
-    private void updateMovies(String sortBy) {
-        if (mSortBy.equals(Config.FAVORITE)) {
+    public void updateMovies(String sortBy) {
+        // TODO: change
+        if (mSortBy.equals(Config.FAVORITES)) {
             new FetchFavoritesTask(getActivity(), mMovieGridAdapter, mMovies).execute();
         } else {
             new FetchMoviesTask(mMovieGridAdapter).execute(sortBy);
         }
     }
 
-    @Override
-    public void onResume() {  // when press back button a fragment need updates
-        super.onResume();
-        updateMovies(mSortBy);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main, menu);
-
-        MenuItem item = menu.findItem(R.id.spinner_sortby);
-        spinner = (Spinner) MenuItemCompat.getActionView(item);
-
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                getContext(), R.array.sortby_array, android.R.layout.simple_spinner_item);
-
-        // Specify the layout to use when the list of choices appears
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Reduce some space between text and an expand arrow icon
-        spinner.setGravity(Gravity.END);
-
-        // Apply the adapter to the spinner
-        spinner.setAdapter(adapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                switch (i) {
-                    case 0:
-                        // popular
-                        mSortBy = Config.POPULARITY_DESC;
-                        break;
-                    case 1:
-                        // top rated
-                        mSortBy = Config.RATING_DESC;
-                        break;
-                    case 2:
-                        // favorite
-                        mSortBy = Config.FAVORITE;
-                        break;
-                    default:
-                        Log.e(LOG_TAG, "Something went wrong with spinner");
-                }
-                updateMovies(mSortBy);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        if (mBundle != null) {
-            // Retrieve saved selection of spinner
-            spinner.setSelection(mBundle.getInt(Config.SPINNER_KEY, 0));
-        } else {
-            Log.e(LOG_TAG, "mBundle in onCreateOptionsMenu is null");
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_refresh) {
-            updateMovies(mSortBy);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public void onResume() {  // when press back button a fragment need updates
+//        super.onResume();
+//        updateMovies(mSortBy);
+//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (!mSortBy.contentEquals(Config.POPULARITY_DESC)) {
-            outState.putString(Config.SORT_SETTING_KEY, mSortBy);
-        }
         if (mMovies != null) {
             // Save state of activity as parcelable
             outState.putParcelableArrayList(Config.MOVIES_KEY, mMovies);
         }
-        // Save active selection for spinner
-        outState.putInt(Config.SPINNER_KEY, spinner.getSelectedItemPosition());
     }
 
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(Config.SORT_SETTING_KEY)) {
-                mSortBy = savedInstanceState.getString(Config.SORT_SETTING_KEY);
-            }
             if (savedInstanceState.containsKey(Config.MOVIES_KEY)) {
                 mMovies = savedInstanceState.getParcelableArrayList(Config.MOVIES_KEY);
                 mMovieGridAdapter.setData(mMovies);
             } else {
                 updateMovies(mSortBy);
             }
-            this.mBundle = savedInstanceState;
         } else {
             updateMovies(mSortBy);
         }

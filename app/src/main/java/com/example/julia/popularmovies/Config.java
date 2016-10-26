@@ -45,8 +45,7 @@ public class Config {
     // Sort options
     static final String POPULARITY_DESC = "popularity.desc";
     static final String RATING_DESC = "vote_average.desc";
-    static final String FAVORITE = "favorite";
-    static final String SPINNER_KEY = "spinner";
+    static final String FAVORITES = "favorites";
     static final String MOVIES_KEY = "movies";
 
     // Paths used in JSON for trailers

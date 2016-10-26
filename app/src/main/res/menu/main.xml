@@ -16,15 +16,8 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" tools:context=".MovieGridActivity">
-
-    <item
-        android:theme="@style/Spinner"
-        android:id="@+id/spinner_sortby"
-        android:title="@string/sortby_spinner"
-        app:actionViewClass="android.widget.Spinner"
-        app:showAsAction="ifRoom"
-        android:background="@color/colorPrimary"/>
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MovieGridActivity">
 
     <item android:id="@+id/action_refresh"
           android:title="@string/action_refresh"

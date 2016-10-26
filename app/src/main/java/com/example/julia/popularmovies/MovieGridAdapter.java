@@ -16,29 +16,30 @@
 
 package com.example.julia.popularmovies;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.example.julia.popularmovies.models.Movie;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.ViewHolder> {
 
+    private final TypedValue mTypedValue = new TypedValue();
     private List<Movie> mMovies;
 
-    MovieGridAdapter(List<Movie> movies){
+    MovieGridAdapter(Context context, List<Movie> movies){
+        context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
         mMovies = movies;
     }
 
@@ -52,10 +53,9 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.View
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.grid_item_movie, parent, false);
-        final Context context = view.getContext();
-        int gridColsNumber = context.getResources().getInteger(R.integer.grid_number_cols);
-        if(context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            gridColsNumber = context.getResources().getInteger(R.integer.grid_number_cols_portrait);
+        int gridColsNumber = parent.getContext().getResources().getInteger(R.integer.grid_number_cols);
+        if(parent.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            gridColsNumber = parent.getContext().getResources().getInteger(R.integer.grid_number_cols_portrait);
         }
         view.getLayoutParams().height = (int) (parent.getWidth() / gridColsNumber * 1.5f);
         return new ViewHolder(view);
@@ -64,20 +64,20 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.View
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Movie movie = mMovies.get(position);
-        final Context context = holder.image.getContext();
         String posterUrl = movie.getPoster();
+        final Context context = holder.mImageView.getContext();
         if (!posterUrl.equals("null")) {
             Picasso.with(context)
                     .load(movie.getImagePath(context, 120, posterUrl))
-                    .into(holder.image);
+                    .into(holder.mImageView);
         } else {
             String uri = "@drawable/ic_wallpaper_white_18dp";
             int imageResource = context.getResources().getIdentifier(uri, null,
                     context.getPackageName());
             Drawable res = context.getResources().getDrawable(imageResource);
-            holder.image.setImageDrawable(res);
+            holder.mImageView.setImageDrawable(res);
         }
-        holder.image.setOnClickListener(new View.OnClickListener() {
+        holder.mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((Callback) context).onItemSelected(movie);
@@ -113,11 +113,11 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.View
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        public final ImageView image;
+        final ImageView mImageView;
 
         ViewHolder(View view) {
             super(view);
-            image = (ImageView) view.findViewById(R.id.grid_item_movie_image);
+            mImageView = (ImageView) view.findViewById(R.id.grid_item_movie_image);
         }
     }
 }
