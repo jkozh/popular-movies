@@ -19,11 +19,7 @@ package com.example.julia.popularmovies;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -33,12 +29,14 @@ import com.example.julia.popularmovies.details.DetailActivity;
 import com.example.julia.popularmovies.details.DetailFragment;
 import com.example.julia.popularmovies.models.Movie;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class MovieGridActivity extends AppCompatActivity implements MovieGridAdapter.Callback {
+public class MovieGridActivity extends AppCompatActivity implements MovieGridAdapter.Callback,
+        TabLayout.OnTabSelectedListener {
 
     private boolean mTwoPane;
+    private Toolbar mToolbar;
+    private TabLayout mTabLayout;
+    private ViewPager mViewPager;
+    final private String[] FRAGMENT_NAME = { "Popular", "Top Rated", "Favorite" };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,77 +54,45 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
             mTwoPane = false;
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayShowTitleEnabled(true);
-        }
+        // Setting up Toolbar
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitle(getString(R.string.format_toolbar_title, FRAGMENT_NAME[0]));
+        setSupportActionBar(mToolbar);
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        if (viewPager != null) {
-            setupViewPager(viewPager);
-        }
+        //Initialize ViewPager
+        mViewPager = (ViewPager) findViewById(R.id.viewpager);
+        //Setup ViewPager Adapter
+        setupViewPager(mViewPager);
+        //TabLayout initialization
+        mTabLayout = (TabLayout) findViewById(R.id.tabs);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
+        mTabLayout.setupWithViewPager(mViewPager);
+        //setup Listeners to Tabs
+        mTabLayout.addOnTabSelectedListener(this);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_refresh:
-                //updateMovies(mSortBy);
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
+    // This method will call Adapter for ViewPager
     private void setupViewPager(ViewPager viewPager) {
-        Adapter adapter = new Adapter(getSupportFragmentManager());
-        adapter.addFragment("popular");
-        adapter.addFragment("top rated");
-        adapter.addFragment("favorites");
+        PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(MovieGridFragment.newInstance(Config.POPULARITY_DESC), FRAGMENT_NAME[0]);
+        adapter.addFragment(MovieGridFragment.newInstance(Config.RATING_DESC), FRAGMENT_NAME[1]);
+        adapter.addFragment(MovieGridFragment.newInstance(Config.FAVORITES), FRAGMENT_NAME[2]);
         viewPager.setAdapter(adapter);
     }
 
-    static class Adapter extends FragmentPagerAdapter {
- //       private final List<MovieGridFragment> mFragments = new ArrayList<>();
-        private final List<String> mFragmentTitles = new ArrayList<>();
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        mToolbar.setTitle(getString(R.string.format_toolbar_title, FRAGMENT_NAME[tab.getPosition()]));
+        // When Tab is clicked this line set the viewpager to corresponding fragment
+        mViewPager.setCurrentItem(tab.getPosition());
+    }
 
-        Adapter(FragmentManager fm) {
-            super(fm);
-        }
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+    }
 
-        void addFragment(String title) {
- //           mFragments.add(fragment);
-            mFragmentTitles.add(title);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-                case 0: return MovieGridFragment.newInstance(Config.POPULARITY_DESC);
-                case 1: return MovieGridFragment.newInstance(Config.RATING_DESC);
-                case 2: return MovieGridFragment.newInstance(Config.FAVORITES);
-                default: return MovieGridFragment.newInstance(Config.POPULARITY_DESC);
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitles.get(position);
-        }
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
     }
 
     @Override

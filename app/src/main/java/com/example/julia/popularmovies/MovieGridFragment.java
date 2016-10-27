@@ -20,22 +20,15 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
-import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.julia.popularmovies.details.FetchFavoritesTask;
 import com.example.julia.popularmovies.models.Movie;
@@ -51,14 +44,13 @@ public class MovieGridFragment extends Fragment {
     private String mSortBy = Config.POPULARITY_DESC;
 
     // newInstance constructor for creating fragment with arguments
-    public static MovieGridFragment newInstance(String sortBy) {
+    public static MovieGridFragment newInstance(String str) {
         MovieGridFragment fragment = new MovieGridFragment();
         Bundle args = new Bundle();
-        args.putString(Config.SORT_SETTING_KEY, sortBy);
+        args.putString(Config.SORT_SETTING_KEY, str);
         fragment.setArguments(args);
         return fragment;
     }
-
     public MovieGridFragment() {
         // Required empty public constructor
     }
@@ -67,13 +59,10 @@ public class MovieGridFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       if (getArguments()!=null) {
+        setHasOptionsMenu(true);
+        if (getArguments() != null) {
             mSortBy = getArguments().getString(Config.SORT_SETTING_KEY);
-            Log.e(LOG_TAG, "SORT_BY="+mSortBy);
-            updateMovies(mSortBy);
-       } else {
-           Log.e(LOG_TAG, "NOTHING WAS PASSED!");
-       }
+        }
     }
 
     @Nullable
@@ -90,21 +79,30 @@ public class MovieGridFragment extends Fragment {
         mGridRecyclerView.setAdapter(mMovieGridAdapter);
         return view;
     }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                updateMovies(mSortBy);
+                Toast.makeText(getContext(), "Refreshed", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     public void updateMovies(String sortBy) {
-        // TODO: change
         if (mSortBy.equals(Config.FAVORITES)) {
             new FetchFavoritesTask(getActivity(), mMovieGridAdapter, mMovies).execute();
         } else {
             new FetchMoviesTask(mMovieGridAdapter).execute(sortBy);
         }
     }
-
-//    @Override
-//    public void onResume() {  // when press back button a fragment need updates
-//        super.onResume();
-//        updateMovies(mSortBy);
-//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

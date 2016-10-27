@@ -228,24 +228,22 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-
         Bundle bundle = getArguments();
         if (bundle != null) {
             mMovie = bundle.getParcelable(DetailFragment.DETAIL_MOVIE);
         } else {
-            Log.e(LOG_TAG,"a bundle in onCreateView is null");
+            Log.e(LOG_TAG,"A bundle in onCreateView is null");
         }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         CoordinatorLayout mDetailLayout = (CoordinatorLayout) rootView.findViewById(R.id.detail_layout);
 
-        if (mMovie != null) {
-            mDetailLayout.setVisibility(View.VISIBLE);
-        } else {
-            mDetailLayout.setVisibility(View.INVISIBLE);
-        }
+        //if (mMovie != null) {
+         //   mDetailLayout.setVisibility(View.VISIBLE);
+        //} else {
+        //    mDetailLayout.setVisibility(View.INVISIBLE);
+        //}
 
         mBackdropView = (ImageView) rootView.findViewById(R.id.detail_backdrop);
         ImageView mPosterView = (ImageView) rootView.findViewById(R.id.detail_poster);
@@ -330,7 +328,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
             mDateView.setText(mMovie.getDate(getContext()));
             setRatingBar(rootView);
             // Set movie rating
-            mRatingView.setText(getResources().getString(R.string.movie_rating, mMovie.getRating()));
+            mRatingView.setText(getResources().getString(R.string.format_movie_rating, mMovie.getRating()));
             // Set movie overview
             mPlotView.setText(mMovie.getPlot());
         }
