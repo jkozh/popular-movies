@@ -21,11 +21,11 @@ package com.example.julia.popularmovies.details;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -38,14 +38,14 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
     private ImageView mBackdropView;
     private FloatingActionButton playFAB;
     private AppBarLayout appBar;
-    Toolbar toolbar;
+    private static final String ICON_PLAY = "ICON_PLAY";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -87,15 +87,12 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
                     .into(mBackdropView);
         } else {
             appBar.setExpanded(false);
-
         }
     }
 
     @Override
     public void onTrailersFetched(final Uri trailer) {
-      //  Log.e("AAA", trailer.toString());
         playFAB.setVisibility(View.VISIBLE);
-
         playFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -105,6 +102,23 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
                 getApplicationContext().startActivity(intent);
             }
         });
+    }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (playFAB != null) {
+            outState.putBoolean(ICON_PLAY, playFAB.getVisibility() == View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getBoolean(ICON_PLAY)) {
+                playFAB.setVisibility(View.VISIBLE);
+            }
+        }
     }
 }

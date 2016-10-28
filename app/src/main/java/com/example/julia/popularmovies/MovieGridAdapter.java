@@ -71,10 +71,11 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.View
                     .load(movie.getImagePath(context, 120, posterUrl))
                     .into(holder.mImageView);
         } else {
-            String uri = "@drawable/ic_wallpaper_white_18dp";
+            String uri = context.getString(R.string.icon_theaters_path);
             int imageResource = context.getResources().getIdentifier(uri, null,
                     context.getPackageName());
             Drawable res = context.getResources().getDrawable(imageResource);
+            res.setAlpha(20);
             holder.mImageView.setImageDrawable(res);
         }
         holder.mImageView.setOnClickListener(new View.OnClickListener() {

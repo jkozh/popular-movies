@@ -14,5 +14,6 @@
     <string name="runtime">Runtime:</string>
     <string name="view_all">view all</string>
     <string name="no_reviews_found">NO REVIEWS FOUND</string>
+    <string name="icon_theaters_path">\@drawable/ic_theaters_black_48dp</string>
 
 </resources>

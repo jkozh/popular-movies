@@ -22,8 +22,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.example.julia.popularmovies.details.DetailActivity;
 import com.example.julia.popularmovies.details.DetailFragment;
@@ -43,21 +41,10 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
 
-        if (findViewById(R.id.movie_detail_container) != null) {
-            mTwoPane = true;
-            if (savedInstanceState == null) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.movie_detail_container,  new DetailFragment())
-                        .commit();
-            }
-        }else {
-            mTwoPane = false;
-        }
-
         // Setting up Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle(getString(R.string.format_toolbar_title, FRAGMENT_NAME[0]));
         setSupportActionBar(mToolbar);
+        mToolbar.setTitle(getString(R.string.format_toolbar_title, FRAGMENT_NAME[0]));
 
         //Initialize ViewPager
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -69,6 +56,17 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
         mTabLayout.setupWithViewPager(mViewPager);
         //setup Listeners to Tabs
         mTabLayout.addOnTabSelectedListener(this);
+
+        if (findViewById(R.id.detail_fragment) != null) {
+            mTwoPane = true;
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.detail_fragment,  new DetailFragment())
+                        .commit();
+            }
+        }else {
+            mTwoPane = false;
+        }
     }
 
     // This method will call Adapter for ViewPager
@@ -105,7 +103,7 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
             fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.movie_detail_container, fragment)
+                    .replace(R.id.detail_fragment, fragment)
                     .commit();
         } else {
             Intent intent = new Intent(this, DetailActivity.class)

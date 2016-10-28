@@ -63,7 +63,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     public static final String DETAIL_MOVIE = "DETAIL_MOVIE";
     private static final String EXTRA_TRAILERS = "EXTRA_TRAILERS";
     private static final String EXTRA_REVIEWS = "EXTRA_REVIEWS";
-    private static final String ICON_PLAY_BACKDROP = "ICON_PLAY_BACKDROP";
     private static final String TRAILERS_VIEW = "TRAILERS_VIEW";
 
     private Movie mMovie;
@@ -88,11 +87,17 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
+        if (context instanceof Listener) {
             mListener = (Listener) context;
-        } catch (ClassCastException e) {
+        } else {
             throw new ClassCastException(context.toString() + " must implement Listener");
         }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     @Override
@@ -243,13 +248,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        //CoordinatorLayout mDetailLayout = (CoordinatorLayout) rootView.findViewById(R.id.detail_layout);
-//        if (mMovie != null) {
-//            mDetailLayout.setVisibility(View.VISIBLE);
-//        } else {
-//            mDetailLayout.setVisibility(View.INVISIBLE);
-//        }
-
         ImageView mPosterView = (ImageView) rootView.findViewById(R.id.detail_poster);
         TextView mTitleView = (TextView) rootView.findViewById(R.id.detail_title);
         TextView mPlotView = (TextView) rootView.findViewById(R.id.detail_plot);
@@ -310,7 +308,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                         .load(mMovie.getImagePath(getContext(), 120, posterUrl))
                         .into(mPosterView);
             } else {
-                String uri = "@drawable/ic_wallpaper_white_18dp";
+                String uri = getString(R.string.icon_theaters_path);
                 int imageResource = getContext().getResources().getIdentifier(uri, null,
                         getContext().getPackageName());
                 Drawable res = getContext().getResources().getDrawable(imageResource);
