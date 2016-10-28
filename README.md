@@ -26,11 +26,6 @@ compile 'com.android.support:appcompat-v7:23.4.0'
 compile 'com.squareup.picasso:picasso:2.5.2'
 compile 'com.android.support:support-v4:23.4.0'
 compile "com.android.support:recyclerview-v7:23.0.1"
-compile project(":volley")
-```
-Use Git to checkout the source code for Volley, preferably to the filesystem where your Android project lives.
-```
-git clone https://android.googlesource.com/platform/frameworks/volley
 ```
 
 ## Powered by
