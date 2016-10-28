@@ -22,10 +22,12 @@ App uses The Movie Database API. You have to enter your API key in order to run 
 
 ## Gradle
 ```
-compile 'com.android.support:appcompat-v7:23.4.0'
+compile 'com.android.support:appcompat-v7:25.0.0'
 compile 'com.squareup.picasso:picasso:2.5.2'
-compile 'com.android.support:support-v4:23.4.0'
-compile "com.android.support:recyclerview-v7:23.0.1"
+compile 'com.android.support:support-v4:25.0.0'
+compile 'com.android.support:recyclerview-v7:25.0.0'
+compile 'com.android.support:cardview-v7:25.0.0'
+compile 'com.android.support:design:25.0.0'
 ```
 
 ## Powered by
