@@ -6,9 +6,8 @@
 The purpose of this project was to built an app, optimized for tablets, to help users discover popular and highly rated movies on the web. It displays a scrolling grid of movie trailers, launches a details screen when a particular movie is selected, allows users to save favorites, play trailers, and read user reviews. This app utilizes core Android user interface components and fetches movie information using themoviedb.org web API.
 
 
-<img width="40%" src="https://cloud.githubusercontent.com/assets/22068784/18801249/7e116c0e-8196-11e6-99f6-ca888cfc0788.png" /><img width="40%" src="https://cloud.githubusercontent.com/assets/22068784/18801249/7e116c0e-8196-11e6-99f6-ca888cfc0788.png" />
+<img width="39%" src="https://raw.githubusercontent.com/jkozh/popular-movies/master/art/Screenshot_20161028-022321_framed%20(1).png" /><img width="39%" src="https://raw.githubusercontent.com/jkozh/popular-movies/master/art/Screenshot_20161028-011823_framed%20(1).png" /><img width="39%" src="https://raw.githubusercontent.com/jkozh/popular-movies/master/art/Screenshot_20161028-022342_framed%20(1).png" />
 
-<img width="80%" src="https://cloud.githubusercontent.com/assets/22068784/18801363/38a94654-8197-11e6-87d3-07f25ccdceb8.png" />
 
 ### Project review
 > In my perspective, you have done a perfect job implementing popular movie stage 1 and the format of your codes is extremely standard and your codes are easy to be understood. Great job for your popular movie stage 1! Hope to see your stage 2 codes soon! :)
