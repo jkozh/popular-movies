@@ -11,7 +11,6 @@
     <string name="release_date_missing">Release date is missing</string>
     <string name="format_movie_rating">%1$s/10</string>
     <string name="reviews">REVIEWS</string>
-    <string name="image_for_poster">Image for poster</string>
     <string name="runtime">Runtime:</string>
     <string name="view_all">view all</string>
     <string name="no_reviews_found">NO REVIEWS FOUND</string>

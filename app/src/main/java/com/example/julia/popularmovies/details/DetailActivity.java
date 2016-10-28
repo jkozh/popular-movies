@@ -18,21 +18,39 @@
 
 package com.example.julia.popularmovies.details;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.example.julia.popularmovies.R;
+import com.squareup.picasso.Picasso;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements DetailFragment.Listener {
+
+    private ImageView mBackdropView;
+    private FloatingActionButton playFAB;
+    private AppBarLayout appBar;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null){
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
 
         if (savedInstanceState == null) {
             Bundle arguments = new Bundle();
@@ -40,42 +58,53 @@ public class DetailActivity extends AppCompatActivity {
                     getIntent().getParcelableExtra(DetailFragment.DETAIL_MOVIE));
 
             DetailFragment fragment = new DetailFragment();
+
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.detail_container, fragment)
                     .commit();
         }
+        mBackdropView = (ImageView) findViewById(R.id.detail_backdrop);
+        playFAB = (FloatingActionButton) findViewById(R.id.play_FAB);
+        appBar = (AppBarLayout) findViewById(R.id.appbar);
+    }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        // add back arrow to toolbar
-        if (getSupportActionBar() != null){
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
         }
+        return super.onOptionsItemSelected(item);
+    }
 
+    @Override
+    public void onBackdropFetched(String str) {
+        if (str != null) {
+            Picasso.with(getApplicationContext())
+                    .load(str)
+                    .into(mBackdropView);
+        } else {
+            appBar.setExpanded(false);
 
-        CollapsingToolbarLayout collapsingToolbar =
-                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        if (collapsingToolbar != null) {
-            collapsingToolbar.setTitle("Fucking movie");
         }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.detail, menu);
-        return true;
-    }
+    public void onTrailersFetched(final Uri trailer) {
+      //  Log.e("AAA", trailer.toString());
+        playFAB.setVisibility(View.VISIBLE);
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case android.R.id.home:
-//                onBackPressed();
-//                return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+        playFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(trailer);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(intent);
+            }
+        });
+
+    }
 }
