@@ -32,9 +32,7 @@ public class Config {
     // JSON URL
     public static final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/";
     public static final String POSTER_URL = "http://image.tmdb.org/t/p/";
-    static final String DISCOVER_PARAM = "discover";
     public static final String MOVIE_PARAM = "movie";
-    static final String SORT_BY_PARAM = "sort_by";
     public static final String API_KEY_PARAM = "api_key";
     public static final String VIDEOS_PARAM = "videos";
     public static final String REVIEWS_PARAM = "reviews";
@@ -43,8 +41,8 @@ public class Config {
     static final String SORT_SETTING_KEY = "sort_setting";
 
     // Sort options
-    static final String POPULARITY_DESC = "popularity.desc";
-    static final String RATING_DESC = "vote_average.desc";
+    static final String POPULARITY_DESC = "popular";
+    static final String RATING_DESC = "top_rated";
     static final String FAVORITES = "favorites";
     static final String MOVIES_KEY = "movies";
 
