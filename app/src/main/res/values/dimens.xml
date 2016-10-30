@@ -23,4 +23,18 @@
     <dimen name="card_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="list_item_avatar_size">40dp</dimen>
+    <dimen name="text_sz_title">20sp</dimen>
+    <dimen name="padding_top_title">30dp</dimen>
+    <dimen name="padding_left_movie_info">12dp</dimen>
+    <dimen name="width_poster">170dp</dimen>
+    <dimen name="padding_left_poster">12dp</dimen>
+    <dimen name="padding_top_poster">20dp</dimen>
+    <dimen name="padding_top_genres">10dp</dimen>
+    <dimen name="padding_right_genres">5dp</dimen>
+    <dimen name="text_sz_reviews_title">20sp</dimen>
+    <dimen name="ratingbar_margin_top">2dp</dimen>
+    <dimen name="rating_detail_padding_left">5dp</dimen>
+    <dimen name="runtime_linearlayout_padding_top">10dp</dimen>
+    <dimen name="runtime_padding_right">5dp</dimen>
+    <dimen name="detail_date_padding_top">10dp</dimen>
 </resources>

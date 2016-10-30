@@ -22,6 +22,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.example.julia.popularmovies.details.DetailActivity;
 import com.example.julia.popularmovies.details.DetailFragment;
@@ -32,9 +33,10 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
 
     private boolean mTwoPane;
     private Toolbar mToolbar;
-    private TabLayout mTabLayout;
     private ViewPager mViewPager;
+    private TabLayout mTabLayout;
     final private String[] FRAGMENT_NAME = { "Popular", "Top Rated", "Favorite" };
+    final private String TOOLBAR_TITLE = "TOOLBAR_TITLE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +46,15 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
         // Setting up Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        mToolbar.setTitle(getString(R.string.format_toolbar_title, FRAGMENT_NAME[0]));
+        if (getSupportActionBar() != null) {
+            if (savedInstanceState != null) {
+                getSupportActionBar().setTitle(getString(R.string.format_toolbar_title,
+                        savedInstanceState.getCharSequence(TOOLBAR_TITLE)));
+            } else {
+                getSupportActionBar().setTitle(getString(R.string.format_toolbar_title, FRAGMENT_NAME[0]));
 
+            }
+        }
         //Initialize ViewPager
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
         //Setup ViewPager Adapter
@@ -66,6 +75,21 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
             }
         }else {
             mTwoPane = false;
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+            outState.putCharSequence(TOOLBAR_TITLE, FRAGMENT_NAME[mTabLayout.getSelectedTabPosition()]);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            mToolbar.setTitle(getString(R.string.format_toolbar_title,
+                    savedInstanceState.getCharSequence(TOOLBAR_TITLE)));
         }
     }
 
