@@ -36,8 +36,7 @@
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginStart="48dp"
-            app:expandedTitleMarginEnd="64dp"
-            >
+            app:expandedTitleMarginEnd="64dp">
 
             <ImageView
                 android:id="@+id/detail_backdrop"

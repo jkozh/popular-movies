@@ -33,7 +33,7 @@ import android.widget.ImageView;
 import com.example.julia.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
-public class DetailActivity extends AppCompatActivity implements DetailFragment.Listener {
+public class DetailActivity extends AppCompatActivity /*implements DetailFragment.Listener*/ {
 
     private ImageView mBackdropView;
     private FloatingActionButton playFAB;
@@ -78,7 +78,7 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
         }
         return super.onOptionsItemSelected(item);
     }
-
+/*
     @Override
     public void onBackdropFetched(String str) {
         if (str != null) {
@@ -103,7 +103,7 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
             }
         });
     }
-
+*/
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);

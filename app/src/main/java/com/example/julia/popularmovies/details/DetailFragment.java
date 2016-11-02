@@ -74,35 +74,41 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     private TextView mRuntimeView;
     private TextView mReviewsTitleView;
 
-    private Listener mListener;
+//    private Listener mListener;
 
     public DetailFragment() {
     }
 
-    interface Listener {
-        void onBackdropFetched(String backdrop);
-        void onTrailersFetched(Uri trailer);
-    }
+//    interface Listener {
+//        void onBackdropFetched(String backdrop);
+//        void onTrailersFetched(Uri trailer);
+//    }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof Listener) {
-            mListener = (Listener) context;
-        } else {
-            throw new ClassCastException(context.toString() + " must implement Listener");
-        }
-    }
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+//        if (context instanceof Listener) {
+//            mListener = (Listener) context;
+//        } else {
+//            throw new ClassCastException(context.toString() + " must implement Listener");
+//        }
+//    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
+//    @Override
+//    public void onDetach() {
+//        super.onDetach();
+//        mListener = null;
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle args = getArguments();
+        if (args != null) {
+            mMovie = args.getParcelable(DETAIL_MOVIE);
+        } else {
+            Log.e(LOG_TAG,"args are null");
+        }
         setHasOptionsMenu(true);
     }
 
@@ -239,12 +245,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Bundle args = getArguments();
-        if (args != null) {
-            mMovie = args.getParcelable(DetailFragment.DETAIL_MOVIE);
-        } else {
-            Log.e(LOG_TAG,"A bundle is null");
-        }
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
@@ -276,11 +276,11 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
 
         if (mMovie != null) {
 
-            if (!mMovie.getBackdrop().equals("null")) {
-                mListener.onBackdropFetched(mMovie.getImagePath(getContext(), getContext().getResources().getDisplayMetrics().densityDpi, mMovie.getBackdrop()));
-            } else {
-                mListener.onBackdropFetched(null);
-            }
+//            if (!mMovie.getBackdrop().equals("null")) {
+//                mListener.onBackdropFetched(mMovie.getImagePath(getContext(), getContext().getResources().getDisplayMetrics().densityDpi, mMovie.getBackdrop()));
+//            } else {
+//                mListener.onBackdropFetched(null);
+//            }
 
             // fetch trailers only if there is no trailers fetched yet
             if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
@@ -339,7 +339,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         if (mTrailerListAdapter.getItemCount() > 0) {
             Trailer trailer = mTrailerListAdapter.getTrailers().get(0);
             setShareActionProvider(trailer);
-            mListener.onTrailersFetched(Uri.parse(trailer.getTrailerUrl()));
+//            mListener.onTrailersFetched(Uri.parse(trailer.getTrailerUrl()));
             View view = getView();
             if (view != null) {
                 mTrailersView.setVisibility(View.VISIBLE);

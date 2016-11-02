@@ -28,8 +28,8 @@ import com.example.julia.popularmovies.details.DetailActivity;
 import com.example.julia.popularmovies.details.DetailFragment;
 import com.example.julia.popularmovies.models.Movie;
 
-public class MovieGridActivity extends AppCompatActivity implements MovieGridAdapter.Callback,
-        TabLayout.OnTabSelectedListener {
+public class MovieGridActivity extends AppCompatActivity implements MovieGridAdapter.Listener,
+        TabLayout.OnTabSelectedListener, MovieGridFragment.Listener  {
 
     private boolean mTwoPane;
     private Toolbar mToolbar;
@@ -42,8 +42,23 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
+        mTwoPane = (findViewById(R.id.detail_fragment) != null);
 
         // Setting up Toolbar
+        setupToolbar(savedInstanceState);
+        // Initialize ViewPager
+        mViewPager = (ViewPager) findViewById(R.id.viewpager);
+        // Setup ViewPager Adapter
+        setupViewPager(mViewPager);
+        // TabLayout initialization
+        mTabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        mTabLayout.setupWithViewPager(mViewPager);
+        // Setup Listeners to Tabs
+        mTabLayout.addOnTabSelectedListener(this);
+    }
+
+    private void setupToolbar(Bundle savedInstanceState) {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
@@ -55,26 +70,29 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
 
             }
         }
-        //Initialize ViewPager
-        mViewPager = (ViewPager) findViewById(R.id.viewpager);
-        //Setup ViewPager Adapter
-        setupViewPager(mViewPager);
-        //TabLayout initialization
-        mTabLayout = (TabLayout) findViewById(R.id.tabs);
+    }
 
-        mTabLayout.setupWithViewPager(mViewPager);
-        //setup Listeners to Tabs
-        mTabLayout.addOnTabSelectedListener(this);
+    @Override
+    public boolean isTwoPane() {
+        return mTwoPane;
+    }
 
-        if (findViewById(R.id.detail_fragment) != null) {
-            mTwoPane = true;
-            if (savedInstanceState == null) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.detail_fragment,  new DetailFragment())
-                        .commit();
-            }
-        }else {
-            mTwoPane = false;
+    @Override
+    public void onMovieSelected(Movie movie) {
+        if (mTwoPane) {
+            Log.e("onMovieSelected!!!!", "THO pANE");
+            Bundle args = new Bundle();
+            args.putParcelable(DetailFragment.DETAIL_MOVIE, movie);
+
+            DetailFragment fragment = new DetailFragment();
+            fragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.detail_fragment, fragment)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .putExtra(DetailFragment.DETAIL_MOVIE, movie);
+            startActivity(intent);
         }
     }
 
@@ -117,22 +135,4 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
     public void onTabReselected(TabLayout.Tab tab) {
     }
 
-    @Override
-    public void onItemSelected(Movie movie) {
-        if (mTwoPane) {
-            Bundle arguments = new Bundle();
-            arguments.putParcelable(DetailFragment.DETAIL_MOVIE, movie);
-
-            DetailFragment fragment = new DetailFragment();
-            fragment.setArguments(arguments);
-
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.detail_fragment, fragment)
-                    .commit();
-        } else {
-            Intent intent = new Intent(this, DetailActivity.class)
-                    .putExtra(DetailFragment.DETAIL_MOVIE, movie);
-            startActivity(intent);
-        }
-    }
 }

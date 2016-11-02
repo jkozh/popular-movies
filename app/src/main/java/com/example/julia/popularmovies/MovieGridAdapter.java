@@ -35,18 +35,18 @@ import java.util.List;
 
 public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.ViewHolder> {
 
-    private final TypedValue mTypedValue = new TypedValue();
     private List<Movie> mMovies;
 
     MovieGridAdapter(Context context, List<Movie> movies){
+        TypedValue mTypedValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
         mMovies = movies;
     }
 
     // A callback interface that all activities containing this fragment must implement.
     // This mechanism allows activities to be notified of item selections.
-    interface Callback {
-        void onItemSelected(Movie movie);
+    interface Listener {
+        void onMovieSelected(Movie movie);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.View
         holder.mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((Callback) context).onItemSelected(movie);
+                ((Listener) context).onMovieSelected(movie);
             }
         });
     }
