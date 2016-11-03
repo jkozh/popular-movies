@@ -74,31 +74,8 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     private TextView mRuntimeView;
     private TextView mReviewsTitleView;
 
-//    private Listener mListener;
-
     public DetailFragment() {
     }
-
-//    interface Listener {
-//        void onBackdropFetched(String backdrop);
-//        void onTrailersFetched(Uri trailer);
-//    }
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof Listener) {
-//            mListener = (Listener) context;
-//        } else {
-//            throw new ClassCastException(context.toString() + " must implement Listener");
-//        }
-//    }
-
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -276,12 +253,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
 
         if (mMovie != null) {
 
-//            if (!mMovie.getBackdrop().equals("null")) {
-//                mListener.onBackdropFetched(mMovie.getImagePath(getContext(), getContext().getResources().getDisplayMetrics().densityDpi, mMovie.getBackdrop()));
-//            } else {
-//                mListener.onBackdropFetched(null);
-//            }
-
             // fetch trailers only if there is no trailers fetched yet
             if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
                 ArrayList<Trailer> trailers = savedInstanceState.getParcelableArrayList(EXTRA_TRAILERS);
@@ -394,7 +365,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     }
 
     private boolean isFavorited() {
-        Cursor cursor = getActivity().getContentResolver().query(
+        Cursor cursor = getContext().getContentResolver().query(
                 MovieEntry.CONTENT_URI,
                 null,
                 MovieEntry.COLUMN_ID + " = ?",

@@ -16,15 +16,12 @@
 
 package com.example.julia.popularmovies;
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,8 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.julia.popularmovies.details.DetailActivity;
-import com.example.julia.popularmovies.details.DetailFragment;
 import com.example.julia.popularmovies.details.FetchFavoritesTask;
 import com.example.julia.popularmovies.models.Movie;
 
@@ -47,8 +42,6 @@ public class MovieGridFragment extends Fragment {
     private MovieGridAdapter mMovieGridAdapter;
     private ArrayList<Movie> mMovies;
     private String mSortBy = Config.POPULARITY_DESC;
-
-    private Listener mListener;
 
     // newInstance constructor for creating fragment with arguments
     public static MovieGridFragment newInstance(String str) {
@@ -78,42 +71,18 @@ public class MovieGridFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         mMovieGridAdapter = new MovieGridAdapter(getContext(), new ArrayList<Movie>());
         RecyclerView mGridRecyclerView = (RecyclerView) view.findViewById(R.id.gridview_movies);
+        mGridRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), getGridColsNumber()));
+        mGridRecyclerView.setAdapter(mMovieGridAdapter);
+        return view;
+    }
+
+    private int getGridColsNumber() {
         int gridColsNumber = getResources().getInteger(R.integer.grid_number_cols);
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             gridColsNumber = getResources().getInteger(R.integer.grid_number_cols_portrait);
         }
-        mGridRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), gridColsNumber));
-        mGridRecyclerView.setAdapter(mMovieGridAdapter);
-
-        if (mListener.isTwoPane()) {
-            //mListener.onMovieItemSelected(movieDBId);
-            Log.e(LOG_TAG, "Two pane");
-        } else {
-            Log.e(LOG_TAG, " Not Two pane");
-
-        }
-
-        return view;
+        return gridColsNumber;
     }
-
-    //on item selected
-     /*if (mTwoPane) {
-            Bundle arguments = new Bundle();
-            arguments.putParcelable(DetailFragment.DETAIL_MOVIE, movie);
-
-            DetailFragment fragment = new DetailFragment();
-            fragment.setArguments(arguments);
-
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.detail_fragment, fragment)
-                    .commit();
-        } else {
-            Intent intent = new Intent(this, DetailActivity.class)
-                    .putExtra(DetailFragment.DETAIL_MOVIE, movie);
-            startActivity(intent);
-        }
-        */
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -150,32 +119,6 @@ public class MovieGridFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof Listener) {
-            mListener = (Listener) context;
-        } else {
-            throw new ClassCastException("activity must implement Listener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     */
-    public interface Listener {
-        boolean isTwoPane();
-    }
-
-    @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
@@ -189,4 +132,5 @@ public class MovieGridFragment extends Fragment {
             updateMovies(mSortBy);
         }
     }
+
 }

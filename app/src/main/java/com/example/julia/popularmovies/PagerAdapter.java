@@ -23,12 +23,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PagerAdapter extends FragmentPagerAdapter {
+class PagerAdapter extends FragmentPagerAdapter {
 
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private final List<String> mFragmentTitleList = new ArrayList<>();
 
-    public PagerAdapter(FragmentManager manager) {
+    PagerAdapter(FragmentManager manager) {
         super(manager);
     }
 
@@ -43,7 +43,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     }
 
     //Method to add Tab fragment and Tab name
-    public void addFragment(Fragment fragment, String title) {
+    void addFragment(Fragment fragment, String title) {
         mFragmentList.add(fragment);
         mFragmentTitleList.add(title);
     }

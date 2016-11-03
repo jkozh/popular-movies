@@ -23,13 +23,15 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.example.julia.popularmovies.details.DetailActivity;
 import com.example.julia.popularmovies.details.DetailFragment;
 import com.example.julia.popularmovies.models.Movie;
 
 public class MovieGridActivity extends AppCompatActivity implements MovieGridAdapter.Listener,
-        TabLayout.OnTabSelectedListener, MovieGridFragment.Listener  {
+        TabLayout.OnTabSelectedListener {
 
     private boolean mTwoPane;
     private Toolbar mToolbar;
@@ -37,14 +39,15 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
     private TabLayout mTabLayout;
     final private String[] FRAGMENT_NAME = { "Popular", "Top Rated", "Favorite" };
     final private String TOOLBAR_TITLE = "TOOLBAR_TITLE";
+    private LinearLayout mDetailView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
         mTwoPane = (findViewById(R.id.detail_fragment) != null);
-
-        // Setting up Toolbar
+        // Initialize Toolbar
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setupToolbar(savedInstanceState);
         // Initialize ViewPager
         mViewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -52,35 +55,38 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
         setupViewPager(mViewPager);
         // TabLayout initialization
         mTabLayout = (TabLayout) findViewById(R.id.tabs);
-
         mTabLayout.setupWithViewPager(mViewPager);
         // Setup Listeners to Tabs
         mTabLayout.addOnTabSelectedListener(this);
+        mDetailView = (LinearLayout) findViewById(R.id.detail_fragment);
+        if (mTwoPane) {
+            mDetailView.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void setupToolbar(Bundle savedInstanceState) {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             if (savedInstanceState != null) {
                 getSupportActionBar().setTitle(getString(R.string.format_toolbar_title,
                         savedInstanceState.getCharSequence(TOOLBAR_TITLE)));
             } else {
-                getSupportActionBar().setTitle(getString(R.string.format_toolbar_title, FRAGMENT_NAME[0]));
+                getSupportActionBar().setTitle(
+                        getString(R.string.format_toolbar_title, FRAGMENT_NAME[0]));
 
             }
         }
     }
 
-    @Override
-    public boolean isTwoPane() {
-        return mTwoPane;
-    }
+//    @Override
+//    public boolean isTwoPane() {
+//        return mTwoPane;
+//    }
 
     @Override
     public void onMovieSelected(Movie movie) {
         if (mTwoPane) {
-            Log.e("onMovieSelected!!!!", "THO pANE");
+            mDetailView.setVisibility(View.VISIBLE);
             Bundle args = new Bundle();
             args.putParcelable(DetailFragment.DETAIL_MOVIE, movie);
 
@@ -122,7 +128,8 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
-        mToolbar.setTitle(getString(R.string.format_toolbar_title, FRAGMENT_NAME[tab.getPosition()]));
+        mToolbar.setTitle(getString(
+                R.string.format_toolbar_title, FRAGMENT_NAME[tab.getPosition()]));
         // When Tab is clicked this line set the viewpager to corresponding fragment
         mViewPager.setCurrentItem(tab.getPosition());
     }
