@@ -64,6 +64,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     private static final String EXTRA_TRAILERS = "EXTRA_TRAILERS";
     private static final String EXTRA_REVIEWS = "EXTRA_REVIEWS";
     private static final String TRAILERS_VIEW = "TRAILERS_VIEW";
+    private static final String EXTRA_RUNTIME = "EXTRA_RUNTIME";
 
     private Movie mMovie;
     private TrailerListAdapter mTrailerListAdapter;
@@ -73,6 +74,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     private LinearLayout mTrailersView;
     private TextView mRuntimeView;
     private TextView mReviewsTitleView;
+    private ImageView mBackdropView;
 
     public DetailFragment() {
     }
@@ -99,6 +101,16 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         if (mTrailersView != null) {
             outState.putBoolean(TRAILERS_VIEW, mTrailersView.getVisibility() == View.VISIBLE);
         }
+        ArrayList<Review> reviews = mReviewListAdapter.getReviews();
+        if (reviews != null && !reviews.isEmpty()) {
+            outState.putParcelableArrayList(EXTRA_REVIEWS, reviews);
+        }
+//        String runtime = mMovie.getRuntime();
+//        Log.e(LOG_TAG, "runtime="+runtime);
+//        if (runtime != null && !runtime.equals("")) {
+//            outState.putString(EXTRA_RUNTIME, runtime);
+//            Log.e(LOG_TAG, "I'm inside");
+//        }
     }
 
     @Override
@@ -234,7 +246,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         mTrailersView = (LinearLayout) rootView.findViewById(R.id.trailers_view);
         mRuntimeView = (TextView) rootView.findViewById(R.id.detail_runtime);
         mReviewsTitleView = (TextView) rootView.findViewById(R.id.detail_reviews_title);
-
+        mBackdropView = (ImageView) rootView.findViewById(R.id.detail_backdrop);
 
         // horizontal list layout for trailers
         mTrailerListAdapter = new TrailerListAdapter(new ArrayList<Trailer>());
@@ -252,7 +264,8 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         mReviewsRecyclerView.setAdapter(mReviewListAdapter);
 
         if (mMovie != null) {
-
+            rootView.findViewById(R.id.detail_linear_layout).setVisibility(View.VISIBLE);
+            rootView.findViewById(R.id.detail_linearlayout_bottom).setVisibility(View.VISIBLE);
             // fetch trailers only if there is no trailers fetched yet
             if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
                 ArrayList<Trailer> trailers = savedInstanceState.getParcelableArrayList(EXTRA_TRAILERS);
@@ -261,6 +274,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                 new FetchTrailersTask(this).execute(Long.toString(mMovie.getId()));
             }
 
+            mReviewsTitleView.setVisibility(View.VISIBLE);
             // fetch reviews only if there is no reviews fetched yet
             if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_REVIEWS)) {
                 List<Review> reviews = savedInstanceState.getParcelableArrayList(EXTRA_REVIEWS);
@@ -269,14 +283,28 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                 new FetchReviewsTask(this).execute(Long.toString(mMovie.getId()));
             }
 
+
             // fetch runtime info for a movie
+//            rootView.findViewById(R.id.detail_runtime_layout).setVisibility(View.VISIBLE);
+//            if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_RUNTIME)) {
+//                mRuntime = savedInstanceState.getString(EXTRA_RUNTIME);
+//            } else {
             new FetchMovieInfoTask(this).execute(Long.toString(mMovie.getId()));
+//            }
+
+            // Set movie backdrop
+            String backdropUrl = mMovie.getBackdrop();
+            if (!backdropUrl.equals("null")) {
+                Picasso.with(getContext())
+                        .load(mMovie.getImagePath(getContext(), 120, backdropUrl))
+                        .into(mBackdropView);
+            }
 
             // Set movie poster
             String posterUrl = mMovie.getPoster();
             if (!posterUrl.equals("null")) {
                 Picasso.with(getContext())
-                        .load(mMovie.getImagePath(getContext(), 120, posterUrl))
+                        .load(mMovie.getImagePath(getContext(), 20000 , posterUrl))
                         .into(mPosterView);
             } else {
                 String uri = getString(R.string.icon_theaters_path);
@@ -295,8 +323,9 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
             }
             // Set movie release date in user-friendly view
             mDateView.setText(mMovie.getDate(getContext()));
-            setRatingBar(rootView);
             // Set movie rating
+            rootView.findViewById(R.id.rating_view).setVisibility(View.VISIBLE);
+            setRatingBar(rootView);
             mRatingView.setText(getResources().getString(R.string.format_movie_rating, mMovie.getRating()));
             // Set movie overview
             mPlotView.setText(mMovie.getPlot());

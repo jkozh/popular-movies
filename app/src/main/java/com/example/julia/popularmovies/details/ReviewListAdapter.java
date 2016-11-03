@@ -45,6 +45,11 @@ class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.ViewHolde
         notifyDataSetChanged();
     }
 
+    ArrayList<Review> getReviews() {
+        return mReviews;
+    }
+
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())

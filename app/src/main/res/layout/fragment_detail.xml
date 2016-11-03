@@ -24,10 +24,20 @@
     android:orientation="vertical"
     android:background="@color/colorBackgroundDetail">
 
+    <ImageView
+        android:id="@+id/detail_backdrop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:contentDescription="@null" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:id="@+id/detail_linear_layout">
 
         <ImageView
             android:id="@+id/detail_poster"
@@ -65,7 +75,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingTop="@dimen/padding_left_movie_info">
+                android:paddingTop="@dimen/padding_left_movie_info"
+                android:id="@+id/rating_view">
 
                 <RatingBar
                     android:id="@+id/rating_bar"
@@ -90,7 +101,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingTop="@dimen/runtime_linearlayout_padding_top">
+                android:paddingTop="@dimen/runtime_linearlayout_padding_top"
+                android:id="@+id/detail_runtime_layout"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -120,7 +133,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="20dp">
+        android:paddingBottom="20dp"
+        android:visibility="gone"
+        android:id="@+id/detail_linearlayout_bottom">
 
         <TextView
             android:id="@+id/detail_plot"
@@ -164,7 +179,8 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:paddingLeft="30dp"
-            android:textColor="@color/colorAccent"/>
+            android:textColor="@color/colorAccent"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
