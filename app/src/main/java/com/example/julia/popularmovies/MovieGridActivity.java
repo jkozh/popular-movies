@@ -78,11 +78,6 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
         }
     }
 
-//    @Override
-//    public boolean isTwoPane() {
-//        return mTwoPane;
-//    }
-
     @Override
     public void onMovieSelected(Movie movie) {
         if (mTwoPane) {
