@@ -18,10 +18,7 @@
 
 package com.example.julia.popularmovies.details;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -31,10 +28,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.example.julia.popularmovies.MovieGridAdapter;
 import com.example.julia.popularmovies.R;
+import com.example.julia.popularmovies.models.Movie;
 import com.squareup.picasso.Picasso;
 
-public class DetailActivity extends AppCompatActivity /*implements DetailFragment.Listener*/ {
+public class DetailActivity extends AppCompatActivity implements DetailFragment.Listener {
 
     private ImageView mBackdropView;
     private FloatingActionButton playFAB;
@@ -79,18 +78,8 @@ public class DetailActivity extends AppCompatActivity /*implements DetailFragmen
         }
         return super.onOptionsItemSelected(item);
     }
-/*
-    @Override
-    public void onBackdropFetched(String str) {
-        if (str != null) {
-            Picasso.with(getApplicationContext())
-                    .load(str)
-                    .into(mBackdropView);
-        } else {
-            appBar.setExpanded(false);
-        }
-    }
 
+/*
     @Override
     public void onTrailersFetched(final Uri trailer) {
         playFAB.setVisibility(View.VISIBLE);
@@ -120,6 +109,23 @@ public class DetailActivity extends AppCompatActivity /*implements DetailFragmen
             if (savedInstanceState.getBoolean(ICON_PLAY)) {
                 playFAB.setVisibility(View.VISIBLE);
             }
+        }
+    }
+
+    @Override
+    public boolean isTwoPane() {
+        // because DetailActivity exists only on phones
+        return false;
+    }
+
+    @Override
+    public void backdropUrl(String url) {
+        if (url != null) {
+            Picasso.with(getApplicationContext())
+                    .load(url)
+                    .into(mBackdropView);
+        } else {
+            appBar.setExpanded(false);
         }
     }
 }

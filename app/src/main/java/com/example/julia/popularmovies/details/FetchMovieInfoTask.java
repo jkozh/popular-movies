@@ -34,13 +34,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-class FetchMovieInfoTask extends AsyncTask<String, Void, String> {
+public class FetchMovieInfoTask extends AsyncTask<String, Void, String> {
 
     public static String LOG_TAG = FetchReviewsTask.class.getSimpleName();
     private final Listener mListener;
 
     // Interface definition for a callback to be invoked when reviews are loaded
-    interface Listener {
+    public interface Listener {
         void onMovieInfoFetchFinished(String runtime);
     }
 

@@ -16,12 +16,14 @@
 
 package com.example.julia.popularmovies;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.julia.popularmovies.details.FetchFavoritesTask;
+import com.example.julia.popularmovies.details.FetchMovieInfoTask;
 import com.example.julia.popularmovies.models.Movie;
 
 import java.util.ArrayList;
@@ -42,6 +45,7 @@ public class MovieGridFragment extends Fragment {
     private MovieGridAdapter mMovieGridAdapter;
     private ArrayList<Movie> mMovies;
     private String mSortBy = Config.POPULARITY_DESC;
+
 
     // newInstance constructor for creating fragment with arguments
     public static MovieGridFragment newInstance(String str) {

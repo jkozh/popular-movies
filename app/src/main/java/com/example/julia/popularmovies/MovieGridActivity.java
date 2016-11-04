@@ -22,7 +22,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -31,19 +30,32 @@ import com.example.julia.popularmovies.details.DetailFragment;
 import com.example.julia.popularmovies.models.Movie;
 
 public class MovieGridActivity extends AppCompatActivity implements MovieGridAdapter.Listener,
-        TabLayout.OnTabSelectedListener {
+        TabLayout.OnTabSelectedListener, DetailFragment.Listener {
 
     private boolean mTwoPane;
     private Toolbar mToolbar;
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
+    private LinearLayout mDetailView;
     final private String[] FRAGMENT_NAME = { "Popular", "Top Rated", "Favorite" };
     final private String TOOLBAR_TITLE = "TOOLBAR_TITLE";
-    private LinearLayout mDetailView;
+
+    public MovieGridActivity() {
+    }
+
+    @Override
+    public boolean isTwoPane() {
+        return mTwoPane;
+    }
+
+    @Override
+    public void backdropUrl(String url) {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_movie_list);
         mTwoPane = (findViewById(R.id.detail_fragment) != null);
         // Initialize Toolbar
@@ -73,7 +85,6 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
             } else {
                 getSupportActionBar().setTitle(
                         getString(R.string.format_toolbar_title, FRAGMENT_NAME[0]));
-
             }
         }
     }

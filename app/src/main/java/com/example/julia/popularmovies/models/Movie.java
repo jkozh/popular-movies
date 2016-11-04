@@ -25,8 +25,10 @@ import android.os.Parcelable;
 import android.util.Log;
 
 import com.example.julia.popularmovies.Config;
+import com.example.julia.popularmovies.MovieGridActivity;
 import com.example.julia.popularmovies.R;
 import com.example.julia.popularmovies.data.MoviesContract;
+import com.example.julia.popularmovies.details.FetchMovieInfoTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,7 +65,6 @@ public class Movie implements Parcelable {
         mPlot = movie.getString(Config.TMD_PLOT);
         mBackdrop = movie.getString(Config.TMD_BACKDROP);
         mGenres = movie.getString(Config.TMD_GENRES);
-
     }
 
     public Movie(Cursor cursor) {
