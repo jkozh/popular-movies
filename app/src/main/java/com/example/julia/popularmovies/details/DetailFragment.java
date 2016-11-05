@@ -64,6 +64,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     private static final String EXTRA_TRAILERS = "EXTRA_TRAILERS";
     private static final String EXTRA_REVIEWS = "EXTRA_REVIEWS";
     private static final String TRAILERS_VIEW = "TRAILERS_VIEW";
+    private static final String REVIEWS_VIEW = "REVIEWS_VIEW";
     private static final String EXTRA_RUNTIME = "EXTRA_RUNTIME";
 
     private Movie mMovie;
@@ -74,13 +75,13 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     private LinearLayout mTrailersView;
     private TextView mRuntimeView;
     private TextView mReviewsTitleView;
-    private ImageView mBackdropView;
 
     private Listener mListener;
 
     public interface Listener {
         boolean isTwoPane();
         void backdropUrl(String url);
+        void trailerUri(final Uri uri);
     }
 
     @Override
@@ -117,23 +118,28 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        ArrayList<Trailer> trailers = mTrailerListAdapter.getTrailers();
-        if (trailers != null && !trailers.isEmpty()) {
-            outState.putParcelableArrayList(EXTRA_TRAILERS, trailers);
+        if (mTrailerListAdapter != null) {
+            ArrayList<Trailer> trailers = mTrailerListAdapter.getTrailers();
+            if (trailers != null && !trailers.isEmpty()) {
+                outState.putParcelableArrayList(EXTRA_TRAILERS, trailers);
+            }
+        } else {
+            Log.e(LOG_TAG, "mTrailerListAdapter is null");
         }
         if (mTrailersView != null) {
             outState.putBoolean(TRAILERS_VIEW, mTrailersView.getVisibility() == View.VISIBLE);
         }
-        ArrayList<Review> reviews = mReviewListAdapter.getReviews();
-        if (reviews != null && !reviews.isEmpty()) {
-            outState.putParcelableArrayList(EXTRA_REVIEWS, reviews);
+        if (mReviewListAdapter != null) {
+            ArrayList<Review> reviews = mReviewListAdapter.getReviews();
+            if (reviews != null && !reviews.isEmpty()) {
+                outState.putParcelableArrayList(EXTRA_REVIEWS, reviews);
+            }
+        } else {
+            Log.e(LOG_TAG, "mReviewListAdapter is null");
         }
-//        String runtime = mMovie.getRuntime();
-//        Log.e(LOG_TAG, "runtime="+runtime);
-//        if (runtime != null && !runtime.equals("")) {
-//            outState.putString(EXTRA_RUNTIME, runtime);
-//            Log.e(LOG_TAG, "I'm inside");
-//        }
+        if (mReviewsRecyclerView != null) {
+            outState.putBoolean(REVIEWS_VIEW, mReviewsRecyclerView.getVisibility() == View.VISIBLE);
+        }
     }
 
     @Override
@@ -142,6 +148,9 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean(TRAILERS_VIEW)) {
                 mTrailersView.setVisibility(View.VISIBLE);
+            }
+            if (savedInstanceState.getBoolean(REVIEWS_VIEW)) {
+                mReviewsRecyclerView.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -269,7 +278,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         mTrailersView = (LinearLayout) rootView.findViewById(R.id.trailers_view);
         mRuntimeView = (TextView) rootView.findViewById(R.id.detail_runtime);
         mReviewsTitleView = (TextView) rootView.findViewById(R.id.detail_reviews_title);
-        mBackdropView = (ImageView) rootView.findViewById(R.id.detail_backdrop);
+        ImageView mBackdropView = (ImageView) rootView.findViewById(R.id.detail_backdrop);
 
         // horizontal list layout for trailers
         mTrailerListAdapter = new TrailerListAdapter(new ArrayList<Trailer>());
@@ -287,8 +296,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         mReviewsRecyclerView.setAdapter(mReviewListAdapter);
 
         if (mMovie != null) {
-            rootView.findViewById(R.id.detail_linear_layout).setVisibility(View.VISIBLE);
-            rootView.findViewById(R.id.detail_linearlayout_bottom).setVisibility(View.VISIBLE);
             // fetch trailers only if there is no trailers fetched yet
             if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_TRAILERS)) {
                 ArrayList<Trailer> trailers = savedInstanceState.getParcelableArrayList(EXTRA_TRAILERS);
@@ -297,7 +304,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                 new FetchTrailersTask(this).execute(Long.toString(mMovie.getId()));
             }
 
-            mReviewsTitleView.setVisibility(View.VISIBLE);
             // fetch reviews only if there is no reviews fetched yet
             if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_REVIEWS)) {
                 List<Review> reviews = savedInstanceState.getParcelableArrayList(EXTRA_REVIEWS);
@@ -307,13 +313,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
             }
 
 
-            // fetch runtime info for a movie
-//            rootView.findViewById(R.id.detail_runtime_layout).setVisibility(View.VISIBLE);
-//            if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_RUNTIME)) {
-//                mRuntime = savedInstanceState.getString(EXTRA_RUNTIME);
-//            } else {
             new FetchMovieInfoTask(this).execute(Long.toString(mMovie.getId()));
-//            }
 
             if (mListener.isTwoPane()) {
                 // Set movie backdrop
@@ -366,7 +366,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         if (mTrailerListAdapter.getItemCount() > 0) {
             Trailer trailer = mTrailerListAdapter.getTrailers().get(0);
             setShareActionProvider(trailer);
-//            mListener.onTrailersFetched(Uri.parse(trailer.getTrailerUrl()));
+            mListener.trailerUri(Uri.parse(trailer.getTrailerUrl()));
             View view = getView();
             if (view != null) {
                 mTrailersView.setVisibility(View.VISIBLE);

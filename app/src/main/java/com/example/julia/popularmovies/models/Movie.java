@@ -100,6 +100,7 @@ public class Movie implements Parcelable {
     }
 
     public String getImagePath(Context context, float dp, String path) {
+
         return Config.POSTER_URL + getImageSizeParam(context, dp) + path;
 
     }
@@ -114,7 +115,7 @@ public class Movie implements Parcelable {
     private String getImageSizeParam(Context context, float dp) {
         // 120dp for posters
         // full dp for backdrops
-        float widthPx = dp * context.getResources().getDisplayMetrics().density;
+        float widthPx = dp*3 * context.getResources().getDisplayMetrics().density;
         String widthParam;
 
         if (widthPx <= 92) {

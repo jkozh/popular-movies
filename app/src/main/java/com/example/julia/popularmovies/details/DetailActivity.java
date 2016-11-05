@@ -18,6 +18,8 @@
 
 package com.example.julia.popularmovies.details;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -79,21 +81,6 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
         return super.onOptionsItemSelected(item);
     }
 
-/*
-    @Override
-    public void onTrailersFetched(final Uri trailer) {
-        playFAB.setVisibility(View.VISIBLE);
-        playFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(trailer);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getApplicationContext().startActivity(intent);
-            }
-        });
-    }
-*/
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -128,4 +115,33 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
             appBar.setExpanded(false);
         }
     }
+
+    @Override
+    public void trailerUri(final Uri uri) {
+        playFAB.setVisibility(View.VISIBLE);
+        playFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(uri);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(intent);
+            }
+        });
+    }
+/*
+    @Override
+    public void onTrailersFetched(final Uri trailer) {
+        playFAB.setVisibility(View.VISIBLE);
+        playFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(trailer);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getApplicationContext().startActivity(intent);
+            }
+        });
+    }
+*/
 }

@@ -35,9 +35,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        android:id="@+id/detail_linear_layout">
+        android:orientation="horizontal">
 
         <ImageView
             android:id="@+id/detail_poster"
@@ -101,9 +99,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingTop="@dimen/runtime_linearlayout_padding_top"
-                android:id="@+id/detail_runtime_layout"
-                android:visibility="gone">
+                android:paddingTop="@dimen/runtime_linearlayout_padding_top">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -133,9 +129,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="20dp"
-        android:visibility="gone"
-        android:id="@+id/detail_linearlayout_bottom">
+        android:paddingBottom="20dp">
 
         <TextView
             android:id="@+id/detail_plot"
@@ -179,8 +173,7 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:paddingLeft="30dp"
-            android:textColor="@color/colorAccent"
-            android:visibility="gone"/>
+            android:textColor="@color/colorAccent" />
 
     </LinearLayout>
 

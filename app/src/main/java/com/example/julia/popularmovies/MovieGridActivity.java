@@ -17,12 +17,17 @@
 package com.example.julia.popularmovies;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.example.julia.popularmovies.details.DetailActivity;
@@ -36,7 +41,6 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
     private Toolbar mToolbar;
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
-    private LinearLayout mDetailView;
     final private String[] FRAGMENT_NAME = { "Popular", "Top Rated", "Favorite" };
     final private String TOOLBAR_TITLE = "TOOLBAR_TITLE";
 
@@ -44,20 +48,10 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
     }
 
     @Override
-    public boolean isTwoPane() {
-        return mTwoPane;
-    }
-
-    @Override
-    public void backdropUrl(String url) {
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_movie_list);
-        mTwoPane = (findViewById(R.id.detail_fragment) != null);
+        mTwoPane = (findViewById(R.id.detail_fragment_framelayout) != null);
         // Initialize Toolbar
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setupToolbar(savedInstanceState);
@@ -70,9 +64,10 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
         mTabLayout.setupWithViewPager(mViewPager);
         // Setup Listeners to Tabs
         mTabLayout.addOnTabSelectedListener(this);
-        mDetailView = (LinearLayout) findViewById(R.id.detail_fragment);
+
         if (mTwoPane) {
-            mDetailView.setVisibility(View.INVISIBLE);
+            FrameLayout layout = (FrameLayout) findViewById(R.id.detail_fragment_framelayout);
+            layout.setBackgroundResource(R.drawable.detailview_placeholder);
         }
     }
 
@@ -92,14 +87,14 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
     @Override
     public void onMovieSelected(Movie movie) {
         if (mTwoPane) {
-            mDetailView.setVisibility(View.VISIBLE);
             Bundle args = new Bundle();
             args.putParcelable(DetailFragment.DETAIL_MOVIE, movie);
 
             DetailFragment fragment = new DetailFragment();
             fragment.setArguments(args);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.detail_fragment, fragment)
+                    .replace(R.id.detail_fragment_framelayout, fragment)
+                    .addToBackStack(null)
                     .commit();
         } else {
             Intent intent = new Intent(this, DetailActivity.class)
@@ -148,4 +143,16 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
     public void onTabReselected(TabLayout.Tab tab) {
     }
 
+    @Override
+    public boolean isTwoPane() {
+        return mTwoPane;
+    }
+
+    @Override
+    public void backdropUrl(String url) {
+    }
+
+    @Override
+    public void trailerUri(Uri uri) {
+    }
 }
