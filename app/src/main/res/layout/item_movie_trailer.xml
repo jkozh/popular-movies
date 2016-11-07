@@ -22,15 +22,15 @@
     <ImageView
         android:id="@+id/trailer_image"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="@dimen/trailer_image_height"
         android:adjustViewBounds="true"
-        android:layout_margin="5dp"
+        android:layout_margin="@dimen/trailer_image_layout_margin"
         android:contentDescription="@null" />
 
     <ImageView
         android:id="@+id/image_play_icon"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="@dimen/play_icon_size"
+        android:layout_height="@dimen/play_icon_size"
         android:src="@drawable/ic_play_arrow_white_48dp"
         android:layout_gravity="center"
         android:alpha=".9"

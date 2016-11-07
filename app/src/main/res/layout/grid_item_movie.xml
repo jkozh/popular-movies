@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   Copyright 2016.  Julia Kozhukhovskaya
 
@@ -13,6 +14,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -23,5 +25,7 @@
         android:layout_height="fill_parent"
         android:scaleType="fitXY"
         android:adjustViewBounds="true"
-        android:clickable="true"/>
+        android:clickable="true"
+        android:contentDescription="@null"/>
+
 </FrameLayout>

@@ -26,9 +26,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/cardview_detail_reviews"
-        app:cardCornerRadius="2dp"
-        app:contentPadding="20dp"
-        android:layout_margin="10dp">
+        app:cardCornerRadius="@dimen/review_card_corner_radius"
+        app:contentPadding="@dimen/review_card_content_padding"
+        android:layout_margin="@dimen/review_card_layout_margin">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -39,14 +39,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/review_author"
-                android:textSize="20sp"
+                android:textSize="@dimen/text_sz_title"
                 android:textColor="@color/colorPrimaryDark"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/review_content"
-                android:maxLines="5"
+                android:maxLines="@integer/lines_number_in_review"
                 android:ellipsize="end"/>
 
             <TextView
@@ -56,5 +56,7 @@
                 android:textColor="@color/colorAccent"/>
 
         </LinearLayout>
+
     </android.support.v7.widget.CardView>
+
 </LinearLayout>

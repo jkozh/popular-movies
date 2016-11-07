@@ -45,7 +45,7 @@
         android:divider="?android:attr/dividerHorizontal">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="@dimen/zero"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_weight="1">
@@ -68,7 +68,7 @@
         </LinearLayout>
 
         <android.support.v4.widget.NestedScrollView
-            android:layout_width="0dp"
+            android:layout_width="@dimen/zero"
             android:layout_height="match_parent"
             android:layout_weight="1">
 

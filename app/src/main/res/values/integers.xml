@@ -18,4 +18,5 @@
 <resources>
     <integer name="grid_number_cols">3</integer>
     <integer name="grid_number_cols_portrait">2</integer>
+    <integer name="lines_number_in_review">5</integer>
 </resources>

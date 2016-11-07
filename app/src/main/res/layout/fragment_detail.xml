@@ -129,13 +129,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="20dp">
+        android:paddingBottom="@dimen/reviews_padding_bottom">
 
         <TextView
             android:id="@+id/detail_plot"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:padding="12dp" />
+            android:padding="@dimen/plot_padding" />
 
         <LinearLayout
             android:id="@+id/trailers_view"
@@ -143,8 +143,8 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:orientation="vertical"
-            android:paddingBottom="20dp"
-            android:paddingTop="10dp">
+            android:paddingBottom="@dimen/trailers_padding_bottom"
+            android:paddingTop="@dimen/trailers_padding_top">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -168,11 +168,11 @@
             android:id="@+id/detail_reviews_title"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:textSize="@dimen/text_sz_reviews_title"
+            android:textSize="@dimen/text_sz_title"
             android:text="@string/reviews"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:paddingLeft="30dp"
+            android:paddingTop="@dimen/runtime_text_padding_top"
+            android:paddingBottom="@dimen/runtime_text_padding_bottom"
+            android:paddingLeft="@dimen/runtime_text_padding_left"
             android:textColor="@color/colorAccent" />
 
     </LinearLayout>
@@ -183,6 +183,6 @@
         android:scrollbars="vertical"
         android:id="@+id/detail_reviews"
         android:visibility="gone"
-        android:paddingBottom="20dp"/>
+        android:paddingBottom="@dimen/reviews_padding_bottom"/>
 
 </LinearLayout>
