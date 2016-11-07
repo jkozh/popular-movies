@@ -22,6 +22,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.example.julia.popularmovies.Config;
@@ -99,10 +100,8 @@ public class Movie implements Parcelable {
         return null;
     }
 
-    public String getImagePath(Context context, float dp, String path) {
-
-        return Config.POSTER_URL + getImageSizeParam(context, dp) + path;
-
+    public String getImagePath(Context context, String path) {
+        return Config.POSTER_URL + getImageSizeParam(context) + path;
     }
 
     public String getBackdrop() {
@@ -112,26 +111,13 @@ public class Movie implements Parcelable {
         return null;
     }
 
-    private String getImageSizeParam(Context context, float dp) {
-        // 120dp for posters
-        // full dp for backdrops
-        float widthPx = dp*3 * context.getResources().getDisplayMetrics().density;
-        String widthParam;
-
-        if (widthPx <= 92) {
-            widthParam = "w92";
-        } else if (widthPx <= 154) {
-            widthParam = "w154";
-        } else if (widthPx <= 185) {
-            widthParam = "w185";
-        } else if (widthPx <= 342) {
-            widthParam = "w342";
-        } else if (widthPx <= 500) {
-            widthParam = "w500";
-        } else {
-            widthParam = "w780";
-        }
-        return widthParam;
+    private String getImageSizeParam(Context context) {
+        float density = context.getResources().getDisplayMetrics().density;
+        if (density >= 4.0) return "w780";
+        if (density >= 3.0) return "w500";
+        if (density >= 2.0) return "w342";
+        if (density >= 1.5) return "w185";
+        return "w154";
     }
 
     public String getTitle() {

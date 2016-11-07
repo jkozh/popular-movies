@@ -18,6 +18,8 @@ package com.example.julia.popularmovies;
 
 public class Config {
 
+    static final float ASPECT_RATIO_POSTER = 1.5f;
+
     // Paths used in the JSON String
     public static final String TMD_ID = "id";
     public static final String TMD_LIST = "results";

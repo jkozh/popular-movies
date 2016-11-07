@@ -320,18 +320,18 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                 String backdropUrl = mMovie.getBackdrop();
                 if (!backdropUrl.equals("null")) {
                     Picasso.with(getContext())
-                            .load(mMovie.getImagePath(getContext(), 120, backdropUrl))
+                            .load(mMovie.getImagePath(getContext(), backdropUrl))
                             .into(mBackdropView);
                 }
             } else {
-                mListener.backdropUrl(mMovie.getImagePath(getContext(), 120, mMovie.getBackdrop()));
+                mListener.backdropUrl(mMovie.getImagePath(getContext(), mMovie.getBackdrop()));
             }
 
             // Set movie poster
             String posterUrl = mMovie.getPoster();
             if (!posterUrl.equals("null")) {
                 Picasso.with(getContext())
-                        .load(mMovie.getImagePath(getContext(), 120 , posterUrl))
+                        .load(mMovie.getImagePath(getContext(), posterUrl))
                         .into(mPosterView);
             } else {
                 String uri = getString(R.string.icon_theaters_path);

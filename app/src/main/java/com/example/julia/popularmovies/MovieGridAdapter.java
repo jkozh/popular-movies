@@ -18,8 +18,10 @@ package com.example.julia.popularmovies;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,12 +55,18 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.View
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.grid_item_movie, parent, false);
-        int gridColsNumber = parent.getContext().getResources().getInteger(R.integer.grid_number_cols);
-        if(parent.getContext().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
-            gridColsNumber = parent.getContext().getResources().getInteger(R.integer.grid_number_cols_portrait);
-        }
-        view.getLayoutParams().height = (int) (parent.getWidth() / gridColsNumber * 1.5f);
+        view.getLayoutParams().height = (int)(parent.getWidth() /
+                getGridColsNumber(parent.getContext()) * Config.ASPECT_RATIO_POSTER);
         return new ViewHolder(view);
+    }
+
+    private int getGridColsNumber(Context context) {
+        final Resources res = context.getResources();
+        int gridColsNumber = res.getInteger(R.integer.grid_number_cols);
+        if(res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            gridColsNumber = res.getInteger(R.integer.grid_number_cols_portrait);
+        }
+        return gridColsNumber;
     }
 
     @Override
@@ -68,7 +76,7 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.View
         final Context context = holder.mImageView.getContext();
         if (!posterUrl.equals("null")) {
             Picasso.with(context)
-                    .load(movie.getImagePath(context, 120, posterUrl))
+                    .load(movie.getImagePath(context, posterUrl))
                     .into(holder.mImageView);
         } else {
             String uri = context.getString(R.string.icon_theaters_path);
