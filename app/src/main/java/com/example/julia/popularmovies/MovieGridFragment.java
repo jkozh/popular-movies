@@ -16,6 +16,7 @@
 
 package com.example.julia.popularmovies;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -38,6 +39,10 @@ import com.example.julia.popularmovies.models.Movie;
 
 import java.util.ArrayList;
 
+import butterknife.BindString;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MovieGridFragment extends Fragment {
 
     private final String LOG_TAG = MovieGridFragment.class.getSimpleName();
@@ -46,6 +51,8 @@ public class MovieGridFragment extends Fragment {
     private ArrayList<Movie> mMovies;
     private String mSortBy = Config.POPULARITY_DESC;
 
+    @BindView(R.id.gridview_movies)
+    RecyclerView mGridRecyclerView;
 
     // newInstance constructor for creating fragment with arguments
     public static MovieGridFragment newInstance(String str) {
@@ -73,8 +80,8 @@ public class MovieGridFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
+        ButterKnife.bind(this, view);
         mMovieGridAdapter = new MovieGridAdapter(getContext(), new ArrayList<Movie>());
-        RecyclerView mGridRecyclerView = (RecyclerView) view.findViewById(R.id.gridview_movies);
         mGridRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), getGridColsNumber()));
         mGridRecyclerView.setAdapter(mMovieGridAdapter);
         return view;
@@ -136,5 +143,4 @@ public class MovieGridFragment extends Fragment {
             updateMovies(mSortBy);
         }
     }
-
 }

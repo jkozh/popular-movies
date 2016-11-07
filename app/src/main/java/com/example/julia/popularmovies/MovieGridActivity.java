@@ -19,6 +19,7 @@ package com.example.julia.popularmovies;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,15 +35,26 @@ import com.example.julia.popularmovies.details.DetailActivity;
 import com.example.julia.popularmovies.details.DetailFragment;
 import com.example.julia.popularmovies.models.Movie;
 
+import butterknife.BindDrawable;
+import butterknife.BindInt;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MovieGridActivity extends AppCompatActivity implements MovieGridAdapter.Listener,
         TabLayout.OnTabSelectedListener, DetailFragment.Listener {
 
     private boolean mTwoPane;
-    private Toolbar mToolbar;
-    private ViewPager mViewPager;
-    private TabLayout mTabLayout;
     final private String[] FRAGMENT_NAME = { "Popular", "Top Rated", "Favorite" };
     final private String TOOLBAR_TITLE = "TOOLBAR_TITLE";
+
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.viewpager)
+    ViewPager mViewPager;
+    @BindView(R.id.tabs)
+    TabLayout mTabLayout;
+    @BindView(R.id.detail_fragment_framelayout)
+    FrameLayout mDetailFrameLayout;
 
     public MovieGridActivity() {
     }
@@ -51,23 +63,20 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
+        ButterKnife.bind(this);
+
         mTwoPane = (findViewById(R.id.detail_fragment_framelayout) != null);
-        // Initialize Toolbar
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        // Setup Toolbar
         setupToolbar(savedInstanceState);
-        // Initialize ViewPager
-        mViewPager = (ViewPager) findViewById(R.id.viewpager);
         // Setup ViewPager Adapter
         setupViewPager(mViewPager);
-        // TabLayout initialization
-        mTabLayout = (TabLayout) findViewById(R.id.tabs);
         mTabLayout.setupWithViewPager(mViewPager);
         // Setup Listeners to Tabs
         mTabLayout.addOnTabSelectedListener(this);
 
         if (mTwoPane) {
-            FrameLayout layout = (FrameLayout) findViewById(R.id.detail_fragment_framelayout);
-            layout.setBackgroundResource(R.drawable.detailview_placeholder);
+           mDetailFrameLayout.setBackgroundResource(R.drawable.detailview_placeholder);
         }
     }
 

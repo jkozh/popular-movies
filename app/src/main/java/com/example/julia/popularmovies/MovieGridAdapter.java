@@ -27,6 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.julia.popularmovies.models.Movie;
 import com.squareup.picasso.Picasso;
@@ -34,6 +35,9 @@ import com.squareup.picasso.Picasso;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.ViewHolder> {
 
@@ -122,11 +126,12 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.View
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        final ImageView mImageView;
+        @BindView(R.id.grid_item_movie_image)
+        ImageView mImageView;
 
         ViewHolder(View view) {
             super(view);
-            mImageView = (ImageView) view.findViewById(R.id.grid_item_movie_image);
+            ButterKnife.bind(this, view);
         }
     }
 }

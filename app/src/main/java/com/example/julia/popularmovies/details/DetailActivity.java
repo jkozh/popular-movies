@@ -25,30 +25,36 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.example.julia.popularmovies.MovieGridAdapter;
 import com.example.julia.popularmovies.R;
-import com.example.julia.popularmovies.models.Movie;
 import com.squareup.picasso.Picasso;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity implements DetailFragment.Listener {
 
-    private ImageView mBackdropView;
-    private FloatingActionButton playFAB;
-    private AppBarLayout appBar;
     private static final String ICON_PLAY = "ICON_PLAY";
+
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.detail_backdrop)
+    ImageView mBackdropView;
+    @BindView(R.id.play_FAB)
+    FloatingActionButton playFAB;
+    @BindView(R.id.appbar)
+    AppBarLayout appBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -66,9 +72,6 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
                     .add(R.id.detail_container, fragment)
                     .commit();
         }
-        mBackdropView = (ImageView) findViewById(R.id.detail_backdrop);
-        playFAB = (FloatingActionButton) findViewById(R.id.play_FAB);
-        appBar = (AppBarLayout) findViewById(R.id.appbar);
     }
 
     @Override
@@ -129,19 +132,4 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
             }
         });
     }
-/*
-    @Override
-    public void onTrailersFetched(final Uri trailer) {
-        playFAB.setVisibility(View.VISIBLE);
-        playFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(trailer);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getApplicationContext().startActivity(intent);
-            }
-        });
-    }
-*/
 }

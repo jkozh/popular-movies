@@ -31,6 +31,9 @@ import com.example.julia.popularmovies.models.Review;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.ViewHolder> {
 
     private final ArrayList<Review> mReviews;
@@ -78,18 +81,20 @@ class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.ViewHolde
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        CardView cardview;
         final View mView;
-        TextView mContentView;
-        TextView mAuthorView;
         Review mReview;
+
+        @BindView(R.id.cardview_detail_reviews)
+        CardView cardview;
+        @BindView(R.id.review_content)
+        TextView mContentView;
+        @BindView(R.id.review_author)
+        TextView mAuthorView;
 
         ViewHolder(View view) {
             super(view);
-            cardview = (CardView) view.findViewById(R.id.cardview_detail_reviews);
+            ButterKnife.bind(this, view);
             mView = view;
-            mContentView = (TextView) view.findViewById(R.id.review_content);
-            mAuthorView = (TextView) view.findViewById(R.id.review_author);
         }
     }
 }
