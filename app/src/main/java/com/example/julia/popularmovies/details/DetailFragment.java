@@ -45,6 +45,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.julia.popularmovies.MovieGridFragment;
 import com.example.julia.popularmovies.R;
 import com.example.julia.popularmovies.data.MoviesContract.MovieEntry;
 import com.example.julia.popularmovies.models.Movie;
@@ -54,6 +55,10 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindDrawable;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class DetailFragment extends Fragment implements FetchTrailersTask.Listener,
         FetchReviewsTask.Listener, FetchMovieInfoTask.Listener {
@@ -71,10 +76,36 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     private TrailerListAdapter mTrailerListAdapter;
     private ReviewListAdapter mReviewListAdapter;
     private ShareActionProvider mShareActionProvider;
-    private RecyclerView mReviewsRecyclerView;
-    private LinearLayout mTrailersView;
-    private TextView mRuntimeView;
-    private TextView mReviewsTitleView;
+
+    @BindView(R.id.detail_poster)
+    ImageView mPosterView;
+    @BindView(R.id.detail_title)
+    TextView mTitleView;
+    @BindView(R.id.detail_plot)
+    TextView mPlotView;
+    @BindView(R.id.detail_date)
+    TextView mDateView;
+    @BindView(R.id.detail_rating)
+    TextView mRatingView;
+    @BindView(R.id.detail_genres)
+    TextView mGenresView;
+    @BindView(R.id.trailers_view)
+    LinearLayout mTrailersView;
+    @BindView(R.id.detail_runtime)
+    TextView mRuntimeView;
+    @BindView(R.id.detail_reviews_title)
+    TextView mReviewsTitleView;
+    @BindView(R.id.detail_backdrop)
+    ImageView mBackdropView;
+    @BindView(R.id.detail_trailers)
+    RecyclerView mTrailersRecyclerView;
+    @BindView(R.id.detail_reviews)
+    RecyclerView mReviewsRecyclerView;
+    @BindDrawable(R.drawable.ic_theaters_black_48dp)
+    Drawable mPlaceHolderPoster;
+    @BindView(R.id.rating_bar)
+    RatingBar ratingBar;
+
 
     private Listener mListener;
 
@@ -200,22 +231,23 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                         }
 
                         @Override
-                        protected void onPostExecute(Boolean isFavored) {
+                        protected void onPostExecute(final Boolean isFavored) {
                             // if it is in favorites
                             if (isFavored) {
                                 // delete from favorites
-                                new AsyncTask<Void, Void, Integer>() {
+                                new AsyncTask<Void, Void, Void>() {
                                     @Override
-                                    protected Integer doInBackground(Void... params) {
-                                        return getActivity().getContentResolver().delete(
+                                    protected Void doInBackground(Void... params) {
+                                        getActivity().getContentResolver().delete(
                                                 MovieEntry.CONTENT_URI,
                                                 MovieEntry.COLUMN_ID + " = ?",
                                                 new String[]{Long.toString(mMovie.getId())}
                                         );
+                                        return null;
                                     }
 
                                     @Override
-                                    protected void onPostExecute(Integer rowsDeleted) {
+                                    protected void onPostExecute(Void v) {
                                         item.setIcon(R.drawable.ic_favorite_border_white_48dp);
                                         Toast.makeText(getActivity(), "Removed from favorites",
                                                 Toast.LENGTH_SHORT).show();
@@ -224,9 +256,9 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                             }
                             // if it's not in favorites - add to favorites
                             else {
-                                new AsyncTask<Void, Void, Uri>() {
+                                new AsyncTask<Void, Void, Void>() {
                                     @Override
-                                    protected Uri doInBackground(Void... params) {
+                                    protected Void doInBackground(Void... params) {
                                         ContentValues values = new ContentValues();
 
                                         values.put(MovieEntry.COLUMN_ID, mMovie.getId());
@@ -242,11 +274,13 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                                         values.put(MovieEntry.COLUMN_GENRES, mMovie.getGenres());
                                         values.put(MovieEntry.COLUMN_RUNTIME, mMovie.getRuntime());
 
-                                        return getActivity().getContentResolver().insert(
+                                        getActivity().getContentResolver().insert(
                                                 MovieEntry.CONTENT_URI, values);
+                                        return null;
                                     }
+
                                     @Override
-                                    protected void onPostExecute(Uri returnUri) {
+                                    protected void onPostExecute(Void v) {
                                         item.setIcon(R.drawable.ic_favorite_white_48dp);
                                         Toast.makeText(getActivity(),
                                                 "Marked as favorite", Toast.LENGTH_SHORT).show();
@@ -268,30 +302,18 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-
-        ImageView mPosterView = (ImageView) rootView.findViewById(R.id.detail_poster);
-        TextView mTitleView = (TextView) rootView.findViewById(R.id.detail_title);
-        TextView mPlotView = (TextView) rootView.findViewById(R.id.detail_plot);
-        TextView mDateView = (TextView) rootView.findViewById(R.id.detail_date);
-        TextView mRatingView = (TextView) rootView.findViewById(R.id.detail_rating);
-        TextView mGenresView = (TextView) rootView.findViewById((R.id.detail_genres));
-        mTrailersView = (LinearLayout) rootView.findViewById(R.id.trailers_view);
-        mRuntimeView = (TextView) rootView.findViewById(R.id.detail_runtime);
-        mReviewsTitleView = (TextView) rootView.findViewById(R.id.detail_reviews_title);
-        ImageView mBackdropView = (ImageView) rootView.findViewById(R.id.detail_backdrop);
+        ButterKnife.bind(this, rootView);
 
         // horizontal list layout for trailers
         mTrailerListAdapter = new TrailerListAdapter(new ArrayList<Trailer>());
         LinearLayoutManager horizontalLayoutManager
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        RecyclerView mTrailersRecyclerView = (RecyclerView) rootView.findViewById(R.id.detail_trailers);
         mTrailersRecyclerView.setLayoutManager(horizontalLayoutManager);
         mTrailersRecyclerView.setAdapter(mTrailerListAdapter);
 
         // vertical list layout for reviews
         mReviewListAdapter = new ReviewListAdapter(new ArrayList<Review>());
         LinearLayoutManager verticalLayoutManager = new LinearLayoutManager(getContext());
-        mReviewsRecyclerView = (RecyclerView) rootView.findViewById(R.id.detail_reviews);
         mReviewsRecyclerView.setLayoutManager(verticalLayoutManager);
         mReviewsRecyclerView.setAdapter(mReviewListAdapter);
 
@@ -311,7 +333,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
             } else {
                 new FetchReviewsTask(this).execute(Long.toString(mMovie.getId()));
             }
-
 
             new FetchMovieInfoTask(this).execute(Long.toString(mMovie.getId()));
 
@@ -334,11 +355,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                         .load(mMovie.getImagePath(getContext(), posterUrl))
                         .into(mPosterView);
             } else {
-                String uri = getString(R.string.icon_theaters_path);
-                int imageResource = getContext().getResources().getIdentifier(uri, null,
-                        getContext().getPackageName());
-                Drawable res = getContext().getResources().getDrawable(imageResource);
-                mPosterView.setImageDrawable(res);
+                mPosterView.setImageDrawable(mPlaceHolderPoster);
             }
             // Set movie title
             mTitleView.setText(mMovie.getTitle());
@@ -351,8 +368,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
             // Set movie release date in user-friendly view
             mDateView.setText(mMovie.getDate(getContext()));
             // Set movie rating
-            rootView.findViewById(R.id.rating_view).setVisibility(View.VISIBLE);
-            setRatingBar(rootView);
+            setRatingBar();
             mRatingView.setText(getResources().getString(R.string.format_movie_rating, mMovie.getRating()));
             // Set movie overview
             mPlotView.setText(mMovie.getPlot());
@@ -412,10 +428,9 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
         }
     }
 
-    private void setRatingBar(View view) {
+    private void setRatingBar() {
         if (mMovie.getRating() != null && !mMovie.getRating().isEmpty()) {
             float rating = Float.valueOf(mMovie.getRating()) / 2;
-            RatingBar ratingBar = (RatingBar) view.findViewById(R.id.rating_bar);
             ratingBar.setRating(rating);
         }
     }

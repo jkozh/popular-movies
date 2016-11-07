@@ -16,11 +16,10 @@
 
 package com.example.julia.popularmovies;
 
-import android.content.ClipData;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,12 +33,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.julia.popularmovies.details.FetchFavoritesTask;
-import com.example.julia.popularmovies.details.FetchMovieInfoTask;
 import com.example.julia.popularmovies.models.Movie;
 
 import java.util.ArrayList;
 
-import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -74,6 +71,12 @@ public class MovieGridFragment extends Fragment {
         if (getArguments() != null) {
             mSortBy = getArguments().getString(Config.SORT_SETTING_KEY);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateMovies(mSortBy);
     }
 
     @Nullable

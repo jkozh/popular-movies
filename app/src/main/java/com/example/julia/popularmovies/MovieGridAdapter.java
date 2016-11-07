@@ -36,12 +36,16 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindDrawable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.ViewHolder> {
 
     private List<Movie> mMovies;
+
+    @BindDrawable(R.drawable.ic_theaters_black_48dp)
+    Drawable mPlaceHolderPoster;
 
     MovieGridAdapter(Context context, List<Movie> movies){
         TypedValue mTypedValue = new TypedValue();
@@ -83,12 +87,8 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.View
                     .load(movie.getImagePath(context, posterUrl))
                     .into(holder.mImageView);
         } else {
-            String uri = context.getString(R.string.icon_theaters_path);
-            int imageResource = context.getResources().getIdentifier(uri, null,
-                    context.getPackageName());
-            Drawable res = context.getResources().getDrawable(imageResource);
-            res.setAlpha(20);
-            holder.mImageView.setImageDrawable(res);
+            mPlaceHolderPoster.setAlpha(20);
+            holder.mImageView.setImageDrawable(mPlaceHolderPoster);
         }
         holder.mImageView.setOnClickListener(new View.OnClickListener() {
             @Override

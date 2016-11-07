@@ -53,8 +53,6 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
     ViewPager mViewPager;
     @BindView(R.id.tabs)
     TabLayout mTabLayout;
-    @BindView(R.id.detail_fragment_framelayout)
-    FrameLayout mDetailFrameLayout;
 
     public MovieGridActivity() {
     }
@@ -76,7 +74,8 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
         mTabLayout.addOnTabSelectedListener(this);
 
         if (mTwoPane) {
-           mDetailFrameLayout.setBackgroundResource(R.drawable.detailview_placeholder);
+            FrameLayout layout = (FrameLayout) findViewById(R.id.detail_fragment_framelayout);
+            layout.setBackgroundResource(R.drawable.detailview_placeholder);
         }
     }
 
@@ -134,6 +133,7 @@ public class MovieGridActivity extends AppCompatActivity implements MovieGridAda
         adapter.addFragment(MovieGridFragment.newInstance(Config.RATING_DESC), FRAGMENT_NAME[1]);
         adapter.addFragment(MovieGridFragment.newInstance(Config.FAVORITES), FRAGMENT_NAME[2]);
         viewPager.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     @Override

@@ -19,6 +19,7 @@ package com.example.julia.popularmovies.details;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,9 @@ import com.example.julia.popularmovies.models.Trailer;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHolder>  {
 
@@ -103,11 +107,12 @@ class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHol
     }
 
     class ViewHolder extends RecyclerView.ViewHolder  {
-        final ImageView imageView;
+        @BindView(R.id.trailer_image)
+        ImageView imageView;
 
         ViewHolder(View view) {
             super(view);
-            imageView = (ImageView) view.findViewById(R.id.trailer_image);
+            ButterKnife.bind(this, view);
         }
     }
 }
