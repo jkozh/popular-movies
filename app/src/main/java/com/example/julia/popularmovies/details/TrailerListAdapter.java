@@ -76,7 +76,18 @@ class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHol
             public void onClick(View view) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(trailer.getTrailerUrl()));
-                mContext.startActivity(intent);
+                /**
+                 * If there are no apps on the device that can receive the implicit intent,
+                 * your app will crash when it calls startActivity(). To first verify that
+                 * an app exists to receive the intent, call resolveActivity() on your Intent object.
+                 * If the result is non-null, there is at least one app that can handle the intent
+                 * and it's safe to call startActivity(). If the result is null,
+                 * you should not use the intent and, if possible,
+                 * you should disable the feature that invokes the intent.
+                 */
+                if (intent.resolveActivity(mContext.getPackageManager()) != null) {
+                    mContext.startActivity(intent);
+                }
             }
         });
     }
