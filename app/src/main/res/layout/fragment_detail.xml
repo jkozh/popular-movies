@@ -25,7 +25,7 @@
     android:background="@color/colorBackgroundDetail">
 
     <ImageView
-        android:id="@+id/detail_backdrop"
+        android:id="@+id/detail_backdrop_twopane"
         android:layout_width="match_parent"
         android:layout_height="@dimen/detail_backdrop_height"
         android:scaleType="fitXY"

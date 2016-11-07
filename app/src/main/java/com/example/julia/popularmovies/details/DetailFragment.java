@@ -95,7 +95,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     TextView mRuntimeView;
     @BindView(R.id.detail_reviews_title)
     TextView mReviewsTitleView;
-    @BindView(R.id.detail_backdrop)
+    @BindView(R.id.detail_backdrop_twopane)
     ImageView mBackdropView;
     @BindView(R.id.detail_trailers)
     RecyclerView mTrailersRecyclerView;
@@ -105,7 +105,6 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
     Drawable mPlaceHolderPoster;
     @BindView(R.id.rating_bar)
     RatingBar ratingBar;
-
 
     private Listener mListener;
 
@@ -346,6 +345,7 @@ public class DetailFragment extends Fragment implements FetchTrailersTask.Listen
                 }
             } else {
                 mListener.backdropUrl(mMovie.getImagePath(getContext(), mMovie.getBackdrop()));
+                mBackdropView.setVisibility(View.GONE);
             }
 
             // Set movie poster
